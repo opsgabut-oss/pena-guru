@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pena Guru - Generator Modul Ajar Deep Learning (Permendikdasmen No 13/2025)</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="shortcut icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>✏️</text></svg>">
+</head>
+<body>
+
+  <div class="app-container">
+    
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-logo">P</div>
+        <div class="sidebar-brand-name">
+          Pena Guru
+          <div class="sidebar-brand-sub">Deep Learning</div>
+        </div>
+      </div>
+      
+      <ul class="sidebar-menu">
+        <li class="menu-section-title">Modul Utama Kurikulum</li>
+        <li>
+          <a class="menu-item tab-btn" data-tab="prota">
+            <svg viewBox="0 0 24 24"><path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+            Program Tahunan (Prota)
+          </a>
+        </li>
+        <li>
+          <a class="menu-item tab-btn" data-tab="promes">
+            <svg viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
+            Program Semester (Promes)
+          </a>
+        </li>
+        <li>
+          <a class="menu-item tab-btn" data-tab="cptpatp">
+            <svg viewBox="0 0 24 24"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+            CP, TP, & ATP
+          </a>
+        </li>
+        
+        <li class="menu-section-title">Modul Per Pertemuan</li>
+        <li>
+          <a class="menu-item tab-btn active" data-tab="modulajar">
+            <svg viewBox="0 0 24 24"><path d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+            Modul Ajar
+          </a>
+        </li>
+        <li>
+          <a class="menu-item tab-btn" data-tab="bahanajar">
+            <svg viewBox="0 0 24 24"><path d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+            Bahan Ajar Siswa
+          </a>
+        </li>
+        <li>
+          <a class="menu-item tab-btn" data-tab="lkpd">
+            <svg viewBox="0 0 24 24"><path d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+            LKPD Siswa
+          </a>
+        </li>
+        <li>
+          <a class="menu-item tab-btn" data-tab="asesmen">
+            <svg viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            Rubrik Asesmen
+          </a>
+        </li>
+        
+        <li class="menu-section-title">Administrasi Akhir</li>
+        <li>
+          <a class="menu-item tab-btn" data-tab="eraport">
+            <svg viewBox="0 0 24 24"><path d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+            Capaian E-Raport
+          </a>
+        </li>
+      </ul>
+      
+      <div class="sidebar-footer">
+        <div><b>Versi Aplikasi</b>: 1.1</div>
+        <div>Sesuai Permendikdasmen No 13 Tahun 2025</div>
+      </div>
+    </aside>
+    
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+      
+      <!-- HEADER -->
+      <header class="app-header">
+        <div class="header-title-container">
+          <h1>Administrasi Mengajar Mandiri</h1>
+          <p>Rancangan Pembelajaran Mendalam (Deep Learning)</p>
+        </div>
+        
+        <div class="header-controls">
+          <div class="profile-tag" id="btn-edit-profil" title="Klik untuk mengedit profil sekolah dan tanda tangan">
+            <div class="profile-avatar">G</div>
+            <div>
+              <div class="profile-name" id="profile-guru-nama">Nama Guru</div>
+              <div style="font-size:10px; color:var(--text-muted);" id="profile-guru-sekolah">Sekolah</div>
+            </div>
+          </div>
+          
+          <button class="btn btn-outline" id="btn-cetak-pdf">
+            <svg viewBox="0 0 24 24" style="width:16px;height:16px;stroke:currentColor;stroke-width:2;fill:none;"><path d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
+            Cetak PDF
+          </button>
+          
+          <button class="btn btn-primary" id="btn-unduh-word">
+            <svg viewBox="0 0 24 24" style="width:16px;height:16px;stroke:currentColor;stroke-width:2;fill:none;"><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+            Unduh Word (.doc)
+          </button>
+        </div>
+      </header>
+      
+      <!-- WORKSPACE WRAPPER -->
+      <div class="workspace-wrapper">
+        
+        <div class="dashboard-grid">
+          
+          <!-- PANEL PENGATURAN & IDENTITAS -->
+          <div class="control-column">
+            <!-- SETUP PANEL -->
+            <div class="card">
+              <h2 class="card-title">Pengaturan Dokumen</h2>
+              
+              <div class="form-group">
+                <label for="select-kelas">Jenjang Kelas</label>
+                <select class="form-control" id="select-kelas"></select>
+              </div>
+              
+              <div class="form-group">
+                <label for="select-mapel">Mata Pelajaran</label>
+                <select class="form-control" id="select-mapel"></select>
+              </div>
+              
+              <div class="form-group">
+                <label for="select-semester">Semester</label>
+                <select class="form-control" id="select-semester">
+                  <option value="1">Semester 1 (Ganjil)</option>
+                  <option value="2">Semester 2 (Genap)</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="select-bab">Materi Pokok / Bab</label>
+                <select class="form-control" id="select-bab"></select>
+              </div>
+              
+              <div class="form-group">
+                <label for="select-pertemuan">Pertemuan Ke</label>
+                <select class="form-control" id="select-pertemuan"></select>
+              </div>
+            </div>
+
+            <!-- IDENTITAS GURU & SEKOLAH PANEL -->
+            <div class="card" style="margin-top: 20px;">
+              <h2 class="card-title">Identitas Guru & Sekolah</h2>
+              
+              <div class="form-group">
+                <label for="setup-nama-guru">Nama Guru Penyusun</label>
+                <input type="text" class="form-control" id="setup-nama-guru" placeholder="Contoh: M. Irfan, S.Pd.">
+              </div>
+              
+              <div class="form-group">
+                <label for="setup-nip-guru">NIP Guru</label>
+                <input type="text" class="form-control" id="setup-nip-guru" placeholder="NIP Guru Penyusun">
+              </div>
+              
+              <div class="form-group">
+                <label for="setup-sekolah">Nama Sekolah</label>
+                <input type="text" class="form-control" id="setup-sekolah" placeholder="Nama Sekolah Anda">
+              </div>
+              
+              <div class="form-group">
+                <label for="setup-tahun-ajaran">Tahun Pelajaran</label>
+                <input type="text" class="form-control" id="setup-tahun-ajaran" placeholder="Contoh: 2025/2026">
+              </div>
+              
+              <div class="form-group">
+                <label for="setup-nama-kepsek">Nama Kepala Sekolah</label>
+                <input type="text" class="form-control" id="setup-nama-kepsek" placeholder="Nama Kepala Sekolah">
+              </div>
+              
+              <div class="form-group">
+                <label for="setup-nip-kepsek">NIP Kepala Sekolah</label>
+                <input type="text" class="form-control" id="setup-nip-kepsek" placeholder="NIP Kepala Sekolah">
+              </div>
+              
+              <div style="background-color: var(--primary-light); border-radius: var(--radius-sm); padding: 12px; margin-top: 15px; font-size:12px; border: 1px solid var(--border-color);">
+                <p class="fw-bold" style="color: var(--primary); margin-bottom: 4px; display:flex; align-items:center; gap:5px;">
+                  <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" style="width:14px;height:14px;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                  Petunjuk Penyuntingan
+                </p>
+                <p style="color: var(--text-main); line-height: 1.4;">
+                  Seluruh bagian teks pada kertas pratinjau bersifat <b>interaktif</b>. Cukup klik dan ketik langsung untuk mengubah isinya sebelum mencetak atau mengunduh.
+                </p>
+              </div>
+            </div>
+          </div>
+          
+          <!-- DOCUMENT PREVIEW WORKSPACE -->
+          <div class="preview-column">
+            <!-- TAB BAR -->
+            <div class="tabs-bar">
+              <button class="tab-btn" data-tab="prota">Prota</button>
+              <button class="tab-btn" data-tab="promes">Promes</button>
+              <button class="tab-btn" data-tab="cptpatp">CP & ATP</button>
+              <button class="tab-btn active" data-tab="modulajar">Modul Ajar</button>
+              <button class="tab-btn" data-tab="bahanajar">Bahan Ajar</button>
+              <button class="tab-btn" data-tab="lkpd">LKPD</button>
+              <button class="tab-btn" data-tab="asesmen">Asesmen</button>
+              <button class="tab-btn" data-tab="eraport">E-Raport</button>
+            </div>
+            
+            <!-- PAPER SHEET -->
+            <div class="doc-sheet-container">
+              <div class="doc-sheet" id="workspace-sheet">
+                <!-- Content compiled via app.js -->
+              </div>
+            </div>
+          </div>
+          
+        </div>
+        
+      </div>
+      
+    </main>
+    
+  </div>
+
+  <!-- PROFILE CONFIGURATION MODAL -->
+  <div class="modal-overlay" id="profile-modal" style="display: none;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <span>Pengaturan Profil Guru & Penandatangan</span>
+        <button style="background:none; border:none; color:var(--primary); font-size:20px; cursor:pointer;" id="modal-cancel">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label>Nama Guru Penyusun</label>
+          <input type="text" class="form-control" id="input-nama-guru">
+        </div>
+        <div class="form-group">
+          <label>NIP Guru</label>
+          <input type="text" class="form-control" id="input-nip-guru">
+        </div>
+        <div class="form-group">
+          <label>Nama Sekolah / Satuan Pendidikan</label>
+          <input type="text" class="form-control" id="input-sekolah">
+        </div>
+        <div class="form-group">
+          <label>Tahun Pelajaran</label>
+          <input type="text" class="form-control" id="input-tahun-ajaran">
+        </div>
+        <div class="form-group">
+          <label>Nama Kepala Sekolah</label>
+          <input type="text" class="form-control" id="input-nama-kepsek">
+        </div>
+        <div class="form-group">
+          <label>NIP Kepala Sekolah</label>
+          <input type="text" class="form-control" id="input-nip-kepsek">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" id="modal-cancel">Batal</button>
+        <button class="btn btn-primary" id="modal-save">Simpan Profil</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST CONTAINER -->
+  <div id="toast-container" class="toast-container"></div>
+
+  <!-- APPLICATION SCRIPTS -->
+  <script src="js/curriculum-db.js"></script>
+  <script src="js/exporter.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
