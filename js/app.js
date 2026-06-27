@@ -5292,30 +5292,30 @@ function compileModulAjar(subData, chData, topicName, fase) {
       <table style="width: 100%; border: none !important; margin: 0; border-collapse: collapse;">
         <tr style="border: none !important;">
           <td style="width: 25%; border: none !important; padding: 5px 0; font-size: 10.5px; vertical-align: middle;">
-            <span class="interactive-checkbox" data-dimensi="iman" style="cursor:pointer; font-weight: bold; color: #0b5e56; font-size: 12.5px; margin-right: 4px;">${checkboxIman}</span> Keimanan & Ketaqwaan
+            <span class="interactive-checkbox" data-dimensi="iman" style="cursor:pointer; font-weight: bold; color: #0b5e56; font-size: 12.5px; margin-right: 4px;">${checkboxIman}</span> 1. Keimanan & Ketaqwaan
           </td>
           <td style="width: 25%; border: none !important; padding: 5px 0; font-size: 10.5px; vertical-align: middle;">
-            <span class="interactive-checkbox" data-dimensi="kritis" style="cursor:pointer; font-weight: bold; color: #0b5e56; font-size: 12.5px; margin-right: 4px;">${checkboxKritis}</span> Penalaran Kritis
+            <span class="interactive-checkbox" data-dimensi="kewargaan" style="cursor:pointer; font-weight: bold; color: #0b5e56; font-size: 12.5px; margin-right: 4px;">${checkboxKewargaan}</span> 2. Kewargaan
           </td>
           <td style="width: 25%; border: none !important; padding: 5px 0; font-size: 10.5px; vertical-align: middle;">
-            <span class="interactive-checkbox" data-dimensi="kolaborasi" style="cursor:pointer; font-weight: bold; color: #0b5e56; font-size: 12.5px; margin-right: 4px;">${checkboxKolaborasi}</span> Kolaborasi
+            <span class="interactive-checkbox" data-dimensi="kritis" style="cursor:pointer; font-weight: bold; color: #0b5e56; font-size: 12.5px; margin-right: 4px;">${checkboxKritis}</span> 3. Penalaran Kritis
           </td>
           <td style="width: 25%; border: none !important; padding: 5px 0; font-size: 10.5px; vertical-align: middle;">
-            <span class="interactive-checkbox" data-dimensi="kesehatan" style="cursor:pointer; font-weight: bold; color: #0b5e56; font-size: 12.5px; margin-right: 4px;">${checkboxKesehatan}</span> Kesehatan
+            <span class="interactive-checkbox" data-dimensi="kreativitas" style="cursor:pointer; font-weight: bold; color: #0b5e56; font-size: 12.5px; margin-right: 4px;">${checkboxKreativitas}</span> 4. Kreativitas
           </td>
         </tr>
         <tr style="border: none !important;">
           <td style="width: 25%; border: none !important; padding: 5px 0; font-size: 10.5px; vertical-align: middle;">
-            <span class="interactive-checkbox" data-dimensi="kewargaan" style="cursor:pointer; font-weight: bold; color: #0b5e56; font-size: 12.5px; margin-right: 4px;">${checkboxKewargaan}</span> Kewargaan
+            <span class="interactive-checkbox" data-dimensi="kolaborasi" style="cursor:pointer; font-weight: bold; color: #0b5e56; font-size: 12.5px; margin-right: 4px;">${checkboxKolaborasi}</span> 5. Kolaborasi
           </td>
           <td style="width: 25%; border: none !important; padding: 5px 0; font-size: 10.5px; vertical-align: middle;">
-            <span class="interactive-checkbox" data-dimensi="kreativitas" style="cursor:pointer; font-weight: bold; color: #0b5e56; font-size: 12.5px; margin-right: 4px;">${checkboxKreativitas}</span> Kreativitas
+            <span class="interactive-checkbox" data-dimensi="kemandirian" style="cursor:pointer; font-weight: bold; color: #0b5e56; font-size: 12.5px; margin-right: 4px;">${checkboxKemandirian}</span> 6. Kemandirian
           </td>
           <td style="width: 25%; border: none !important; padding: 5px 0; font-size: 10.5px; vertical-align: middle;">
-            <span class="interactive-checkbox" data-dimensi="kemandirian" style="cursor:pointer; font-weight: bold; color: #0b5e56; font-size: 12.5px; margin-right: 4px;">${checkboxKemandirian}</span> Kemandirian
+            <span class="interactive-checkbox" data-dimensi="kesehatan" style="cursor:pointer; font-weight: bold; color: #0b5e56; font-size: 12.5px; margin-right: 4px;">${checkboxKesehatan}</span> 7. Kesehatan
           </td>
           <td style="width: 25%; border: none !important; padding: 5px 0; font-size: 10.5px; vertical-align: middle;">
-            <span class="interactive-checkbox" data-dimensi="komunikasi" style="cursor:pointer; font-weight: bold; color: #0b5e56; font-size: 12.5px; margin-right: 4px;">${checkboxKomunikasi}</span> Komunikasi
+            <span class="interactive-checkbox" data-dimensi="komunikasi" style="cursor:pointer; font-weight: bold; color: #0b5e56; font-size: 12.5px; margin-right: 4px;">${checkboxKomunikasi}</span> 8. Komunikasi
           </td>
         </tr>
       </table>
