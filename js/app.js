@@ -4995,97 +4995,146 @@ function compileProta(subData, fase) {
 }
 
 // ----------------------------------------------------
-// RENDER TEMPLATES: PROMES (Program Semester)
+// RENDER TEMPLATES: PROMES (PROGRAM SEMESTER)
 // ----------------------------------------------------
 function compilePromes(subData, fase) {
   const headers = compileHeaderIdentitas("PROGRAM SEMESTER (PROMES)");
-  let rowsHtml = "";
-  
-  // Header Bulan (Sem 1: Juli - Des, Sem 2: Jan - Jun)
-  let monthHeaders = "";
-  const months = state.selectedSemester === "1" 
+  const isSem1 = state.selectedSemester === "1";
+  const months = isSem1
     ? ["Juli", "Agustus", "September", "Oktober", "November", "Desember"]
     : ["Januari", "Februari", "Maret", "April", "Mei", "Juni"];
-    
-  months.forEach(m => {
-    monthHeaders += `<th colspan="4" style="font-size: 10px; padding: 6px 4px; font-weight: bold; text-align: center; background-color: #eaf4f3; color: #0b5e56;">${m}</th>`;
+
+  const weekStatus = isSem1
+    ? ["mpls","mpls","eff","eff","eff","eff","eff","eff","eff","eff","eff","eff","eff","eff","eff","eff","eff","eff","eff","eff","eff","pas","libur","libur"]
+    : ["eff","eff","eff","eff","eff","eff","eff","eff","eff","eff","eff","ujian","ujian","eff","eff","eff","eff","eff","eff","eff","eff","pat","mpls","libur"];
+
+  const effWeekIndices = [];
+  weekStatus.forEach((s, i) => { if (s === "eff") effWeekIndices.push(i); });
+  const totalEffWeeks = effWeekIndices.length;
+
+  const half = Math.ceil(subData.chapters.length / 2);
+  const activeChapters = isSem1 ? subData.chapters.slice(0, half) : subData.chapters.slice(half);
+
+  const totalJpAll = activeChapters.reduce((sum, ch) => sum + (ch.jp || 0), 0);
+  let chapWeekAssignments = [];
+  let cursor = 0;
+  activeChapters.forEach((ch, idx) => {
+    let wks = Math.round((ch.jp || 0) / Math.max(totalJpAll, 1) * totalEffWeeks);
+    if (wks < 1) wks = 1;
+    if (idx === activeChapters.length - 1) wks = Math.max(1, totalEffWeeks - cursor);
+    chapWeekAssignments.push({ start: cursor, end: cursor + wks - 1 });
+    cursor += wks;
   });
 
+  let monthHeaders = "";
+  months.forEach(m => {
+    monthHeaders += `<th colspan="4" style="font-size:10px;padding:6px 4px;font-weight:bold;text-align:center;background-color:#eaf4f3;color:#0b5e56;">${m}</th>`;
+  });
   let subHeaders = "";
   for (let i = 0; i < 6; i++) {
     for (let w = 1; w <= 4; w++) {
-      subHeaders += `<th style="font-size: 9px; padding: 4px 2px; text-align: center; background-color: #f7faf9; color: #576d6a; font-weight: 500;">${w}</th>`;
+      subHeaders += `<th style="font-size:9px;padding:4px 2px;text-align:center;background-color:#f7faf9;color:#576d6a;font-weight:500;">${w}</th>`;
     }
   }
 
-  // Generate colgroup for table-layout: fixed to keep columns neatly aligned
-  let colGroupHtml = `
-    <colgroup>
-      <col style="width: 40px;">
-      <col style="width: 250px;">
-      <col style="width: 45px;">
-      <col style="width: 45px;">
-      <col style="width: 45px;">
-  `;
-  for (let i = 0; i < 24; i++) {
-    colGroupHtml += `    <col style="width: 24px;">\n`;
+  let colGroupHtml = `<colgroup><col style="width:40px;"><col style="width:250px;"><col style="width:45px;"><col style="width:45px;"><col style="width:45px;">`;
+  for (let i = 0; i < 24; i++) colGroupHtml += `<col style="width:24px;">`;
+  colGroupHtml += `</colgroup>`;
+
+  function getWeekBg(st) {
+    if (st === "mpls") return "#fff3cd";
+    if (st === "pas" || st === "ujian" || st === "pat") return "#fde8e8";
+    if (st === "libur") return "#e0e0e0";
+    return "#f0fff4";
   }
-  colGroupHtml += `  </colgroup>`;
 
-  // Filter bab yang tampil sesuai semester aktif
-  const half = Math.ceil(subData.chapters.length / 2);
-  const activeChapters = state.selectedSemester === "1" 
-    ? subData.chapters.slice(0, half) 
-    : subData.chapters.slice(half);
+  let keteranganCells = "";
+  for (let c = 0; c < 24; c++) {
+    const st = weekStatus[c];
+    const bg = getWeekBg(st);
+    let lbl = "";
+    if (st === "mpls") lbl = "M";
+    else if (st === "pas" || st === "pat") lbl = "P";
+    else if (st === "ujian") lbl = "U";
+    else if (st === "libur") lbl = "L";
+    keteranganCells += `<td class="text-center" style="font-size:9px;padding:3px 1px;background-color:${bg};font-weight:bold;color:#555;vertical-align:middle;">${lbl}</td>`;
+  }
+  const keteranganRow = `
+    <tr>
+      <td colspan="2" style="font-size:10px;padding:4px 8px;font-style:italic;font-weight:bold;background-color:#fffbf0;color:#7d6608;">Keterangan</td>
+      <td colspan="3" style="font-size:9px;padding:4px;background-color:#fffbf0;color:#7d6608;text-align:center;">M=MPLS &nbsp; P/U=PAS/Ujian &nbsp; L=Libur</td>
+      ${keteranganCells}
+    </tr>`;
 
+  let rowsHtml = "";
+  let totalIntra = 0, totalKokur = 0, totalJpSum = 0;
   activeChapters.forEach((ch, idx) => {
     const split = getJpSplit(subData.id, ch.jp);
-    
-    // Generate checkmarks distributed
+    totalIntra += parseInt(split.intra) || 0;
+    totalKokur += parseInt(split.kokur) || 0;
+    totalJpSum += parseInt(split.total) || 0;
+    const assign = chapWeekAssignments[idx];
+
     let checks = "";
     for (let c = 0; c < 24; c++) {
-      // Simulasikan checklist terdistribusi di minggu efektif
-      const checked = (idx === 0 && c >= 1 && c <= 3) || 
-                      (idx === 1 && c >= 5 && c <= 7) ||
-                      (idx === 2 && c >= 9 && c <= 11) ||
-                      (idx === 3 && c >= 13 && c <= 15) ||
-                      (c === idx * 4 + 2); // Distribute others
-      checks += `<td class="text-center" style="font-size: 11px; padding: 6px 2px; color: #0b5e56; font-weight: bold; vertical-align: middle;">${checked ? '✓' : ''}</td>`;
+      const st = weekStatus[c];
+      const bg = getWeekBg(st);
+      if (st !== "eff") {
+        checks += `<td style="background-color:${bg};padding:6px 2px;"></td>`;
+      } else {
+        const effPos = effWeekIndices.indexOf(c);
+        const ticked = (effPos >= assign.start && effPos <= assign.end);
+        checks += `<td class="text-center" style="font-size:11px;padding:6px 2px;color:#0b5e56;font-weight:bold;vertical-align:middle;background-color:#f0fff4;">${ticked ? "\u2713" : ""}</td>`;
+      }
     }
 
     rowsHtml += `
       <tr>
-        <td class="text-center" style="font-size: 11px; padding: 6px 4px; vertical-align: middle;">${ch.no}</td>
-        <td style="font-size: 11px; padding: 6px 8px; vertical-align: middle; text-align: left; line-height: 1.4;">${ch.title}</td>
-        <td class="text-center" style="font-size: 11px; padding: 6px 4px; vertical-align: middle;">${split.intra}</td>
-        <td class="text-center" style="font-size: 11px; padding: 6px 4px; vertical-align: middle;">${split.kokur}</td>
-        <td class="text-center fw-bold" style="font-size: 11px; padding: 6px 4px; vertical-align: middle; color: #0b5e56;">${split.total}</td>
+        <td class="text-center" style="font-size:11px;padding:6px 4px;vertical-align:middle;">${ch.no}</td>
+        <td style="font-size:11px;padding:6px 8px;vertical-align:middle;text-align:left;line-height:1.4;">${ch.title}</td>
+        <td class="text-center" style="font-size:11px;padding:6px 4px;vertical-align:middle;">${split.intra}</td>
+        <td class="text-center" style="font-size:11px;padding:6px 4px;vertical-align:middle;">${split.kokur}</td>
+        <td class="text-center fw-bold" style="font-size:11px;padding:6px 4px;vertical-align:middle;color:#0b5e56;">${split.total}</td>
         ${checks}
-      </tr>
-    `;
+      </tr>`;
   });
+
+  const totalRow = `
+    <tr style="background-color:#eaf4f3;font-weight:bold;">
+      <td colspan="2" style="font-size:11px;padding:8px;text-align:right;color:#0b5e56;">JUMLAH TOTAL JP:</td>
+      <td class="text-center" style="font-size:11px;padding:8px 4px;color:#0b5e56;">${totalIntra}</td>
+      <td class="text-center" style="font-size:11px;padding:8px 4px;color:#0b5e56;">${totalKokur}</td>
+      <td class="text-center" style="font-size:11px;padding:8px 4px;color:#0b5e56;">${totalJpSum}</td>
+      <td colspan="24" style="font-size:10px;padding:8px;color:#576d6a;text-align:center;">Minggu Efektif: <b>${totalEffWeeks}</b> minggu dari 24 minggu kalender semester</td>
+    </tr>`;
 
   return `
     ${headers}
-    <p class="text-muted" style="margin-bottom: 12px; font-size: 12px; font-style: italic;">* Distribusi jam pelajaran semester dipecah berdasarkan target Intrakurikuler (Intra) & Kokurikuler (Kokur) sesuai Kemendikdasmen No 13/2025.</p>
-    <div style="overflow-x: auto; width: 100%;">
-      <table style="width: 100%; min-width: 1000px; table-layout: fixed; border-collapse: collapse; margin: 16px 0;">
+    <p class="text-muted" style="margin-bottom:4px;font-size:12px;font-style:italic;">* Distribusi JP sesuai kalender akademik 2025/2026 dan Permendikdasmen No. 13/2025.</p>
+    <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:10px;font-size:11px;">
+      <span style="background:#fff3cd;padding:2px 8px;border-radius:4px;border:1px solid #d4a017;"><b>M</b> = MPLS</span>
+      <span style="background:#fde8e8;padding:2px 8px;border-radius:4px;border:1px solid #c0392b;"><b>P/U</b> = PAS/Ujian</span>
+      <span style="background:#e0e0e0;padding:2px 8px;border-radius:4px;border:1px solid #999;"><b>L</b> = Libur</span>
+      <span style="background:#f0fff4;padding:2px 8px;border-radius:4px;border:1px solid #0b5e56;color:#0b5e56;font-weight:bold;">\u2713 = Minggu Efektif</span>
+    </div>
+    <div style="overflow-x:auto;width:100%;">
+      <table style="width:100%;min-width:1000px;table-layout:fixed;border-collapse:collapse;margin:8px 0;">
         ${colGroupHtml}
         <thead>
           <tr>
-            <th rowspan="2" style="font-size: 10px; padding: 6px 4px; text-align: center; vertical-align: middle; background-color: #eaf4f3; color: #0b5e56; font-weight: bold;">Bab</th>
-            <th rowspan="2" style="font-size: 10px; padding: 6px 8px; text-align: left; vertical-align: middle; background-color: #eaf4f3; color: #0b5e56; font-weight: bold;">Materi Pokok / Sub-Bab</th>
-            <th rowspan="2" style="font-size: 10px; padding: 6px 4px; text-align: center; vertical-align: middle; background-color: #eaf4f3; color: #0b5e56; font-weight: bold;">Intra</th>
-            <th rowspan="2" style="font-size: 10px; padding: 6px 4px; text-align: center; vertical-align: middle; background-color: #eaf4f3; color: #0b5e56; font-weight: bold;">Kokur</th>
-            <th rowspan="2" style="font-size: 10px; padding: 6px 4px; text-align: center; vertical-align: middle; background-color: #eaf4f3; color: #0b5e56; font-weight: bold;">Total</th>
+            <th rowspan="2" style="font-size:10px;padding:6px 4px;text-align:center;vertical-align:middle;background-color:#eaf4f3;color:#0b5e56;font-weight:bold;">Bab</th>
+            <th rowspan="2" style="font-size:10px;padding:6px 8px;text-align:left;vertical-align:middle;background-color:#eaf4f3;color:#0b5e56;font-weight:bold;">Materi Pokok</th>
+            <th rowspan="2" style="font-size:10px;padding:6px 4px;text-align:center;vertical-align:middle;background-color:#eaf4f3;color:#0b5e56;font-weight:bold;">Intra</th>
+            <th rowspan="2" style="font-size:10px;padding:6px 4px;text-align:center;vertical-align:middle;background-color:#eaf4f3;color:#0b5e56;font-weight:bold;">Kokur</th>
+            <th rowspan="2" style="font-size:10px;padding:6px 4px;text-align:center;vertical-align:middle;background-color:#eaf4f3;color:#0b5e56;font-weight:bold;">Total</th>
             ${monthHeaders}
           </tr>
-          <tr>
-            ${subHeaders}
-          </tr>
+          <tr>${subHeaders}</tr>
         </thead>
         <tbody>
+          ${keteranganRow}
           ${rowsHtml}
+          ${totalRow}
         </tbody>
       </table>
     </div>
