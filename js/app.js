@@ -5203,36 +5203,297 @@ function compileCpTpAtp(subData, fase) {
   `;
 }
 
+// Helper to get highly specific physical/concrete activities based on topic keywords
+function getConcreteActivity(category, topicName) {
+  const topicLower = (topicName || "").toLowerCase();
+  
+  if (category === "matematika") {
+    if (topicLower.includes("pecahan") || topicLower.includes("bagi") || topicLower.includes("pembagian")) {
+      return `Peserta didik secara aktif melipat kertas origami berwarna menjadi beberapa bagian sama besar, mengguntingnya, lalu membagikannya ke anggota kelompok untuk mendemonstrasikan konsep pecahan senilai atau operasi pembagian secara fisik.`;
+    }
+    if (topicLower.includes("tambah") || topicLower.includes("jumlah") || topicLower.includes("penjumlahan")) {
+      return `Peserta didik secara aktif menggabungkan beberapa kumpulan stik es krim atau kelereng dari wadah kelompok yang berbeda di atas meja, lalu menghitung total jumlah gabungannya secara konkret satu per satu.`;
+    }
+    if (topicLower.includes("kurang") || topicLower.includes("selisih") || topicLower.includes("pengurangan")) {
+      return `Peserta didik secara fisik mengambil sejumlah kelereng dari wadah utama di meja kelompok, membagikannya kepada teman kelompok lain, lalu menghitung sisa kelereng yang tersisa di wadah awal.`;
+    }
+    if (topicLower.includes("kali") || topicLower.includes("perkalian")) {
+      return `Peserta didik menyusun stik es krim ke dalam susunan baris dan kolom yang sama banyak (matriks/grid) di atas meja kelompok, lalu menghitung total stik secara cepat untuk memahami konsep dasar perkalian secara fisik.`;
+    }
+    if (topicLower.includes("bangun") || topicLower.includes("geometri") || topicLower.includes("datar") || topicLower.includes("ruang") || topicLower.includes("sudut") || topicLower.includes("segitiga") || topicLower.includes("lingkaran")) {
+      return `Peserta didik meraba tepi benda-benda nyata di kelas (seperti permukaan meja, buku, jam dinding) atau merangkai sedotan plastik menggunakan benang kasur menjadi model bangun datar atau bangun ruang secara nyata.`;
+    }
+    if (topicLower.includes("ukur") || topicLower.includes("panjang") || topicLower.includes("lebar") || topicLower.includes("tinggi") || topicLower.includes("berat")) {
+      return `Peserta didik menggunakan pita meteran kain, penggaris kayu, atau timbangan mainan untuk mengukur langsung panjang meja belajar, tinggi badan teman, atau berat buku tulis secara berpasangan.`;
+    }
+    if (topicLower.includes("volume") || topicLower.includes("isi") || topicLower.includes("debit") || topicLower.includes("kapasitas")) {
+      return `Peserta didik menuangkan air secara langsung menggunakan gelas ukur berskala ke dalam berbagai wadah botol plastik kosong dengan bentuk berbeda untuk membandingkan kapasitas volume secara riil.`;
+    }
+    if (topicLower.includes("uang") || topicLower.includes("rupiah") || topicLower.includes("belanja") || topicLower.includes("harga")) {
+      return `Peserta didik mensimulasikan transaksi jual beli menggunakan uang mainan kertas dan koin serta barang-barang di kelas (alat tulis) untuk menghitung total belanjaan dan kembalian secara langsung.`;
+    }
+    if (topicLower.includes("waktu") || topicLower.includes("jam") || topicLower.includes("menit") || topicLower.includes("detik")) {
+      return `Peserta didik memutar jarum jam pada model jam dinding mainan dari kertas karton tebal untuk menunjukkan waktu aktivitas harian (jam bangun tidur, jam sekolah) secara berpasangan.`;
+    }
+    return `Peserta didik secara aktif mengeksplorasi dan memanipulasi objek nyata di meja mereka (seperti mengelompokkan lidi, melipat kertas pecahan, atau mengukur dengan jengkal tangan) guna mendalami materi <b>${topicName}</b> secara langsung.`;
+  }
+  
+  if (category === "koding") {
+    if (topicLower.includes("ulang") || topicLower.includes("loop") || topicLower.includes("selamanya")) {
+      return `Peserta didik melakukan gerakan fisik tepuk tangan sebanyak 5 kali secara berulang mengikuti pola ketukan 'Loop 5 Kali' yang tertulis pada papan tulis instruksi koding fisik kelompok.`;
+    }
+    if (topicLower.includes("cabang") || topicLower.includes("jika") || topicLower.includes("if") || topicLower.includes("else")) {
+      return `Peserta didik memainkan game 'Jika-Maka' fisik: Jika guru mengangkat bendera merah maka siswa harus berdiri tegap, jika guru mengangkat bendera hijau maka siswa harus duduk rileks.`;
+    }
+    if (topicLower.includes("variabel") || topicLower.includes("data") || topicLower.includes("skor")) {
+      return `Peserta didik menggunakan kotak kardus kosong berlabel 'Wadah Skor' dan memasukkan/mengeluarkan bola tenis ke dalamnya untuk melambangkan penambahan dan pengurangan nilai variabel secara fisik.`;
+    }
+    return `Peserta didik menyusun kartu fisik (koding tanpa komputer/unplugged) berupa kartu perintah arah (maju, belok, lompat) secara manual di lantai kelas untuk mensimulasikan langkah algoritma secara fisik.`;
+  }
+
+  if (category === "ipas") {
+    if (topicLower.includes("cahaya") || topicLower.includes("optik") || topicLower.includes("cermin") || topicLower.includes("pantul")) {
+      return `Peserta didik menyalakan senter di ruang kelas yang redup, lalu mengarahkannya ke cermin datar, gelas bening berisi air, dan kertas karton tebal untuk membuktikan sifat cahaya merambat lurus, menembus benda bening, dan memantul.`;
+    }
+    if (topicLower.includes("magnet") || topicLower.includes("tarik") || topicLower.includes("kutub")) {
+      return `Peserta didik memegang magnet batang lalu mendekatkannya ke berbagai benda di sekitar kelas (paku besi, klip kertas plastik, daun, penghapus karet, kayu) untuk membuktikan gaya tarik magnet secara berkelompok.`;
+    }
+    if (topicLower.includes("air") || topicLower.includes("hujan") || topicLower.includes("siklus") || topicLower.includes("uap") || topicLower.includes("awan")) {
+      return `Peserta didik menuangkan air hangat ke dalam mangkuk kaca tebal, menutupnya dengan plastik wrap bening, lalu menaruh es batu di atas plastik wrap untuk mengamati proses kondensasi (tetesan air hujan mini) di bawah plastik secara langsung.`;
+    }
+    if (topicLower.includes("bunyi") || topicLower.includes("suara") || topicLower.includes("getar") || topicLower.includes("telinga")) {
+      return `Peserta didik memetik senar karet gelang yang diregangkan pada kotak tisu kosong dengan berbagai tingkat ketegangan untuk mendengarkan perbedaan tinggi-rendah nada bunyi akibat getaran karet.`;
+    }
+    if (topicLower.includes("tumbuh") || topicLower.includes("daun") || topicLower.includes("akar") || topicLower.includes("batang") || topicLower.includes("bunga") || topicLower.includes("tanaman")) {
+      return `Peserta didik mengamati langsung tanaman pot kecil yang dibawa ke kelas, menggunakan kaca pembesar (lup) untuk melihat serat daun, batang, dan struktur akar tanaman secara detail.`;
+    }
+    if (topicLower.includes("gaya") || topicLower.includes("gesek") || topicLower.includes("gravitasi") || topicLower.includes("dorong") || topicLower.includes("tarik")) {
+      return `Peserta didik menggelindingkan bola mainan di atas permukaan lantai ubin yang licin dibandingkan di atas karpet berbulu kasar untuk membandingkan pengaruh gaya gesek secara langsung.`;
+    }
+    if (topicLower.includes("listrik") || topicLower.includes("baterai") || topicLower.includes("kabel") || topicLower.includes("saklar")) {
+      return `Peserta didik merangkai baterai kecil, kabel tembaga, dan lampu bohlam mini menjadi sirkuit tertutup dan terbuka untuk mengamati aliran arus listrik secara langsung.`;
+    }
+    if (topicLower.includes("peta") || topicLower.includes("atlas") || topicLower.includes("globe") || topicLower.includes("wilayah") || topicLower.includes("geografi")) {
+      return `Peserta didik membuka atlas fisik atau bola dunia (globe), lalu menggunakan benang kasur untuk mengukur jarak relatif antar pulau atau menemukan koordinat wilayah secara berkelompok.`;
+    }
+    if (topicLower.includes("ekonomi") || topicLower.includes("jual") || topicLower.includes("beli") || topicLower.includes("pasar") || topicLower.includes("kebutuhan") || topicLower.includes("uang")) {
+      return `Peserta didik menyusun kartu bergambar barang kebutuhan (seperti beras, obat) dan barang keinginan (seperti mainan, PS5) secara bergotong-royong di papan klasifikasi kelompok.`;
+    }
+    return `Peserta didik melakukan eksperimen fisik atau observasi lapangan langsung (seperti meraba daun, mendekatkan magnet ke paku, atau mengamati interaksi di halaman sekolah) mengenai materi terkait secara berkelompok.`;
+  }
+
+  if (category === "pancasila") {
+    if (topicLower.includes("gotong") || topicLower.includes("kerja") || topicLower.includes("sama") || topicLower.includes("bakti")) {
+      return `Peserta didik mensimulasikan aktivitas kerja bakti di kelas (seperti membagi tugas menyapu, merapikan buku, dan membersihkan papan tulis) secara langsung untuk mempraktikkan gotong royong secara berkelompok.`;
+    }
+    if (topicLower.includes("lambang") || topicLower.includes("garuda") || topicLower.includes("simbol") || topicLower.includes("sila")) {
+      return `Peserta didik menyusun potongan puzzle gambar Garuda Pancasila dan mencocokkan simbol sila Pancasila (bintang, rantai, pohon beringin, banteng, padi kapas) pada karton secara berkelompok.`;
+    }
+    if (topicLower.includes("aturan") || topicLower.includes("norma") || topicLower.includes("tata") || topicLower.includes("tertib")) {
+      return `Peserta didik bermain peran (role-play) mempraktikkan sikap tertib sekolah (seperti berbaris sebelum masuk kelas, menaruh sepatu di rak, menyapa guru) secara berpasangan.`;
+    }
+    return `Peserta didik menyusun gambar pilihan perilaku baik (patuh aturan, toleransi, musyawarah) di papan kerja kelompok untuk mengklasifikasikan nilai-nilai moral terkait <b>${topicName}</b>.`;
+  }
+
+  if (category === "pjok") {
+    return `Peserta didik berbaris di lapangan dan mempraktikkan langsung gerakan jasmani (seperti berlari zig-zag, melompati rintangan kardus bekas, atau mengoper bola tenis) secara aktif bergantian sesuai panduan gerak <b>${topicName}</b>.`;
+  }
+
+  if (category === "senirupa") {
+    return `Peserta didik memanipulasi alat dan media fisik seni rupa (seperti mencampur warna cat air, meremas playdough/tanah liat, menggunting kertas kolase) untuk merancang karya rupa kreatif bertema <b>${topicName}</b>.`;
+  }
+
+  if (category === "pai") {
+    if (topicLower.includes("wudhu") || topicLower.includes("salat") || topicLower.includes("shalat") || topicLower.includes("ibadah")) {
+      return `Peserta didik memperagakan langsung tata cara wudhu atau gerakan salat menggunakan media sajadah/poster urutan ibadah secara berpasangan di kelas secara runtut.`;
+    }
+    return `Peserta didik mensimulasikan perilaku terpuji (akhlak mulia kepada orang tua/teman) lewat bermain peran drama pendek di depan kelas bertema <b>${topicName}</b>.`;
+  }
+
+  if (category === "kristen") {
+    if (topicLower.includes("alkitab") || topicLower.includes("baca") || topicLower.includes("nas") || topicLower.includes("firman")) {
+      return `Peserta didik membuka Alkitab fisik berkelompok, mencari pasal/ayat yang ditentukan, lalu membaca bergantian dengan menunjuk teks secara teratur demi melatih literasi Alkitab.`;
+    }
+    if (topicLower.includes("doa") || topicLower.includes("ibadah") || topicLower.includes("syukur")) {
+      return `Peserta didik memperagakan adab berdoa kristiani yang baik (sikap duduk tenang, melipat tangan, dan memejamkan mata) secara hening dan khusyuk secara bergotong-royong.`;
+    }
+    if (topicLower.includes("ciptaan") || topicLower.includes("penciptaan") || topicLower.includes("alam") || topicLower.includes("bumi")) {
+      return `Peserta didik menyusun gambar urutan penciptaan hari ke-1 sampai ke-6 secara runtut pada lembar karton kelompok secara aktif dan bergotong-royong.`;
+    }
+    return `Peserta didik melakukan simulasi bermain peran (roleplay) keteladanan tokoh Alkitab atau menyusun kartu gambar tindakan kasih bertema <b>${topicName}</b> secara aktif.`;
+  }
+
+  // Languages / Default Fallback
+  if (topicLower.includes("baca") || topicLower.includes("nyaring") || topicLower.includes("buku") || topicLower.includes("cerita")) {
+    return `Peserta didik memegang buku cerita bergambar besar, membaca bergantian kata demi kata dengan menunjuk teks menggunakan telunjuk tangan secara teratur demi melatih artikulasi nyaring.`;
+  }
+  if (topicLower.includes("tulis") || topicLower.includes("karang") || topicLower.includes("huruf") || topicLower.includes("kata") || topicLower.includes("kalimat")) {
+    return `Peserta didik meraba huruf timbul dari kertas pasir (sandpaper letters) atau menyusun kartu suku kata fisik berwarna menjadi satu kalimat utuh di atas meja kelompok.`;
+  }
+  if (topicLower.includes("bicara") || topicLower.includes("wawancara") || topicLower.includes("diskusi") || topicLower.includes("tanya") || topicLower.includes("pendapat")) {
+    return `Peserta didik bermain peran melakukan wawancara berpasangan menggunakan telepon kaleng mainan yang dihubungkan dengan benang kasur untuk melatih intonasi suara dan kepercayaan diri.`;
+  }
+  return `Peserta didik melakukan simulasi konkret (seperti menyusun kartu kata fisik bergambar, bermain peran komunikatif tematik, atau memanipulasi media huruf/bahasa) secara aktif bertema <b>${topicName}</b>.`;
+}
+
+// Helper to get detailed topic-specific descriptions for Deep Learning stages
+function getLangkahInstruksional(subjectId, topicName) {
+  let category = "indonesia";
+  if (subjectId.includes("matematika")) category = "matematika";
+  else if (subjectId.includes("koding")) category = "koding";
+  else if (subjectId.includes("pjok")) category = "pjok";
+  else if (subjectId.includes("senirupa")) category = "senirupa";
+  else if (subjectId.includes("pai")) category = "pai";
+  else if (subjectId.includes("kristen")) category = "kristen";
+  else if (subjectId.includes("pancasila")) category = "pancasila";
+  else if (subjectId.includes("ipas")) category = "ipas";
+  else if (subjectId.includes("english")) category = "english";
+  else if (subjectId.includes("jawa")) category = "jawa";
+
+  const data = {
+    pendahuluan1: "",
+    pendahuluan2: "",
+    pendahuluan3: "",
+    tahap1: "",
+    tahap2: "",
+    tahap3: "",
+    tahap4: "",
+    tahap5: "",
+    penutup1: "",
+    penutup2: "",
+    penutup3: ""
+  };
+
+  switch (category) {
+    case "matematika":
+      data.pendahuluan1 = `Guru mengondisikan kesiapan mental belajar kelas dengan mengajak siswa duduk tegap dan memandu teknik pernapasan kesadaran (tarik napas dalam 4 detik, tahan 2 detik, lalu hembuskan perlahan) sebanyak 3 kali secara hening untuk memusatkan emosi positif belajar. Dilanjutkan dengan berdoa bersama dipimpin ketua kelas, memeriksa kerapian pakaian, menjaga kebersihan kelas, serta menanyakan perasaan emosional siswa hari ini secara ramah.`;
+      data.pendahuluan2 = `Guru menghubungkan materi dengan pengalaman kontekstual siswa di kehidupan sehari-hari: 'Anak-anak hebat, pernahkah kalian memotong kue ulang tahun untuk dibagikan secara adil ke teman-teman? Atau mengelompokkan mainan kelereng di rumah? Hari ini kita akan belajar matematika tentang <b>${topicName}</b> agar kita bisa mengukur, menghitung, dan membagi objek nyata secara tepat, adil, dan objektif dalam kehidupan sehari-hari!'`;
+      data.pendahuluan3 = `Guru menjelaskan target capaian pembelajaran hari ini yaitu memahami cara kerja logika <b>${topicName}</b>. Alur kegiatan menyenangkan yang akan dilalui meliputi eksplorasi manipulatif objek berkelompok, visualisasi gambar sketsa konsep, merumuskan simbol matematis, serta diakhiri dengan kuis interaktif berhadiah bintang prestasi yang ramah anak.`;
+      
+      data.tahap1 = `Peserta didik dihadapkan pada situasi tidak lengkap atau teka-teki konkret bermasalah di depan kelas. Guru memperlihatkan alat peraga nyata atau wadah berisi barang acak, lalu mengajukan pertanyaan pemantik: 'Jika kita ingin menyortir dan menghitung kumpulan objek fisik ini untuk memecahkan konsep <b>${topicName}</b> secara paling efektif and adil, bagaimana langkah logis awal yang harus kita lakukan?'. Siswa dipancing untuk berpikir kritis tanpa langsung diberi tahu rumusnya.`;
+      data.tahap2 = getConcreteActivity("matematika", topicName);
+      data.tahap3 = `Peserta didik menuangkan hasil manipulasi konkret di atas ke dalam bentuk lembar kerja visual (representasi gambar). Setiap kelompok menggambar arsiran lingkaran/persegi untuk pecahan, melukis sketsa diagram batang berwarna, atau menata tabel visual data terkait <b>${topicName}</b> pada kertas karton kelompok agar konsepnya terlihat jelas secara visual.`;
+      data.tahap4 = `Peserta didik dibimbing untuk menerjemahkan representasi visual tersebut menjadi simbol abstrak formal matematika. Siswa menuliskan angka resmi, merumuskan persamaan operasi hitung (seperti tanda tambah [+], kurang [-], pecahan, atau rumus keliling/luas), serta melabeli simbol matematis yang merepresentasikan materi <b>${topicName}</b> secara akurat.`;
+      data.tahap5 = `Perwakilan dari setiap kelompok mempresentasikan proses berpikir kelompoknya di depan kelas. Siswa menjelaskan secara verbal dan logis bagaimana mereka memproses benda konkret hingga menemukan formulasi matematika <b>${topicName}</b>. Kelompok lain memberikan tanggapan berupa apresiasi atau pertanyaan kritis konstruktif, dilanjutkan dengan penguatan dan validasi konsep oleh guru.`;
+      
+      data.penutup1 = `Siswa bersama guru melakukan refleksi perasaan belajar dengan mengajukan pertanyaan pemandu: 'Aktivitas eksplorasi bagian mana yang paling menantang dan memicu rasa ingin tahumu tentang <b>${topicName}</b> hari ini? Karakter baik (seperti gotong royong dan kejujuran) apa saja yang sudah kita terapkan?'`;
+      data.penutup2 = `Guru melakukan asesmen spontan lisan dengan mengajukan 3 pertanyaan pemahaman cepat secara acak:<br>
+      1. 'Sebutkan 1 contoh pemanfaatan konsep <b>${topicName}</b> yang baru saja kita pelajari saat kamu membantu ibu di rumah!'<br>
+      2. 'Mengapa kita harus menggambarkan pola visual terlebih dahulu sebelum menuliskan simbol formal <b>${topicName}</b>?'<br>
+      3. 'Jika angka variabel diubah menjadi lebih besar, apa pengaruhnya terhadap hasil perhitungan akhir?'`;
+      data.penutup3 = `Guru memberikan tindak lanjut tugas rumah kontekstual sederhana: 'Cari dan catatlah 2 benda atau kegiatan di rumahmu yang menerapkan prinsip hitung <b>${topicName}</b>.' Pembelajaran ditutup dengan doa syukur bersama dan yel-yel penyemangat kelas secara ceria.`;
+      break;
+
+    case "kristen":
+      data.pendahuluan1 = `Guru mengondisikan kesiapan mental belajar siswa dengan bernyanyi lagu rohani gembira (seperti 'Setinggi-tingginya Langit' atau 'Hari Ini Kurasa Bahagia') bersama-sama secara ceria, dilanjutkan berdoa pembuka dipimpin salah satu siswa, serta absensi kehadiran siswa dengan sapaan hangat.`;
+      data.pendahuluan2 = `Guru menghubungkan materi dengan iman Kristen sehari-hari: 'Anak-anak terkasih, tahukah kalian bahwa setiap kita diciptakan secara unik, dikasihi, dan dipelihara oleh Tuhan setiap hari? Hari ini kita belajar materi <b>${topicName}</b> agar kita bisa mensyukuri kasih setia Allah dan menjadi saluran berkat bagi keluarga serta teman-teman di sekitar kita!'`;
+      data.pendahuluan3 = `Guru memaparkan alur aktivitas seru hari ini: menyanyi gerakan bersama, menyusun urutan peristiwa Alkitab, berdiskusi kelompok merawat alam ciptaan, menulis komitmen kasih Kristen, dan ditutup dengan doa syukur bersama.`;
+      
+      data.tahap1 = `Peserta didik dihadapkan pada paparan cerita Alkitab bergambar atau pembacaan nats firman Tuhan bertema <b>${topicName}</b>. Guru mengajukan pertanyaan pemantik: 'Dari firman Tuhan ini, teladan atau pesan kasih apa yang ingin Tuhan ajarkan kepada kita untuk dilakukan hari ini?'.`;
+      data.tahap2 = getConcreteActivity("kristen", topicName);
+      data.tahap3 = `Peserta didik menuangkan pesan cerita Alkitab di atas dalam lembar kerja visual berkelompok. Mereka menggambar ilustrasi kisah Alkitab, mewarnai gambar alam ciptaan, atau menyusun poster visual bertema <b>${topicName}</b> secara kreatif.`;
+      data.tahap4 = `Peserta didik dibimbing merumuskan kalimat doa syukur tertulis atau komitmen janji iman Kristen (seperti janji membantu orang tua, rukun dengan saudara) terkait materi <b>${topicName}</b> secara mandiri di buku tulis masing-masing.`;
+      data.tahap5 = `Setiap kelompok bergantian mempresentasikan poster visual atau membacakan kalimat komitmen kasih bertema <b>${topicName}</b> di depan kelas. Murid lain memberikan apresiasi dan guru memberikan konfirmasi teologis serta penguatan firman Tuhan.`;
+      
+      data.penutup1 = `Siswa bersama guru melakukan refleksi iman: 'Bagian nats firman Tuhan mana yang paling menyentuh hatimu hari ini tentang <b>${topicName}</b>? Sikap kasih apa yang akan kamu praktikkan setelah keluar dari kelas ini?'`;
+      data.penutup2 = `Guru melakukan asesmen spontan lisan dengan mengajukan 3 pertanyaan pemahaman Alkitab secara cepat:<br>
+      1. 'Apa pesan utama nats Alkitab materi <b>${topicName}</b> yang baru saja kita pelajari?'<br>
+      2. 'Sebutkan 2 contoh tindakan nyata di rumah sebagai bukti anak yang mengasihi Allah!'<br>
+      3. 'Bagaimana sikap kita saat melihat teman sedang mengalami kesusahan?'`;
+      data.penutup3 = `Guru memberikan tugas rumah mandiri: 'Tuliskan satu doa pendek ucapan syukur atas berkat <b>${topicName}</b> dan doakan bersama orang tuamu malam nanti.' Kelas ditutup dengan menyanyi dan doa syafaat penutup oleh guru.`;
+      break;
+
+    case "koding":
+      data.pendahuluan1 = `Guru mengondisikan kesiapan belajar siswa dengan mengajak memejamkan mata dan melakukan peregangan otot leher dan jari tangan secara hening. Siswa diarahkan memfokuskan mental pada ketenangan logika berpikir guna mempersiapkan pemecahan masalah algoritma. Dilanjutkan dengan doa pembuka dipimpin salah satu siswa, absensi kehadiran, dan sapaan penyemangat 'Halo para penemu masa depan!'.`;
+      data.pendahuluan2 = `Guru memberikan apersepsi pentingnya koding: 'Anak-anak hebat, tahukah kalian bahwa game interaktif dan animasi robot dibuat menggunakan susunan perintah logika komputer? Hari ini kita akan belajar merancang logika koding bertema <b>${topicName}</b> agar kita memiliki kemampuan berpikir komputasional yang runtut dan kreatif dalam menciptakan teknologi!'`;
+      data.pendahuluan3 = `Guru menyampaikan bahwa alur belajar hari ini dikemas dalam bentuk permainan 'unplugged coding' (gerak fisik koding tanpa komputer), menyusun peta visual alir program (flowchart), mempraktikkan koding langsung di perangkat digital, dan diakhiri pameran karya koding kelompok.`;
+      
+      data.tahap1 = `Peserta didik mengamati jalannya demonstrasi game Scratch atau program simulasi bertema <b>${topicName}</b> di proyektor kelas. Guru sengaja menyisipkan kesalahan logika (bug) sehingga sprite bergerak acak atau macet. Siswa ditantang menganalisis secara kritis: 'Mengapa program koding ini tidak berjalan sesuai instruksi dan bagian logika mana yang bermasalah?'.`;
+      data.tahap2 = getConcreteActivity("koding", topicName);
+      data.tahap3 = `Peserta didik berkolaborasi menggambar bagan alir (flowchart) visual atau menempelkan potongan visual blok kode Scratch pada lembar kerja kelompok. Mereka merancang alur logika jalannya sprite dan struktur perulangan (loops/conditional) terkait <b>${topicName}</b> sebelum mengetik di komputer.`;
+      data.tahap4 = `Peserta didik membuka komputer/tablet kelompok dan menyusun blok koding resmi yang sesungguhnya di editor Scratch berdasarkan flowchart visual yang telah mereka sepakati. Siswa mengetikkan nilai koordinat, menyisipkan variabel, dan menyempurnakan struktur kode program <b>${topicName}</b>.`;
+      data.tahap5 = `Kelompok mendemonstrasikan program koding <b>${topicName}</b> mereka yang sudah berhasil berjalan bebas dari bug di depan kelas menggunakan proyektor. Mereka menjelaskan alur logika algoritma yang dipakai dan bagaimana cara mereka men-debug program jika terjadi error. Siswa lain dipandu untuk menguji coba program tersebut.`;
+      
+      data.penutup1 = `Siswa merefleksikan emosi belajar mereka: 'Bagaimana perasaanmu saat program kodingmu pertama kali mengalami error (bug), dan apa pelajaran kesabaran yang kamu dapatkan hingga program <b>${topicName}</b> berhasil berjalan sukses?'`;
+      data.penutup2 = `Guru memberikan asesmen spontan lisan dengan menampilkan potongan gambar susunan blok kode <b>${topicName}</b> di proyektor, lalu mengajukan 3 pertanyaan:<br>
+      1. 'Jika blok perintah <b>${topicName}</b> ini dijalankan, ke arah mana sprite komputer kita akan bergeser?'<br>
+      2. 'Apa fungsi dari variabel/perulangan yang baru saja kita pasang pada kode tersebut?'<br>
+      3. 'Bagaimana caramu menghentikan program jika sprite mengalami looping tanpa henti?'`;
+      data.penutup3 = `Guru memberikan tugas tindak lanjut: 'Modifikasi proyek koding <b>${topicName}</b> kalian dengan menambahkan efek suara interaktif atau warna background baru di rumah.' Kelas ditutup dengan berdoa bersama dan mematikan komputer secara tertib.`;
+      break;
+
+    case "ipas":
+      data.pendahuluan1 = `Guru memimpin teknik pemusatan fokus kesadaran alamiah (mindful listening) dengan mengajak siswa memejamkan mata secara rileks selama 1 menit dan mendengarkan suara alam di luar kelas (kicau burung, embusan angin) dengan khusyuk untuk menyatu dengan alam. Dilanjutkan berdoa syukur bersama, memeriksa kebersihan laci meja, dan mengabsen siswa dengan menanyakan kabar kesehatan mereka.`;
+      data.pendahuluan2 = `Guru menghubungkan materi dengan realitas kehidupan sosial dan alam: 'Anak-anak, pernahkah kalian melihat air hujan menguap? Atau mengamati bagaimana benda di sekitar kita bergerak jatuh? Hari ini kita akan menjelajah fenomena tentang <b>${topicName}</b> agar kita bisa menjaga kelestarian bumi dan memahami hukum alam ciptaan Tuhan secara bijaksana!'`;
+      data.pendahuluan3 = `Guru memaparkan alur petualangan belajar hari ini yang sangat menyenangkan: melakukan penyelidikan eksperimen sains mandiri di laboratorium/halaman sekolah, menggambar siklus/proses alam secara visual, merumuskan kesimpulan teoretis ilmiah, dan membuat poster hasil observasi kelompok.`;
+      
+      data.tahap1 = `Peserta didik disuguhkan suatu fenomena sains riil di depan kelas (seperti mendemonstrasikan es batu mencair di dalam air hangat, menyorotkan cahaya senter ke permukaan gelap, atau memperlihatkan tanaman layu) yang berkaitan erat dengan materi <b>${topicName}</b>. Guru memandu siswa merumuskan pertanyaan penyelidikan kritis.`;
+      data.tahap2 = getConcreteActivity("ipas", topicName);
+      data.tahap3 = `Peserta didik mencatat data observasi dan menuangkannya ke dalam representasi gambar visual. Mereka melukis diagram siklus hidup, menggambar arah perambatan cahaya, atau membuat peta pikiran (mind map) proses ekosistem bertema <b>${topicName}</b> pada kertas kerja karton besar kelompok.`;
+      data.tahap4 = `Peserta didik dibimbing merumuskan kesimpulan ilmiah dari data gambar tersebut dan mendefinisikan konsep sains secara formal (seperti menuliskan istilah ilmiah konduksi, evaporasi, fotosintesis, atau interaksi sosial) yang menjelaskan materi <b>${topicName}</b>.`;
+      data.tahap5 = `Setiap kelompok mempresentasikan poster hasil eksperimen ilmiah <b>${topicName}</b> mereka di depan kelas dengan percaya diri. Mereka menguraikan alur sebab-akibat fenomena alam yang diteliti, menjawab pertanyaan kritis kelompok lain, serta menerima penjelasan konseptual penegasan dari guru.`;
+      
+      data.penutup1 = `Siswa merefleksikan kepedulian lingkungan mereka dengan menjawab pertanyaan: 'Setelah memahami konsep <b>${topicName}</b> ini, tindakan nyata apa yang bisa kamu lakukan untuk menjaga kelestarian alam atau lingkungan sosial di sekitarmu?'`;
+      data.penutup2 = `Guru memberikan asesmen spontan lisan berupa 3 pertanyaan konsep teoretis secara cepat:<br>
+      1. 'Berdasarkan praktikum tadi, apa faktor utama yang menyebabkan fenomena <b>${topicName}</b> dapat terjadi?'<br>
+      2. 'Sebutkan 2 contoh nyata penerapan atau keberadaan konsep <b>${topicName}</b> di sekitar lingkungan rumahmu!'<br>
+      3. 'Apa dampak negatif yang terjadi bagi kehidupan manusia jika proses <b>${topicName}</b> mengalami kerusakan atau gangguan?'`;
+      data.penutup3 = `Guru memberikan penugasan rumah pengamatan mandiri: 'Diskusikan bersama orang tuamu, catat 3 perilaku positif di rumah yang mendukung kelestarian konsep <b>${topicName}</b>.' Pembelajaran ditutup dengan doa syukur bersama dan salam hangat.`;
+      break;
+
+    default: // Bahasa Indonesia, English, Jawa, Pancasila, PJOK, Seni Rupa, PAI
+      data.pendahuluan1 = `Guru memimpin pembukaan kelas dengan mengajak siswa duduk melingkar, menarik napas panjang secara teratur untuk merasakan detak jantung dan bersyukur atas nikmat kesehatan (mindful breathing). Dilanjutkan dengan berdoa bersama dipimpin salah satu siswa, absensi siswa dengan menanyakan kabar emosional serta memberikan senyuman ramah guna membangun emosi belajar yang harmonis.`;
+      data.pendahuluan2 = `Guru memberikan gambaran kontekstual yang relevan: 'Anak-anak hebat, kemampuan mengekspresikan gagasan, membaca, memahami nilai budi pekerti, dan merancang karya kreatif terkait <b>${topicName}</b> sangat penting bagi kehidupan kita agar kita tumbuh menjadi pribadi yang berakhlak mulia, toleran, cerdas, serta terampil berkomunikasi di masyarakat.'`;
+      data.pendahuluan3 = `Guru menjelaskan alur aktivitas seru hari ini yaitu bermain peran (role-play), menyusun urutan kartu kata fisik, menggambar peta visual jalinan ide, menuliskan karya deskriptif mandiri, serta diakhiri dengan pameran karya kelompok yang menyenangkan.`;
+      
+      data.tahap1 = `Peserta didik dihadapkan pada paparan cerita menarik, poster gambar tematik, atau pemutaran rekaman suara kontekstual bertema <b>${topicName}</b>. Guru memotong alur cerita di tengah jalan dan meminta siswa memprediksi akhir kisah secara kreatif guna merangsang kesadaran dan rasa penasaran awal.`;
+      data.tahap2 = getConcreteActivity("default", topicName);
+      data.tahap3 = `Peserta didik menuangkan hasil praktik fisik tersebut ke dalam bentuk representasi visual seperti menggambar ilustrasi alur cerita (storyboard), sketsa pola langkah gerak, atau peta konsep kosakata bertema <b>${topicName}</b> pada kertas kerja kelompok.`;
+      data.tahap4 = `Peserta didik menerjemahkan alur visual tersebut menjadi bentuk konseptual tertulis. Siswa merumuskan paragraf deskriptif utuh, menyusun kalimat dialog resmi yang santun, atau menuliskan kesimpulan nilai moral terkait <b>${topicName}</b> dengan bahasa baku.`;
+      data.tahap5 = `Perwakilan murid menyajikan hasil karya tulisan, membacakan dialog buatan kelompok, atau mendemonstrasikan gerakan fisik bertema <b>${topicName}</b> di depan kelas secara bergantian. Mereka menerima umpan balik positif dari teman, serta mendapatkan konfirmasi kebahasaan/perilaku dari guru.`;
+      
+      data.penutup1 = `Siswa mengevaluasi keberhasilan kerja sama kelompok mereka serta merefleksikan nilai-nilai kebaikan materi <b>${topicName}</b> dalam pembentukan karakter perilaku sopan santun sehari-hari.`;
+      data.penutup2 = `Guru melakukan kuis lisan spontan berupa 3 pertanyaan pemahaman cepat secara acak:<br>
+      1. 'Dari aktivitas pembelajaran materi <b>${topicName}</b> hari ini, apa kesimpulan atau amanat utama yang wajib kita terapkan?'<br>
+      2. 'Mengapa kita harus menyusun rancangan visual (gambar) terlebih dahulu sebelum menulis karya utuh <b>${topicName}</b>?'<br>
+      3. 'Sebutkan contoh sikap santun dalam mengomunikasikan ide atau pendapat terkait materi ini kepada orang lain!'`;
+      data.penutup3 = `Guru memberikan tugas tindak lanjut sederhana: 'Praktikkan nilai budi pekerti atau keterampilan terkait <b>${topicName}</b> yang telah dipelajari hari ini di lingkungan rumahmu, lalu mintalah tanda tangan orang tuamu sebagai bukti.' Kegiatan diakhiri dengan doa penutup bersama.`;
+      break;
+  }
+
+  return data;
+}
+
 // ----------------------------------------------------
 // RENDER TEMPLATES: MODUL AJAR (DEEP LEARNING MODEL)
 // ----------------------------------------------------
 function compileModulAjar(subData, chData, topicName, fase) {
   const headers = compileHeaderIdentitas("MODUL AJAR KURIKULUM MERDEKA");
   const details = getSubjectDetails(subData.id, topicName);
+  const inst = getLangkahInstruksional(subData.id, topicName);
   
   // Custom contents depending on selections or edit cache
   const tp = getCachedContent("tp", details.tp);
   const pemahamanBermakna = getCachedContent("pemahamanBermakna", details.meaningful);
   const pemantik = getCachedContent("pemantik", details.pemantik);
-  const mindfulAct = getCachedContent("mindfulAct", details.mindful);
-  const meaningfulAct = getCachedContent("meaningfulAct", details.meaningfulAct);
-  const joyfulAct = getCachedContent("joyfulAct", details.joyfulAct);
   
-  const langkahPendahuluan = getCachedContent("langkahPendahuluan", details.langkahPendahuluan);
-  const langkahInti = getCachedContent("langkahInti", details.langkahInti);
-  const langkahPenutup = getCachedContent("langkahPenutup", details.langkahPenutup);
+  const langkahPendahuluan1 = getCachedContent("langkahPendahuluan1", inst.pendahuluan1);
+  const langkahPendahuluan2 = getCachedContent("langkahPendahuluan2", inst.pendahuluan2);
+  const langkahPendahuluan3 = getCachedContent("langkahPendahuluan3", inst.pendahuluan3);
   
-  const asesmenFormatif = getCachedContent("asesmenFormatif", details.asesmenFormatif);
-  const asesmenSumatif = getCachedContent("asesmenSumatif", details.asesmenSumatif);
-  
-  const refleksiGuru = getCachedContent("refleksiGuru", details.refleksiGuru);
-  const refleksiSiswa = getCachedContent("refleksiSiswa", details.refleksiSiswa);
+  const langkahInti1 = getCachedContent("langkahInti1", inst.tahap1);
+  const langkahInti2 = getCachedContent("langkahInti2", inst.tahap2);
+  const langkahInti3 = getCachedContent("langkahInti3", inst.tahap3);
+  const langkahInti4 = getCachedContent("langkahInti4", inst.tahap4);
+  const langkahInti5 = getCachedContent("langkahInti5", inst.tahap5);
 
-  // New fields for Desain Pembelajaran
-  const praktikPedagogis = getCachedContent("praktikPedagogis", details.praktikPedagogis);
-  const kemitraanPembelajaran = getCachedContent("kemitraanPembelajaran", details.kemitraanPembelajaran);
-  const lingkunganPembelajaran = getCachedContent("lingkunganPembelajaran", details.lingkunganPembelajaran);
-  const pemanfaatanDigital = getCachedContent("pemanfaatanDigital", details.pemanfaatanDigital || "Pemanfaatan portal pembelajaran digital resmi melalui https://rumah.pendidikan.go.id/ untuk pengayaan materi, eksplorasi mandiri, dan visualisasi konsep interaktif.");
+  const langkahPenutup1 = getCachedContent("langkahPenutup1", inst.penutup1);
+  const langkahPenutup2 = getCachedContent("langkahPenutup2", inst.penutup2);
+  const langkahPenutup3 = getCachedContent("langkahPenutup3", inst.penutup3);
+
+  const waktuPendahuluan = getCachedContent("waktuPendahuluan", "10");
+  const waktuInti = getCachedContent("waktuInti", "50");
+  const waktuPenutup = getCachedContent("waktuPenutup", "10");
 
   // Checkbox values for 8 dimensions (matching the "[X]" format in the PDF)
   const isIman = getDimensiChecked("iman", subData.id, topicName);
@@ -5252,6 +5513,42 @@ function compileModulAjar(subData, chData, topicName, fase) {
   const checkboxKemandirian = isKemandirian ? "[X]" : "[ &nbsp;]";
   const checkboxKesehatan = isKesehatan ? "[X]" : "[ &nbsp;]";
   const checkboxKomunikasi = isKomunikasi ? "[X]" : "[ &nbsp;]";
+
+  // Create dynamic HTML listing only selected dimensions
+  let selectedDplHtml = "";
+  const selectedDplList = [];
+  if (isIman) selectedDplList.push({ key: "iman", idx: 1, name: "Keimanan dan Ketakwaan terhadap Tuhan YME", ind: "Membiasakan doa pembuka/penutup, bersyukur atas keteraturan ilmu, dan berakhlak mulia.", val: checkboxIman });
+  if (isKewargaan) selectedDplList.push({ key: "kewargaan", idx: 2, name: "Kewargaan", ind: "Menghargai keberagaman teman, berpartisipasi menjaga ketertiban, dan taat aturan kelas.", val: checkboxKewargaan });
+  if (isKritis) selectedDplList.push({ key: "kritis", idx: 3, name: "Penalaran Kritis", ind: "Mengajukan pertanyaan, menganalisis hubungan konsep, memproses data literasi/numerasi.", val: checkboxKritis });
+  if (isKreativitas) selectedDplList.push({ key: "kreativitas", idx: 4, name: "Kreativitas", ind: "Berperilaku produktif, melahirkan gagasan/karya asli, atau mencari alternatif solusi.", val: checkboxKreativitas });
+  if (isKolaborasi) selectedDplList.push({ key: "kolaborasi", idx: 5, name: "Kolaborasi", ind: "Bekerja sama dalam kelompok, membagi peran secara adil, dan peka sosial.", val: checkboxKolaborasi });
+  if (isKemandirian) selectedDplList.push({ key: "kemandirian", idx: 6, name: "Kemandirian", ind: "Mengatur diri sendiri, bertanggung jawab atas tugasnya, dan beradaptasi pada tantangan.", val: checkboxKemandirian });
+  if (isKesehatan) selectedDplList.push({ key: "kesehatan", idx: 7, name: "Kesehatan", ind: "Menjaga kebugaran fisik, mengelola emosi belajar, dan menjaga kebersihan lingkungan.", val: checkboxKesehatan });
+  if (isKomunikasi) selectedDplList.push({ key: "komunikasi", idx: 8, name: "Komunikasi", ind: "Menyimak instruksi, menggunakan simbol/bahasa matematis yang tepat saat berpendapat.", val: checkboxKomunikasi });
+
+  if (selectedDplList.length > 0) {
+    selectedDplHtml = `
+      <div style="background-color: #f8faf9; padding: 12px 15px; border-radius: 8px; border: 1px solid #d2e4e1; margin-bottom: 20px;">
+        <ul style="margin: 0; padding-left: 0; list-style: none;">
+          ${selectedDplList.map(d => `
+            <li style="margin-bottom: 8px; display: flex; gap: 10px; align-items: flex-start;">
+              <span class="interactive-checkbox" data-dimensi="${d.key}" style="cursor:pointer; font-weight: bold; color: #0b5e56; font-size: 12px; font-family: monospace; white-space: nowrap; display: inline-block; min-width: 32px; text-align: center; user-select: none;">${d.val}</span>
+              <div>
+                <b style="color: #0b5e56;">${d.idx}. ${d.name}</b><br>
+                <span style="font-size: 10px; color: #576d6a; font-style: italic;">Indikator: ${d.ind}</span>
+              </div>
+            </li>
+          `).join("")}
+        </ul>
+      </div>
+    `;
+  } else {
+    selectedDplHtml = `
+      <div style="background-color: #f8faf9; padding: 12px 15px; border-radius: 8px; border: 1px solid #d2e4e1; margin-bottom: 20px; text-align: center; font-style: italic; color: #576d6a; font-size: 11px;">
+        [Belum ada dimensi Profil Lulusan yang dipilih. Ceklis pada menu setup sebelah kiri]
+      </div>
+    `;
+  }
 
   // Generate Rubrik Penilaian Sikap (Otomatis) rows based on checked dimensions
   let rubrikSikapRows = "";
@@ -5278,7 +5575,7 @@ function compileModulAjar(subData, chData, topicName, fase) {
 
   rubrikSikapRows = selectedDimensions.map(d => `
     <tr>
-      <td style="border: 1px solid #a9c2be; padding: 6px; font-size: 9.5pt;">[Isi Nama Siswa]</td>
+      <td style="border: 1px solid #a9c2be; padding: 6px; font-size: 9.5pt;"></td>
       <td style="border: 1px solid #a9c2be; padding: 6px; font-size: 9.5pt; font-weight: bold; color: #0b5e56;">${d.name}</td>
       <td style="border: 1px solid #a9c2be; padding: 6px; font-size: 9pt; color: #1f2f2c;">${d.desc4}</td>
       <td style="border: 1px solid #a9c2be; padding: 6px; font-size: 9pt; color: #1f2f2c;">${d.desc3}</td>
@@ -5354,94 +5651,9 @@ function compileModulAjar(subData, chData, topicName, fase) {
     </ul>
 
     <h2 style="font-size: 14px; border-bottom: 2px solid #0b5e56; padding-bottom: 4px; color: #0b5e56; margin-top: 25px;">II. INTEGRASI 8 DIMENSI PROFIL LULUSAN (DPL)</h2>
-    <p style="font-size: 11px; font-style: italic; color: #576d6a; margin: 5px 0 10px 0;">(berikan tanda [X] pada kotak dimensi dan menentukan indikator yang disasar dan penjelasannya)</p>
     
-    <div style="background-color: #f8faf9; padding: 12px 15px; border-radius: 8px; border: 1px solid #d2e4e1; margin-bottom: 20px;">
-      <table style="width: 100%; border: none !important; margin: 0; border-collapse: collapse;">
-        <!-- Baris 1: 1 s.d. 4 -->
-        <tr style="border: none !important;">
-          <td style="width: 50%; border: none !important; padding: 8px 10px 8px 0; font-size: 11px; vertical-align: top;">
-            <div style="display: flex; gap: 8px; align-items: flex-start;">
-              <span class="interactive-checkbox" data-dimensi="iman" style="cursor:pointer; font-weight: bold; color: #0b5e56; font-size: 12px; font-family: monospace; white-space: nowrap; display: inline-block; min-width: 32px; text-align: center; user-select: none;">${checkboxIman}</span>
-              <div>
-                <b style="color: #0b5e56;">1. Keimanan dan Ketakwaan terhadap Tuhan YME</b><br>
-                <span style="font-size: 10px; color: #576d6a; font-style: italic;">Indikator: Membiasakan doa pembuka/penutup, bersyukur atas keteraturan ilmu, and berakhlak mulia.</span>
-              </div>
-            </div>
-          </td>
-          <td style="width: 50%; border: none !important; padding: 8px 0 8px 10px; font-size: 11px; vertical-align: top;">
-            <div style="display: flex; gap: 8px; align-items: flex-start;">
-              <span class="interactive-checkbox" data-dimensi="kewargaan" style="cursor:pointer; font-weight: bold; color: #0b5e56; font-size: 12px; font-family: monospace; white-space: nowrap; display: inline-block; min-width: 32px; text-align: center; user-select: none;">${checkboxKewargaan}</span>
-              <div>
-                <b style="color: #0b5e56;">2. Kewargaan</b><br>
-                <span style="font-size: 10px; color: #576d6a; font-style: italic;">Indikator: Menghargai keberagaman teman, berpartisipasi menjaga ketertiban, dan taat aturan kelas.</span>
-              </div>
-            </div>
-          </td>
-        </tr>
-        <tr style="border: none !important;">
-          <td style="border: none !important; padding: 8px 10px 8px 0; font-size: 11px; vertical-align: top;">
-            <div style="display: flex; gap: 8px; align-items: flex-start;">
-              <span class="interactive-checkbox" data-dimensi="kritis" style="cursor:pointer; font-weight: bold; color: #0b5e56; font-size: 12px; font-family: monospace; white-space: nowrap; display: inline-block; min-width: 32px; text-align: center; user-select: none;">${checkboxKritis}</span>
-              <div>
-                <b style="color: #0b5e56;">3. Penalaran Kritis</b><br>
-                <span style="font-size: 10px; color: #576d6a; font-style: italic;">Indikator: Mengajukan pertanyaan, menganalisis hubungan konsep, memproses data literasi/numerasi.</span>
-              </div>
-            </div>
-          </td>
-          <td style="border: none !important; padding: 8px 0 8px 10px; font-size: 11px; vertical-align: top;">
-            <div style="display: flex; gap: 8px; align-items: flex-start;">
-              <span class="interactive-checkbox" data-dimensi="kreativitas" style="cursor:pointer; font-weight: bold; color: #0b5e56; font-size: 12px; font-family: monospace; white-space: nowrap; display: inline-block; min-width: 32px; text-align: center; user-select: none;">${checkboxKreativitas}</span>
-              <div>
-                <b style="color: #0b5e56;">4. Kreativitas</b><br>
-                <span style="font-size: 10px; color: #576d6a; font-style: italic;">Indikator: Berperilaku produktif, melahirkan gagasan/karya asli, atau mencari alternatif solusi.</span>
-              </div>
-            </div>
-          </td>
-        </tr>
-        <!-- Baris 2: 5 s.d. 8 -->
-        <tr style="border: none !important;">
-          <td style="border: none !important; padding: 8px 10px 8px 0; font-size: 11px; vertical-align: top;">
-            <div style="display: flex; gap: 8px; align-items: flex-start;">
-              <span class="interactive-checkbox" data-dimensi="kolaborasi" style="cursor:pointer; font-weight: bold; color: #0b5e56; font-size: 12px; font-family: monospace; white-space: nowrap; display: inline-block; min-width: 32px; text-align: center; user-select: none;">${checkboxKolaborasi}</span>
-              <div>
-                <b style="color: #0b5e56;">5. Kolaborasi</b><br>
-                <span style="font-size: 10px; color: #576d6a; font-style: italic;">Indikator: Bekerja sama dalam kelompok, membagi peran secara adil, dan peka sosial.</span>
-              </div>
-            </div>
-          </td>
-          <td style="border: none !important; padding: 8px 0 8px 10px; font-size: 11px; vertical-align: top;">
-            <div style="display: flex; gap: 8px; align-items: flex-start;">
-              <span class="interactive-checkbox" data-dimensi="kemandirian" style="cursor:pointer; font-weight: bold; color: #0b5e56; font-size: 12px; font-family: monospace; white-space: nowrap; display: inline-block; min-width: 32px; text-align: center; user-select: none;">${checkboxKemandirian}</span>
-              <div>
-                <b style="color: #0b5e56;">6. Kemandirian</b><br>
-                <span style="font-size: 10px; color: #576d6a; font-style: italic;">Indikator: Mengatur diri sendiri, bertanggung jawab atas tugasnya, dan beradaptasi pada tantangan.</span>
-              </div>
-            </div>
-          </td>
-        </tr>
-        <tr style="border: none !important;">
-          <td style="border: none !important; padding: 8px 10px 8px 0; font-size: 11px; vertical-align: top;">
-            <div style="display: flex; gap: 8px; align-items: flex-start;">
-              <span class="interactive-checkbox" data-dimensi="kesehatan" style="cursor:pointer; font-weight: bold; color: #0b5e56; font-size: 12px; font-family: monospace; white-space: nowrap; display: inline-block; min-width: 32px; text-align: center; user-select: none;">${checkboxKesehatan}</span>
-              <div>
-                <b style="color: #0b5e56;">7. Kesehatan</b><br>
-                <span style="font-size: 10px; color: #576d6a; font-style: italic;">Indikator: Menjaga kebugaran fisik, mengelola emosi belajar, and menjaga kebersihan lingkungan.</span>
-              </div>
-            </div>
-          </td>
-          <td style="border: none !important; padding: 8px 0 8px 10px; font-size: 11px; vertical-align: top;">
-            <div style="display: flex; gap: 8px; align-items: flex-start;">
-              <span class="interactive-checkbox" data-dimensi="komunikasi" style="cursor:pointer; font-weight: bold; color: #0b5e56; font-size: 12px; font-family: monospace; white-space: nowrap; display: inline-block; min-width: 32px; text-align: center; user-select: none;">${checkboxKomunikasi}</span>
-              <div>
-                <b style="color: #0b5e56;">8. Komunikasi</b><br>
-                <span style="font-size: 10px; color: #576d6a; font-style: italic;">Indikator: Menyimak instruksi, menggunakan simbol/bahasa matematis yang tepat saat berpendapat.</span>
-              </div>
-            </div>
-          </td>
-        </tr>
-      </table>
-    </div>
+    ${selectedDplHtml}
+
 
     <h2 style="font-size: 14px; border-bottom: 2px solid #0b5e56; padding-bottom: 4px; color: #0b5e56; margin-top: 25px;">III. KOMPONEN INTI</h2>
     
@@ -5463,37 +5675,42 @@ function compileModulAjar(subData, chData, topicName, fase) {
 
     <h2 style="font-size: 14px; border-bottom: 2px solid #0b5e56; padding-bottom: 4px; color: #0b5e56; margin-top: 25px;">IV. SINTAKS LANGKAH PEMBELAJARAN MENDALAM (DEEP LEARNING)</h2>
     
-    <h3 style="font-size: 12px; font-weight: bold; color: #0b5e56; margin-top: 15px; margin-bottom: 5px;">1. Kegiatan Pendahuluan (10 Menit)</h3>
+    <h3 style="font-size: 12px; font-weight: bold; color: #0b5e56; margin-top: 15px; margin-bottom: 5px;">1. Kegiatan Pendahuluan (<span class="editable-content" data-field="waktuPendahuluan">${waktuPendahuluan}</span> Menit)</h3>
     <ul style="margin: 0; padding-left: 20px; font-size: 11px; line-height: 1.6; color: #2b3a38;">
-      <li><b>Pembukaan Berkesadaran (Mindful):</b> Guru membuka kelas dengan pengkondisian mental siswa. Mengajak siswa rileks sejenak (doa bersama, mengecek kehadiran, menjaga emosi positif siswa dengan senyuman atau sapaan ramah).</li>
-      <li><b>Apersepsi & Motivasi Kontekstual (Meaningful):</b> Menghubungkan materi <b>${topicName}</b> dengan isu prioritas sekolah atau pengalaman nyata harian siswa di rumah maupun lingkungan sekitar.</li>
-      <li><b>Penyampaian Target (Joyful):</b> Menjelaskan target capaian belajar serta alur aktivitas menyenangkan (bermain peran, eksplorasi kelompok, dst) dan teknis penilaian yang ramah anak.</li>
+      <li><b>Pembukaan Berkesadaran (Mindful):</b> <span class="editable-content" data-field="langkahPendahuluan1">${langkahPendahuluan1}</span></li>
+      <li><b>Apersepsi & Motivasi Kontekstual (Meaningful):</b> <span class="editable-content" data-field="langkahPendahuluan2">${langkahPendahuluan2}</span></li>
+      <li><b>Penyampaian Target (Joyful):</b> <span class="editable-content" data-field="langkahPendahuluan3">${langkahPendahuluan3}</span></li>
     </ul>
 
-    <h3 style="font-size: 12px; font-weight: bold; color: #0b5e56; margin-top: 15px; margin-bottom: 5px;">2. Kegiatan Inti (50 Menit)</h3>
+    <h3 style="font-size: 12px; font-weight: bold; color: #0b5e56; margin-top: 15px; margin-bottom: 5px;">2. Kegiatan Inti (<span class="editable-content" data-field="waktuInti">${waktuInti}</span> Menit)</h3>
     <ul style="margin: 0; padding-left: 20px; font-size: 11px; line-height: 1.6; color: #2b3a38;">
-      <li><b>Tahap 1: Orientasi Masalah & Stimulasi Nyata (Berkesadaran)</b><br>
-        Peserta didik dihadapkan pada situasi menantang, cerita tidak lengkap, teka-teki, atau benda konkret di dalam kelas yang memicu rasa ingin tahu.
+      <li>
+        <b>Tahap 1: Orientasi Masalah & Stimulasi Nyata (Berkesadaran)</b>
+        <div class="editable-content" data-field="langkahInti1" style="margin-left: 15px; color: #555;">${langkahInti1}</div>
       </li>
-      <li><b>Tahap 2: Pembelajaran Konkret (Manipulasi Objek)</b><br>
-        Peserta didik mengeksplorasi dan memanipulasi alat peraga nyata, benda sekitar, atau media fisik dalam kelompok kecil secara aktif.
+      <li style="margin-top: 6px;">
+        <b>Tahap 2: Pembelajaran Konkret (Manipulasi Objek)</b>
+        <div class="editable-content" data-field="langkahInti2" style="margin-left: 15px; color: #555;">${langkahInti2}</div>
       </li>
-      <li><b>Tahap 3: Pembelajaran Gambar (Representasi Visual)</b><br>
-        Peserta didik menuangkan hasil manipulasi konkret ke dalam representasi gambar, sketsa visual, grafik, diagram, atau tabel di lembar kerja kelompok.
+      <li style="margin-top: 6px;">
+        <b>Tahap 3: Pembelajaran Gambar (Representasi Visual)</b>
+        <div class="editable-content" data-field="langkahInti3" style="margin-left: 15px; color: #555;">${langkahInti3}</div>
       </li>
-      <li><b>Tahap 4: Pembelajaran Abstrak (Simbolisasi Matematis/Bahasa)</b><br>
-        Peserta didik dibimbing menerjemahkan representasi gambar menjadi simbol formal, kalimat matematika resmi, atau istilah konseptual yang tepat.
+      <li style="margin-top: 6px;">
+        <b>Tahap 4: Pembelajaran Abstrak (Simbolisasi Matematis)</b>
+        <div class="editable-content" data-field="langkahInti4" style="margin-left: 15px; color: #555;">${langkahInti4}</div>
       </li>
-      <li><b>Tahap 5: Berbagi Gagasan & Evaluasi (Komunikasi/Kolaborasi)</b><br>
-        Perwakilan kelompok mempresentasikan proses berpikirnya secara sadar di depan kelas, menerima tanggapan konstruktif, serta dikonfirmasi secara komprehensif oleh guru.
+      <li style="margin-top: 6px;">
+        <b>Tahap 5: Berbagi Gagasan & Evaluasi (Komunikasi/Kolaborasi)</b>
+        <div class="editable-content" data-field="langkahInti5" style="margin-left: 15px; color: #555;">${langkahInti5}</div>
       </li>
     </ul>
 
-    <h3 style="font-size: 12px; font-weight: bold; color: #0b5e56; margin-top: 15px; margin-bottom: 5px;">3. Kegiatan Penutup (10 Menit)</h3>
+    <h3 style="font-size: 12px; font-weight: bold; color: #0b5e56; margin-top: 15px; margin-bottom: 5px;">3. Kegiatan Penutup (<span class="editable-content" data-field="waktuPenutup">${waktuPenutup}</span> Menit)</h3>
     <ul style="margin: 0; padding-left: 20px; font-size: 11px; line-height: 1.6; color: #2b3a38;">
-      <li><b>Refleksi Berlapis (As Learning):</b> Siswa bersama guru menarik kesimpulan harian dan merefleksikan emosi belajar serta tingkat keterlibatan aktif mereka hari ini.</li>
-      <li><b>Asesmen Spontan:</b> Pemberian tes lisan singkat atau kuis interaktif harian untuk mendeteksi tingkat pemahaman instan siswa.</li>
-      <li><b>Tindak Lanjut & Penutup:</b> Penugasan rumah kontekstual sederhana, doa penutup bersama, dan pemberian apresiasi positif (applause atau kata motivasi).</li>
+      <li><b>Refleksi Berlapis (As Learning):</b> <span class="editable-content" data-field="langkahPenutup1">${langkahPenutup1}</span></li>
+      <li><b>Asesmen Spontan:</b> <span class="editable-content" data-field="langkahPenutup2">${langkahPenutup2}</span></li>
+      <li><b>Tindak Lanjut & Penutup:</b> <span class="editable-content" data-field="langkahPenutup3">${langkahPenutup3}</span></li>
     </ul>
 
     <h2 style="font-size: 14px; border-bottom: 2px solid #0b5e56; padding-bottom: 4px; color: #0b5e56; margin-top: 25px;">V. SISTEM ASESMEN PENDIDIKAN MENDALAM</h2>
@@ -5831,25 +6048,9 @@ function compileERaport(subData, fase) {
 // SHARED UTILITIES: Header Identitas & Tanda Tangan
 // ----------------------------------------------------
 function compileHeaderIdentitas(judulDokumen) {
-  const semText = state.selectedSemester === "1" ? "I (Ganjil)" : "II (Genap)";
   return `
-    <div class="doc-identitas-header">
-      <h1 style="margin: 0 0 10px 0; text-align: center; font-size: 20px; color:#0b5e56;">${judulDokumen}</h1>
-      <table style="width: 100%; border: none !important; margin: 0; padding:0; border-collapse: collapse;">
-        <tr style="border: none !important;">
-          <td style="width: 50%; border: none !important; padding: 2px 0; font-size: 11px;">
-            <b>Nama Sekolah</b> : ${state.teacherProfile.namaSekolah}<br>
-            <b>Mata Pelajaran</b> : ${getActiveSubjectData().title}<br>
-            <b>Fase / Kelas</b> : ${CURRICULUM_DB[state.selectedClass].fase} / ${state.selectedClass}
-          </td>
-          <td style="width: 50%; border: none !important; padding: 2px 0; font-size: 11px; text-align: right;">
-            <b>Tahun Pelajaran</b> : ${state.teacherProfile.tahunAjaran}<br>
-            <b>Semester</b> : ${semText}<br>
-            <b>Penyusun</b> : ${state.teacherProfile.namaGuru}<br>
-            <b>NIP Guru</b> : ${state.teacherProfile.nip}
-          </td>
-        </tr>
-      </table>
+    <div class="doc-identitas-header" style="text-align: center; margin-bottom: 20px;">
+      <h1 style="margin: 0; text-align: center; font-size: 20px; color:#0b5e56; text-transform: uppercase;">${judulDokumen}</h1>
     </div>
   `;
 }
