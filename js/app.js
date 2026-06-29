@@ -4898,6 +4898,9 @@ function renderWorkspace() {
     case "asesmen":
       contentHtml = compileAsesmen(subData, chData, topicName);
       break;
+    case "kktp":
+      contentHtml = compileKKTP(subData, chData, topicName);
+      break;
     case "eraport":
       contentHtml = compileERaport(subData, classFase);
       break;
@@ -5826,6 +5829,322 @@ function compileAsesmen(subData, chData, topicName) {
   return `
     ${headers}
     <div class="editable-content" data-field="rubricContent">${rubricContent}</div>
+    ${compileTandaTangan()}
+  `;
+}
+
+// ----------------------------------------------------
+// RENDER TEMPLATES: KKTP (Kriteria Ketercapaian Tujuan Pembelajaran)
+// ----------------------------------------------------
+function compileKKTP(subData, chData, topicName) {
+  const headers = compileHeaderIdentitas("KRITERIA KETERCAPAIAN TUJUAN PEMBELAJARAN (KKTP)");
+  const details = getSubjectDetails(subData.id, topicName);
+  const tp = getCachedContent("tp", details.tp);
+  
+  let category = "indonesia";
+  if (subData.id.includes("matematika")) category = "matematika";
+  else if (subData.id.includes("koding")) category = "koding";
+  else if (subData.id.includes("pjok")) category = "pjok";
+  else if (subData.id.includes("senirupa")) category = "senirupa";
+  else if (subData.id.includes("pai")) category = "pai";
+  else if (subData.id.includes("kristen")) category = "kristen";
+  else if (subData.id.includes("pancasila")) category = "pancasila";
+  else if (subData.id.includes("ipas")) category = "ipas";
+  else if (subData.id.includes("english")) category = "english";
+  else if (subData.id.includes("jawa")) category = "jawa";
+
+  let rubrikHtml = "";
+  
+  if (category === "matematika") {
+    rubrikHtml = `
+      <table class="table table-bordered">
+        <thead>
+          <tr style="background-color: var(--primary-light); color: var(--primary);">
+            <th style="width: 25%;">Kriteria / Aspek Asesmen</th>
+            <th style="width: 18%;">Baru Berkembang (0 - 60)</th>
+            <th style="width: 18%;">Layak (61 - 70)</th>
+            <th style="width: 18%;">Cakap (71 - 85)</th>
+            <th style="width: 21%;">Mahir (86 - 100)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="fw-bold">Pemahaman Konsep dan Rumus</td>
+            <td>Belum mampu memahami konsep dasar <b>${topicName}</b> dan salah dalam menggunakan rumus dasar.</td>
+            <td>Mampu memahami konsep dasar <b>${topicName}</b> namun masih sering keliru dalam perhitungan rumus.</td>
+            <td>Memahami konsep <b>${topicName}</b> dengan baik dan mampu menyelesaikan operasi hitung secara tepat.</td>
+            <td>Sangat menguasai konsep <b>${topicName}</b>, mampu menganalisis hubungan konsep, dan menyelesaikan soal rumit dengan cepat.</td>
+          </tr>
+          <tr>
+            <td class="fw-bold">Manipulasi Objek Nyata (Konkret)</td>
+            <td>Belum terampil memanipulasi stik, kertas, atau alat peraga fisik untuk mendalami <b>${topicName}</b>.</td>
+            <td>Mampu menggunakan alat peraga konkret untuk <b>${topicName}</b> namun memerlukan bimbingan guru secara intensif.</td>
+            <td>Terampil memanipulasi alat peraga konkret secara mandiri untuk mengilustrasikan <b>${topicName}</b>.</td>
+            <td>Sangat mahir memanipulasi alat peraga konkret, bahkan mampu membimbing teman sekelompok mendalami <b>${topicName}</b>.</td>
+          </tr>
+          <tr>
+            <td class="fw-bold">Representasi Visual (Gambar)</td>
+            <td>Belum mampu menuangkan hasil praktik fisik menjadi sketsa gambar, tabel, atau arsiran visual.</td>
+            <td>Mampu menggambar diagram atau pola visual sederhana terkait <b>${topicName}</b> namun kurang rapi atau kurang lengkap.</td>
+            <td>Mampu menyusun diagram, sketsa visual, atau peta konsep <b>${topicName}</b> secara rapi dan tepat.</td>
+            <td>Sangat mahir menyajikan representasi visual yang kreatif, detail, and informatif mengenai <b>${topicName}</b>.</td>
+          </tr>
+          <tr>
+            <td class="fw-bold">Simbolisasi Abstrak</td>
+            <td>Belum mampu menerjemahkan gambar visual menjadi lambang bilangan, angka, atau persamaan matematika formal.</td>
+            <td>Mampu menuliskan angka atau persamaan formal matematika dasar dari <b>${topicName}</b> dengan bantuan petunjuk.</td>
+            <td>Mampu merumuskan simbol dan persamaan matematika formal dari <b>${topicName}</b> secara mandiri dan akurat.</td>
+            <td>Sangat mahir menghubungkan simbol-simbol abstrak formal matematika dan merumuskan kesimpulan teoretis secara mandiri.</td>
+          </tr>
+        </tbody>
+      </table>
+    `;
+  } else if (category === "koding") {
+    rubrikHtml = `
+      <table class="table table-bordered">
+        <thead>
+          <tr style="background-color: var(--primary-light); color: var(--primary);">
+            <th style="width: 25%;">Kriteria / Aspek Asesmen</th>
+            <th style="width: 18%;">Baru Berkembang (0 - 60)</th>
+            <th style="width: 18%;">Layak (61 - 70)</th>
+            <th style="width: 18%;">Cakap (71 - 85)</th>
+            <th style="width: 21%;">Mahir (86 - 100)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="fw-bold">Logika Algoritma Koding</td>
+            <td>Belum memahami runtutan logika langkah perintah untuk memprogram <b>${topicName}</b>.</td>
+            <td>Memahami logika dasar <b>${topicName}</b> namun sering keliru menyusun runtutan urutan perintah.</td>
+            <td>Mampu menyusun logika langkah instruksi koding <b>${topicName}</b> secara runtut dan sistematis.</td>
+            <td>Sangat menguasai logika algoritma koding, mampu mengoptimalkan efisiensi blok kode secara mandiri.</td>
+          </tr>
+          <tr>
+            <td class="fw-bold">Praktik Unplugged Koding (Game Fisik)</td>
+            <td>Belum terampil mengikuti instruksi kartu arah atau bertindak sebagai robot koding fisik.</td>
+            <td>Mampu memainkan peran programmer/robot fisik dengan bimbingan dan koreksi guru.</td>
+            <td>Mampu mensimulasikan logika langkah <b>${topicName}</b> secara fisik menggunakan kartu arah secara mandiri.</td>
+            <td>Sangat terampil memandu teman dan menciptakan rintangan logika koding fisik yang kreatif secara mandiri.</td>
+          </tr>
+          <tr>
+            <td class="fw-bold">Peta Alir Visual (Flowchart)</td>
+            <td>Belum mampu merancang flowchart visual untuk menggambarkan alur program.</td>
+            <td>Mampu menggambar bagan flowchart sederhana namun alurnya masih ada yang terputus atau salah arah.</td>
+            <td>Mampu menggambar flowchart visual alur program <b>${topicName}</b> secara lengkap, rapi, dan tepat.</td>
+            <td>Sangat mahir merancang bagan alur program yang kompleks, rapi, dan menyertakan simbol percabangan/perulangan dengan benar.</td>
+          </tr>
+          <tr>
+            <td class="fw-bold">Implementasi Kode & Debugging</td>
+            <td>Belum mampu menyusun blok kode Scratch atau mendeteksi error (bug) dalam program.</td>
+            <td>Mampu menyusun blok koding digital Scratch namun memerlukan bantuan intensif untuk men-debug bug.</td>
+            <td>Mampu menyusun program digital <b>${topicName}</b> di komputer/tablet dan men-debug error minor secara mandiri.</td>
+            <td>Sangat mahir mengimplementasikan koding Scratch yang kompleks dan bersih dari bug secara mandiri dan cepat.</td>
+          </tr>
+        </tbody>
+      </table>
+    `;
+  } else if (category === "ipas") {
+    rubrikHtml = `
+      <table class="table table-bordered">
+        <thead>
+          <tr style="background-color: var(--primary-light); color: var(--primary);">
+            <th style="width: 25%;">Kriteria / Aspek Asesmen</th>
+            <th style="width: 18%;">Baru Berkembang (0 - 60)</th>
+            <th style="width: 18%;">Layak (61 - 70)</th>
+            <th style="width: 18%;">Cakap (71 - 85)</th>
+            <th style="width: 21%;">Mahir (86 - 100)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="fw-bold">Pemahaman Konsep Ilmiah</td>
+            <td>Belum memahami konsep ilmiah/sosial dasar terkait fenomena <b>${topicName}</b>.</td>
+            <td>Mampu menyebutkan definisi dasar <b>${topicName}</b> namun belum memahami hubungan sebab-akibat fenomena tersebut.</td>
+            <td>Memahami hubungan sebab-akibat proses ilmiah/sosial <b>${topicName}</b> secara tepat dan logis.</td>
+            <td>Sangat mendalam memahami konsep, mampu mengaitkannya dengan fenomena global, serta memberi solusi kritis.</td>
+          </tr>
+          <tr>
+            <td class="fw-bold">Eksperimen / Observasi Fisik</td>
+            <td>Belum terampil menggunakan alat praktikum (termometer, magnet, lup) atau melakukan pengamatan.</td>
+            <td>Mampu melakukan praktikum/observasi mengenai <b>${topicName}</b> namun masih canggung dan kurang teliti.</td>
+            <td>Terampil melakukan praktikum ilmiah secara mandiri, aman, dan teliti bersama kelompok.</td>
+            <td>Sangat mahir melakukan observasi mandiri, memimpin tim eksperimen, and memecahkan masalah praktikum secara kreatif.</td>
+          </tr>
+          <tr>
+            <td class="fw-bold">Pencatatan Data & Visualisasi</td>
+            <td>Belum mampu menuliskan hasil pengamatan ke dalam tabel, diagram, atau peta konsep visual.</td>
+            <td>Mampu mencatat hasil pengamatan tetapi diagram/tabel visual yang dibuat kurang rapi atau datanya kurang lengkap.</td>
+            <td>Mampu merekam data pengamatan secara akurat dan menyajikannya dalam tabel/diagram visual yang rapi.</td>
+            <td>Sangat terampil menyajikan infografis, diagram alir, atau mind map yang artistik dan informatif dari hasil data.</td>
+          </tr>
+          <tr>
+            <td class="fw-bold">Rumusan Kesimpulan & Komunikasi</td>
+            <td>Belum mampu menarik kesimpulan dari eksperimen dan pasif saat presentasi di kelas.</td>
+            <td>Mampu merumuskan kesimpulan sederhana dan membacakannya saat presentasi dengan intonasi datar.</td>
+            <td>Mampu merumuskan kesimpulan ilmiah secara formal, menjelaskan sebab-akibat, and mempresentasikannya secara percaya diri.</td>
+            <td>Sangat mahir mengomunikasikan hasil kesimpulan ilmiah secara meyakinkan, menjawab pertanyaan kritis, dan membimbing diskusi.</td>
+          </tr>
+        </tbody>
+      </table>
+    `;
+  } else if (category === "pancasila") {
+    rubrikHtml = `
+      <table class="table table-bordered">
+        <thead>
+          <tr style="background-color: var(--primary-light); color: var(--primary);">
+            <th style="width: 25%;">Kriteria / Aspek Asesmen</th>
+            <th style="width: 18%;">Baru Berkembang (0 - 60)</th>
+            <th style="width: 18%;">Layak (61 - 70)</th>
+            <th style="width: 18%;">Cakap (71 - 85)</th>
+            <th style="width: 21%;">Mahir (86 - 100)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="fw-bold">Pemahaman Nilai Pancasila/Aturan</td>
+            <td>Belum memahami nilai moral Pancasila, simbol negara, atau tata tertib terkait <b>${topicName}</b>.</td>
+            <td>Mampu menyebutkan simbol atau aturan dasar tetapi belum bisa menjelaskan tujuannya bagi kehidupan bersama.</td>
+            <td>Memahami dan mampu menceritakan urgensi serta tujuan mematuhi aturan/nilai Pancasila secara jelas.</td>
+            <td>Sangat menguasai nilai Pancasila, mampu menganalisis hubungan norma sosial, dan memberikan masukan kritis.</td>
+          </tr>
+          <tr>
+            <td class="fw-bold">Penerapan Gotong Royong / Kolaborasi</td>
+            <td>Belum bersedia ikut serta bekerja bakti atau berdiskusi kelompok di kelas.</td>
+            <td>Ikut berpartisipasi dalam gotong royong/diskusi kelompok namun pasif dan sering menunggu instruksi teman.</td>
+            <td>Menunjukkan sikap kooperatif, aktif berbagi peran, and saling menghargai pendapat teman sekelompok.</td>
+            <td>Menjadi inisiator kolaborasi, memimpin pembagian tugas secara adil, and menyelesaikan gesekan kelompok secara damai.</td>
+          </tr>
+          <tr>
+            <td class="fw-bold">Simulasi Sikap & Role-play</td>
+            <td>Belum mampu mensimulasikan perilaku baik (sopan, antre, tertib) dalam bermain peran.</td>
+            <td>Mampu bermain peran menunjukkan sikap sopan/tertib namun ekspresi masih canggung dan kaku.</td>
+            <td>Mampu bermain peran mempraktikkan sikap terpuji terkait <b>${topicName}</b> secara percaya diri dan natural.</td>
+            <td>Sangat mahir menjiwai peran, menyampaikan pesan moral dengan kuat, and menjadi teladan perilaku nyata di kelas.</td>
+          </tr>
+          <tr>
+            <td class="fw-bold">Refleksi Sikap Nyata</td>
+            <td>Belum mampu mengidentifikasi kesalahan perilaku diri sendiri yang melanggar aturan.</td>
+            <td>Mampu mengidentifikasi perilaku tidak baik tetapi belum bisa menjelaskan cara memperbaikinya.</td>
+            <td>Mampu merefleksikan diri, mengakui kekeliruan sikap, and merumuskan janji perbaikan diri secara tertulis.</td>
+            <td>Secara mandiri dan konsisten mempraktikkan pembiasaan karakter luhur Pancasila tanpa diawasi oleh guru.</td>
+          </tr>
+        </tbody>
+      </table>
+    `;
+  } else if (category === "kristen" || category === "pai") {
+    rubrikHtml = `
+      <table class="table table-bordered">
+        <thead>
+          <tr style="background-color: var(--primary-light); color: var(--primary);">
+            <th style="width: 25%;">Kriteria / Aspek Asesmen</th>
+            <th style="width: 18%;">Baru Berkembang (0 - 60)</th>
+            <th style="width: 18%;">Layak (61 - 70)</th>
+            <th style="width: 18%;">Cakap (71 - 85)</th>
+            <th style="width: 21%;">Mahir (86 - 100)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="fw-bold">Pemahaman Nilai Ajaran Moral Agama</td>
+            <td>Belum memahami dasar ajaran moral Alkitab/Hadis terkait kisah/tema <b>${topicName}</b>.</td>
+            <td>Mampu menceritakan kembali kisah agama sederhana namun belum menangkap makna moral spiritual di dalamnya.</td>
+            <td>Memahami dan mampu menceritakan makna moral spiritual dari ajaran agama secara tepat dan jelas.</td>
+            <td>Sangat mendalam memahami pesan firman Tuhan/Hadis, mampu mengaitkannya dengan kehidupan sosial secara kritis.</td>
+          </tr>
+          <tr>
+            <td class="fw-bold">Adab Beribadah & Berdoa</td>
+            <td>Belum menunjukkan sikap tenang, tertib, and khusyuk saat berdoa bersama di kelas.</td>
+            <td>Mampu mengikuti tata cara berdoa/ibadah dengan tertib namun masih sering tidak fokus atau terdistraksi.</td>
+            <td>Menunjukkan adab berdoa yang sangat baik (sikap melipat tangan/tertib, hening, dan fokus) secara konsisten.</td>
+            <td>Sangat khusyuk beribadah, mampu memimpin doa pembuka/penutup kelas secara tulus, runtut, and bermakna.</td>
+          </tr>
+          <tr>
+            <td class="fw-bold">Sikap Kasih dan Toleransi Sosial</td>
+            <td>Belum bersedia berbagi dengan teman atau menunjukkan sikap kurang toleran terhadap perbedaan.</td>
+            <td>Mau berteman dengan sesama tetapi masih membeda-bedakan berdasarkan latar belakang suku/agama.</td>
+            <td>Menunjukkan sikap toleran yang tulus, senang menolong teman kesulitan, dan mempraktikkan kasih sesama secara nyata.</td>
+            <td>Menjadi teladan kerukunan, memelopori aktivitas tolong-menolong lintas teman, and bersikap ramah kepada semua orang.</td>
+          </tr>
+          <tr>
+            <td class="fw-bold">Komitmen Karakter Nyata</td>
+            <td>Belum mampu merumuskan komitmen tertulis atau doa pribadi untuk perbaikan akhlak.</td>
+            <td>Mampu menuliskan doa/komitmen sederhana tetapi masih bersifat formalitas dan belum diterapkan di rumah.</td>
+            <td>Mampu merumuskan komitmen iman/akhlak tertulis secara mandiri dan bertekad menerapkannya di lingkungan rumah.</td>
+            <td>Secara konsisten menjalankan komitmen iman di kehidupan sehari-hari (dibuktikan dengan catatan kebaikan bersama orang tua).</td>
+          </tr>
+        </tbody>
+      </table>
+    `;
+  } else {
+    rubrikHtml = `
+      <table class="table table-bordered">
+        <thead>
+          <tr style="background-color: var(--primary-light); color: var(--primary);">
+            <th style="width: 25%;">Kriteria / Aspek Asesmen</th>
+            <th style="width: 18%;">Baru Berkembang (0 - 60)</th>
+            <th style="width: 18%;">Layak (61 - 70)</th>
+            <th style="width: 18%;">Cakap (71 - 85)</th>
+            <th style="width: 21%;">Mahir (86 - 100)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="fw-bold">Keterampilan Membaca / Artikulasi</td>
+            <td>Belum mampu mengeja kata-kata dasar dan suara membaca tidak terdengar (kurang nyaring).</td>
+            <td>Mampu membaca kata dasar tetapi intonasi masih terbata-bata, kurang memperhatikan tanda titik/koma.</td>
+            <td>Membaca dengan lancar, artikulasi kata jelas, dan intonasi tepat sesuai tanda baca yang tertera.</td>
+            <td>Membaca nyaring secara ekspresif, artikulasi sangat sempurna, dan mampu menjiwai emosi karakter teks.</td>
+          </tr>
+          <tr>
+            <td class="fw-bold">Menyusun Struktur Kata / Kalimat</td>
+            <td>Belum mampu menyusun kartu kata menjadi satu kalimat utuh yang berpola subjek-predikat.</td>
+            <td>Mampu menyusun kalimat dasar namun struktur tanda bacanya (kapital/titik) masih sering salah.</td>
+            <td>Mampu merangkai kalimat berpola SPOK dan menulis paragraf deskriptif secara runtut dan sistematis.</td>
+            <td>Sangat mahir merangkai kalimat kompleks, kaya kosakata baru, and menulis paragraf deskriptif yang sangat hidup.</td>
+          </tr>
+          <tr>
+            <td class="fw-bold">Komunikasi Lisan & Bermain Peran</td>
+            <td>Belum berani berbicara di depan kelas dan pasif saat diminta melakukan percakapan peran.</td>
+            <td>Mampu berkomunikasi lisan dasar tetapi suara masih sangat lirih dan kontak mata dengan lawan bicara kurang.</td>
+            <td>Mampu melakukan wawancara/percakapan secara percaya diri, suara lantang, and kontak mata terjaga baik.</td>
+            <td>Sangat lancar mengomunikasikan gagasan secara persuasif, berani menjawab tanggapan secara taktis, and ekspresif.</td>
+          </tr>
+          <tr>
+            <td class="fw-bold">Kreativitas Storyboard / Konsep Visual</td>
+            <td>Belum mampu menggambarkan ilustrasi visual atau peta pikiran alur cerita kelompok.</td>
+            <td>Mampu menggambarkan sketsa visual alur cerita sederhana namun detail informasinya kurang lengkap.</td>
+            <td>Mampu menyusun storyboard alur cerita secara rapi, indah, and bermakna bagi penonton.</td>
+            <td>Sangat mahir mendesain ilustrasi visual yang artistik, memiliki jalinan konsep cerita yang sangat kuat.</td>
+          </tr>
+        </tbody>
+      </table>
+    `;
+  }
+
+  return `
+    ${headers}
+    <div style="margin-top: 15px;">
+      <h3 class="fw-bold">I. Tujuan Pembelajaran (TP)</h3>
+      <p style="margin-bottom: 12px;">Tujuan Pembelajaran yang diukur ketercapaiannya pada pertemuan ini adalah:</p>
+      <div class="editable-content" data-field="tp" style="background-color: var(--primary-light); padding: 12px; border-left: 4px solid var(--primary); border-radius: var(--radius-sm); margin-bottom: 25px;">
+        ${tp}
+      </div>
+      
+      <h3 class="fw-bold" style="margin-bottom: 12px;">II. Kriteria Ketercapaian Tujuan Pembelajaran (KKTP)</h3>
+      <p style="margin-bottom: 15px;">Instrumen penilaian di bawah ini menggunakan <b>Interval Nilai Kriteria Deskriptif</b> untuk mengklasifikasikan tingkat kompetensi peserta didik setelah menuntaskan pembelajaran:</p>
+      
+      ${rubrikHtml}
+      
+      <div style="margin-top: 25px; background-color: #fafafa; border-radius: var(--radius-sm); padding: 15px; border: 1px solid var(--border-color); font-size: 13px; line-height: 1.5;">
+        <h4 class="fw-bold" style="margin-bottom: 6px; color: var(--text-main);">Petunjuk Interval Ketercapaian:</h4>
+        <ul>
+          <li><b>0 - 60% (Baru Berkembang)</b>: Belum mencapai ketuntasan minimum. Murid perlu intervensi khusus dan pendampingan remedial intensif dari guru.</li>
+          <li><b>61 - 70% (Layak)</b>: Sudah mencapai ketuntasan dasar. Murid perlu penguatan pada aspek-aspek kriteria yang dinilai masih lemah.</li>
+          <li><b>71 - 85% (Cakap)</b>: Sudah mencapai ketuntasan penuh. Murid siap beraktivitas mandiri tanpa pengawasan melekat.</li>
+          <li><b>86 - 100% (Mahir)</b>: Sudah melampaui ketuntasan. Murid siap diberikan tantangan berupa pengayaan atau menjadi tutor sebaya.</li>
+        </ul>
+      </div>
+    </div>
     ${compileTandaTangan()}
   `;
 }
