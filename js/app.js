@@ -15,7 +15,8 @@ const state = {
     namaSekolah: "SD Negeri Karangmangu 01",
     tahunAjaran: "2025/2026",
     kepalaSekolah: "Hj. Sumarsih, M.Pd.",
-    nipKepala: "19720315 199603 2 001"
+    nipKepala: "19720315 199603 2 001",
+    kota: "Karangmangu"
   },
   // Cache dokumen yang telah disunting oleh guru
   editedDocuments: {}
@@ -130,6 +131,7 @@ function initProfileDisplay() {
   document.getElementById("setup-nama-guru").value = state.teacherProfile.namaGuru;
   document.getElementById("setup-nip-guru").value = state.teacherProfile.nip;
   document.getElementById("setup-sekolah").value = state.teacherProfile.namaSekolah;
+  document.getElementById("setup-kota").value = state.teacherProfile.kota || "Karangmangu";
   document.getElementById("setup-tahun-ajaran").value = state.teacherProfile.tahunAjaran;
   document.getElementById("setup-nama-kepsek").value = state.teacherProfile.kepalaSekolah;
   document.getElementById("setup-nip-kepsek").value = state.teacherProfile.nipKepala;
@@ -217,6 +219,7 @@ function initEventListeners() {
   bindRealtimeSetupInput("setup-nama-guru", "namaGuru");
   bindRealtimeSetupInput("setup-nip-guru", "nip");
   bindRealtimeSetupInput("setup-sekolah", "namaSekolah");
+  bindRealtimeSetupInput("setup-kota", "kota");
   bindRealtimeSetupInput("setup-tahun-ajaran", "tahunAjaran");
   bindRealtimeSetupInput("setup-nama-kepsek", "kepalaSekolah");
   bindRealtimeSetupInput("setup-nip-kepsek", "nipKepala");
@@ -245,6 +248,7 @@ function openProfileModal() {
   document.getElementById("input-nama-guru").value = state.teacherProfile.namaGuru;
   document.getElementById("input-nip-guru").value = state.teacherProfile.nip;
   document.getElementById("input-sekolah").value = state.teacherProfile.namaSekolah;
+  document.getElementById("input-kota").value = state.teacherProfile.kota || "Karangmangu";
   document.getElementById("input-tahun-ajaran").value = state.teacherProfile.tahunAjaran;
   document.getElementById("input-nama-kepsek").value = state.teacherProfile.kepalaSekolah;
   document.getElementById("input-nip-kepsek").value = state.teacherProfile.nipKepala;
@@ -259,6 +263,7 @@ function saveProfileModal() {
   state.teacherProfile.namaGuru = document.getElementById("input-nama-guru").value;
   state.teacherProfile.nip = document.getElementById("input-nip-guru").value;
   state.teacherProfile.namaSekolah = document.getElementById("input-sekolah").value;
+  state.teacherProfile.kota = document.getElementById("input-kota").value;
   state.teacherProfile.tahunAjaran = document.getElementById("input-tahun-ajaran").value;
   state.teacherProfile.kepalaSekolah = document.getElementById("input-nama-kepsek").value;
   state.teacherProfile.nipKepala = document.getElementById("input-nip-kepsek").value;
@@ -5227,199 +5232,307 @@ function compileModulAjar(subData, chData, topicName, fase) {
   const praktikPedagogis = getCachedContent("praktikPedagogis", details.praktikPedagogis);
   const kemitraanPembelajaran = getCachedContent("kemitraanPembelajaran", details.kemitraanPembelajaran);
   const lingkunganPembelajaran = getCachedContent("lingkunganPembelajaran", details.lingkunganPembelajaran);
-  const pemanfaatanDigital = getCachedContent("pemanfaatanDigital", details.pemanfaatanDigital);
+  const pemanfaatanDigital = getCachedContent("pemanfaatanDigital", details.pemanfaatanDigital || "Pemanfaatan portal pembelajaran digital resmi melalui https://rumah.pendidikan.go.id/ untuk pengayaan materi, eksplorasi mandiri, dan visualisasi konsep interaktif.");
 
-  // Checkbox values for 8 dimensions
-  const checkboxIman = getDimensiChecked("iman", subData.id, topicName) ? "☑" : "☐";
-  const checkboxKritis = getDimensiChecked("kritis", subData.id, topicName) ? "☑" : "☐";
-  const checkboxKolaborasi = getDimensiChecked("kolaborasi", subData.id, topicName) ? "☑" : "☐";
-  const checkboxKesehatan = getDimensiChecked("kesehatan", subData.id, topicName) ? "☑" : "☐";
-  const checkboxKewargaan = getDimensiChecked("kewargaan", subData.id, topicName) ? "☑" : "☐";
-  const checkboxKreativitas = getDimensiChecked("kreativitas", subData.id, topicName) ? "☑" : "☐";
-  const checkboxKemandirian = getDimensiChecked("kemandirian", subData.id, topicName) ? "☑" : "☐";
-  const checkboxKomunikasi = getDimensiChecked("komunikasi", subData.id, topicName) ? "☑" : "☐";
+  // Checkbox values for 8 dimensions (matching the "[X]" format in the PDF)
+  const isIman = getDimensiChecked("iman", subData.id, topicName);
+  const isKewargaan = getDimensiChecked("kewargaan", subData.id, topicName);
+  const isKritis = getDimensiChecked("kritis", subData.id, topicName);
+  const isKreativitas = getDimensiChecked("kreativitas", subData.id, topicName);
+  const isKolaborasi = getDimensiChecked("kolaborasi", subData.id, topicName);
+  const isKemandirian = getDimensiChecked("kemandirian", subData.id, topicName);
+  const isKesehatan = getDimensiChecked("kesehatan", subData.id, topicName);
+  const isKomunikasi = getDimensiChecked("komunikasi", subData.id, topicName);
+
+  const checkboxIman = isIman ? "[X]" : "[ &nbsp;]";
+  const checkboxKewargaan = isKewargaan ? "[X]" : "[ &nbsp;]";
+  const checkboxKritis = isKritis ? "[X]" : "[ &nbsp;]";
+  const checkboxKreativitas = isKreativitas ? "[X]" : "[ &nbsp;]";
+  const checkboxKolaborasi = isKolaborasi ? "[X]" : "[ &nbsp;]";
+  const checkboxKemandirian = isKemandirian ? "[X]" : "[ &nbsp;]";
+  const checkboxKesehatan = isKesehatan ? "[X]" : "[ &nbsp;]";
+  const checkboxKomunikasi = isKomunikasi ? "[X]" : "[ &nbsp;]";
+
+  // Generate Rubrik Penilaian Sikap (Otomatis) rows based on checked dimensions
+  let rubrikSikapRows = "";
+  const selectedDimensions = [];
+  if (isIman) selectedDimensions.push({ name: "Keimanan & Ketaqwaan", desc4: "Membiasakan doa, bersyukur, & berakhlak mulia secara konsisten mandiri.", desc3: "Berdoa & bersyukur dengan bimbingan berkala.", desc2: "Perlu diingatkan untuk berdoa khusyuk.", desc1: "Belum menunjukkan pembiasaan berdoa." });
+  if (isKewargaan) selectedDimensions.push({ name: "Kewargaan", desc4: "Sangat toleran, aktif menjaga ketertiban, & taat aturan kelas.", desc3: "Menghargai teman & tertib dengan pengawasan.", desc2: "Kadang melanggar aturan tata tertib kelas.", desc1: "Belum peduli aturan & keberagaman teman." });
+  if (isKritis) selectedDimensions.push({ name: "Penalaran Kritis", desc4: "Menyelesaikan soal dengan strategi fleksibel/efisien serta mampu menjelaskan alasannya.", desc3: "Menggunakan strategi logis, runtut, namun membutuhkan sedikit konfirmasi lisan.", desc2: "Menjawab benar secara prosedural hafalan namun belum bisa mengurai prosesnya.", desc1: "Belum mampu mengidentifikasi komponen masalah utama." });
+  if (isKreativitas) selectedDimensions.push({ name: "Kreativitas", desc4: "Sangat produktif, melahirkan gagasan orisinal, & alternatif solusi inovatif.", desc3: "Mampu membuat karya/gagasan baru yang cukup menarik.", desc2: "Gagasan masih meniru contoh yang sudah ada.", desc1: "Belum memunculkan ide kreatif mandiri." });
+  if (isKolaborasi) selectedDimensions.push({ name: "Kolaborasi", desc4: "Bekerja sama sangat baik, membagi peran adil, & peka sosial tinggi.", desc3: "Bekerja sama aktif dalam kelompok dengan tertib.", desc2: "Cenderung pasif dalam kerja kelompok.", desc1: "Belum bersedia berbagi peran kelompok." });
+  if (isKemandirian) selectedDimensions.push({ name: "Kemandirian", desc4: "Mengatur diri sendiri dengan matang, tanggung jawab penuh atas tugas.", desc3: "Menyelesaikan tugas mandiri dengan pengawasan umum.", desc2: "Butuh dorongan konstan untuk memulai tugas.", desc1: "Belum mandiri menyelesaikan tugas individu." });
+  if (isKesehatan) selectedDimensions.push({ name: "Kesehatan", desc4: "Menjaga kebugaran prima, regulasi emosi belajar sangat baik, & menjaga kebersihan.", desc3: "Mengelola emosi belajar & tertib membuang sampah.", desc2: "Kadang terpengaruh emosi negatif saat belajar.", desc1: "Belum peduli kebersihan & kebugaran diri." });
+  if (isKomunikasi) selectedDimensions.push({ name: "Komunikasi", desc4: "Menyimak instruksi dengan saksama & menggunakan simbol/bahasa matematis tepat.", desc3: "Menyimak & menyampaikan pendapat dengan bahasa santun.", desc2: "Kurang fokus menyimak pendapat orang lain.", desc1: "Belum terampil mengemukakan pendapat santun." });
+
+  // Fallback if no dimension is selected
+  if (selectedDimensions.length === 0) {
+    selectedDimensions.push({
+      name: "Penalaran Kritis",
+      desc4: "Menyelesaikan soal dengan strategi fleksibel/efisien serta mampu menjelaskan alasannya.",
+      desc3: "Menggunakan strategi logis, runtut, namun membutuhkan sedikit konfirmasi lisan.",
+      desc2: "Menjawab benar secara prosedural hafalan namun belum bisa mengurai prosesnya.",
+      desc1: "Belum mampu mengidentifikasi komponen masalah utama."
+    });
+  }
+
+  rubrikSikapRows = selectedDimensions.map(d => `
+    <tr>
+      <td style="border: 1px solid #a9c2be; padding: 6px; font-size: 9.5pt;">[Isi Nama Siswa]</td>
+      <td style="border: 1px solid #a9c2be; padding: 6px; font-size: 9.5pt; font-weight: bold; color: #0b5e56;">${d.name}</td>
+      <td style="border: 1px solid #a9c2be; padding: 6px; font-size: 9pt; color: #1f2f2c;">${d.desc4}</td>
+      <td style="border: 1px solid #a9c2be; padding: 6px; font-size: 9pt; color: #1f2f2c;">${d.desc3}</td>
+      <td style="border: 1px solid #a9c2be; padding: 6px; font-size: 9pt; color: #1f2f2c;">${d.desc2}</td>
+      <td style="border: 1px solid #a9c2be; padding: 6px; font-size: 9pt; color: #1f2f2c;">${d.desc1}</td>
+    </tr>
+  `).join("");
 
   return `
-    ${headers}
-    <h2>I. Identitas Modul</h2>
-    <table style="margin-top: 10px; margin-bottom: 20px; width: 100%; border: none !important;">
-      <tr style="border: none !important;">
-        <td class="fw-bold" style="width: 200px; border: none !important; padding: 4px 0; font-size:11px;">Mata Pelajaran</td>
-        <td style="width: 10px; border: none !important; padding: 4px 0; font-size:11px;">:</td>
-        <td style="border: none !important; padding: 4px 0; font-size:11px;">${subData.title}</td>
+    <div style="text-align: center; margin-bottom: 25px;">
+      <h2 style="font-size: 18px; font-weight: bold; color: #0b5e56; margin: 0; text-transform: uppercase;">MODUL AJAR KURIKULUM MERDEKA</h2>
+      <p style="font-size: 12px; color: #576d6a; margin: 5px 0 0 0;">Pendekatan Pembelajaran Mendalam (Deep Learning)</p>
+    </div>
+
+    <h2 style="font-size: 14px; border-bottom: 2px solid #0b5e56; padding-bottom: 4px; color: #0b5e56; margin-top: 20px;">I. INFORMASI UMUM</h2>
+    <table style="width: 100%; border-collapse: collapse; margin-top: 10px; margin-bottom: 15px;">
+      <tr style="border-bottom: 1px solid #eaf4f3;">
+        <td style="width: 25%; font-weight: bold; padding: 6px 0; font-size: 11px; color: #2b3a38;">• Nama Penyusun</td>
+        <td style="width: 2%; padding: 6px 0; font-size: 11px;">:</td>
+        <td style="padding: 6px 0; font-size: 11px;" class="editable-content" data-field="namaGuru">${state.teacherProfile.namaGuru}</td>
       </tr>
-      <tr style="border: none !important;">
-        <td class="fw-bold" style="border: none !important; padding: 4px 0; font-size:11px;">Kelas / Semester</td>
-        <td style="border: none !important; padding: 4px 0; font-size:11px;">:</td>
-        <td style="border: none !important; padding: 4px 0; font-size:11px;">${state.selectedClass} / ${state.selectedSemester === "1" ? "1 (Ganjil)" : "2 (Genap)"}</td>
+      <tr style="border-bottom: 1px solid #eaf4f3;">
+        <td style="font-weight: bold; padding: 6px 0; font-size: 11px; color: #2b3a38;">• Institusi</td>
+        <td style="padding: 6px 0; font-size: 11px;">:</td>
+        <td style="padding: 6px 0; font-size: 11px;" class="editable-content" data-field="namaSekolah">${state.teacherProfile.namaSekolah}</td>
       </tr>
-      <tr style="border: none !important;">
-        <td class="fw-bold" style="border: none !important; padding: 4px 0; font-size:11px;">Bab / Materi Pokok</td>
-        <td style="border: none !important; padding: 4px 0; font-size:11px;">:</td>
-        <td style="border: none !important; padding: 4px 0; font-size:11px;">Bab ${chData.no}: ${chData.title}</td>
+      <tr style="border-bottom: 1px solid #eaf4f3;">
+        <td style="font-weight: bold; padding: 6px 0; font-size: 11px; color: #2b3a38;">• Tahun</td>
+        <td style="padding: 6px 0; font-size: 11px;">:</td>
+        <td style="padding: 6px 0; font-size: 11px;" class="editable-content" data-field="tahunAjaran">${state.teacherProfile.tahunAjaran}</td>
       </tr>
-      <tr style="border: none !important;">
-        <td class="fw-bold" style="border: none !important; padding: 4px 0; font-size:11px;">Topik Pertemuan</td>
-        <td style="border: none !important; padding: 4px 0; font-size:11px;">:</td>
-        <td style="border: none !important; padding: 4px 0; font-size:11px;">${topicName}</td>
+      <tr style="border-bottom: 1px solid #eaf4f3;">
+        <td style="font-weight: bold; padding: 6px 0; font-size: 11px; color: #2b3a38;">• Jenjang / Kelas</td>
+        <td style="padding: 6px 0; font-size: 11px;">:</td>
+        <td style="padding: 6px 0; font-size: 11px;">Sekolah Dasar (SD) / Kelas ${state.selectedClass}</td>
       </tr>
-      <tr style="border: none !important;">
-        <td class="fw-bold" style="border: none !important; padding: 4px 0; font-size:11px;">Fase</td>
-        <td style="border: none !important; padding: 4px 0; font-size:11px;">:</td>
-        <td style="border: none !important; padding: 4px 0; font-size:11px;">Fase ${fase}</td>
+      <tr style="border-bottom: 1px solid #eaf4f3;">
+        <td style="font-weight: bold; padding: 6px 0; font-size: 11px; color: #2b3a38;">• Fase</td>
+        <td style="padding: 6px 0; font-size: 11px;">:</td>
+        <td style="padding: 6px 0; font-size: 11px;">Fase ${fase}</td>
       </tr>
-      <tr style="border: none !important;">
-        <td class="fw-bold" style="border: none !important; padding: 4px 0; font-size:11px;">Alokasi Waktu</td>
-        <td style="border: none !important; padding: 4px 0; font-size:11px;">:</td>
-        <td style="border: none !important; padding: 4px 0; font-size:11px;">2 JP (2 x 35 Menit)</td>
+      <tr style="border-bottom: 1px solid #eaf4f3;">
+        <td style="font-weight: bold; padding: 6px 0; font-size: 11px; color: #2b3a38;">• Mata Pelajaran</td>
+        <td style="padding: 6px 0; font-size: 11px;">:</td>
+        <td style="padding: 6px 0; font-size: 11px;">${subData.title}</td>
       </tr>
-      <tr style="border: none !important;">
-        <td class="fw-bold" style="border: none !important; padding: 4px 0; font-size:11px;">Dasar Kebijakan</td>
-        <td style="border: none !important; padding: 4px 0; font-size:11px;">:</td>
-        <td style="border: none !important; padding: 4px 0; font-size:11px;">Permendikdasmen No. 13/2025 & Salinan Kepka BKPDM No. 021/H/KR/2026</td>
+      <tr style="border-bottom: 1px solid #eaf4f3;">
+        <td style="font-weight: bold; padding: 6px 0; font-size: 11px; color: #2b3a38;">• Elemen Konten</td>
+        <td style="padding: 6px 0; font-size: 11px;">:</td>
+        <td style="padding: 6px 0; font-size: 11px;">${chData.title}</td>
       </tr>
-      <tr style="border: none !important;">
-        <td class="fw-bold" style="border: none !important; padding: 4px 0; font-size:11px;">Rujukan Resmi</td>
-        <td style="border: none !important; padding: 4px 0; font-size:11px;">:</td>
-        <td style="border: none !important; padding: 4px 0; font-size:11px;">kurikulum.kemendikdasmen.go.id</td>
+      <tr style="border-bottom: 1px solid #eaf4f3;">
+        <td style="font-weight: bold; padding: 6px 0; font-size: 11px; color: #2b3a38;">• Alokasi Waktu</td>
+        <td style="padding: 6px 0; font-size: 11px;">:</td>
+        <td style="padding: 6px 0; font-size: 11px;">2 JP (2 x 35 Menit)</td>
+      </tr>
+      <tr style="border-bottom: 1px solid #eaf4f3;">
+        <td style="font-weight: bold; padding: 6px 0; font-size: 11px; color: #2b3a38;">• Moda & Model Pembelajaran</td>
+        <td style="padding: 6px 0; font-size: 11px;">:</td>
+        <td style="padding: 6px 0; font-size: 11px;">Tatap Muka / Perencanaan Pembelajaran Mendalam (Deep Learning)</td>
       </tr>
     </table>
 
-    <h2>II. Identifikasi & Desain Pembelajaran</h2>
+    <h3 style="font-size: 12px; font-weight: bold; color: #0b5e56; margin-top: 15px; margin-bottom: 5px;">A. Kompetensi Awal (Materi Prasyarat)</h3>
+    <div style="background-color: #f8faf9; padding: 10px 12px; border-radius: 6px; border: 1px solid #e2ecea; font-size: 11px; line-height: 1.5; color: #2b3a38;" class="editable-content" data-field="kompetensiAwal">
+      Peserta didik telah memiliki pemahaman prasyarat dasar sebelum memasuki materi <b>${topicName}</b>, termasuk pengenalan konsep penunjang, kemampuan bernalar awal, serta kesiapan mental belajar secara kolaboratif.
+    </div>
+
+    <h3 style="font-size: 12px; font-weight: bold; color: #0b5e56; margin-top: 15px; margin-bottom: 5px;">B. Sarana dan Prasarana</h3>
+    <ul style="margin: 0; padding-left: 20px; font-size: 11px; line-height: 1.6; color: #2b3a38;">
+      <li><b>Media & Alat Peraga Konkret:</b> Laptop, proyektor, papan tulis, alat peraga manipulatif konkret penunjang visualisasi konsep, serta pemanfaatan portal pembelajaran digital resmi melalui <a href="https://rumah.pendidikan.go.id/" target="_blank" style="color:#0b5e56; text-decoration:underline; font-weight:bold;">https://rumah.pendidikan.go.id/</a>.</li>
+      <li><b>Sumber Belajar:</b> Buku Panduan Guru dan Buku Siswa Kemendikdasmen RI 2025/2026, modul pembelajaran pendukung, serta LKPD berbasis aktivitas konkret.</li>
+    </ul>
+
+    <h2 style="font-size: 14px; border-bottom: 2px solid #0b5e56; padding-bottom: 4px; color: #0b5e56; margin-top: 25px;">II. INTEGRASI 8 DIMENSI PROFIL LULUSAN (DPL)</h2>
+    <p style="font-size: 11px; font-style: italic; color: #576d6a; margin: 5px 0 10px 0;">(berikan tanda [X] pada kotak dimensi dan menentukan indikator yang disasar dan penjelasannya)</p>
     
-    <h3 style="color: #0b5e56; font-size: 11pt; margin-top: 15px; margin-bottom: 5px;">Dimensi Profil Lulusan</h3>
     <div style="background-color: #f8faf9; padding: 12px 15px; border-radius: 8px; border: 1px solid #d2e4e1; margin-bottom: 20px;">
       <table style="width: 100%; border: none !important; margin: 0; border-collapse: collapse;">
+        <!-- Baris 1: 1 s.d. 4 -->
         <tr style="border: none !important;">
-          <td style="width: 25%; border: none !important; padding: 5px 0; font-size: 10.5px; vertical-align: middle;">
-            <span class="interactive-checkbox" data-dimensi="iman" style="cursor:pointer; font-weight: bold; color: #0b5e56; font-size: 12.5px; margin-right: 4px;">${checkboxIman}</span> 1. Keimanan & Ketaqwaan
+          <td style="width: 50%; border: none !important; padding: 8px 10px 8px 0; font-size: 11px; vertical-align: top;">
+            <div style="display: flex; gap: 8px; align-items: flex-start;">
+              <span class="interactive-checkbox" data-dimensi="iman" style="cursor:pointer; font-weight: bold; color: #0b5e56; font-size: 12px; font-family: monospace; white-space: nowrap; display: inline-block; min-width: 32px; text-align: center; user-select: none;">${checkboxIman}</span>
+              <div>
+                <b style="color: #0b5e56;">1. Keimanan dan Ketakwaan terhadap Tuhan YME</b><br>
+                <span style="font-size: 10px; color: #576d6a; font-style: italic;">Indikator: Membiasakan doa pembuka/penutup, bersyukur atas keteraturan ilmu, and berakhlak mulia.</span>
+              </div>
+            </div>
           </td>
-          <td style="width: 25%; border: none !important; padding: 5px 0; font-size: 10.5px; vertical-align: middle;">
-            <span class="interactive-checkbox" data-dimensi="kewargaan" style="cursor:pointer; font-weight: bold; color: #0b5e56; font-size: 12.5px; margin-right: 4px;">${checkboxKewargaan}</span> 2. Kewargaan
-          </td>
-          <td style="width: 25%; border: none !important; padding: 5px 0; font-size: 10.5px; vertical-align: middle;">
-            <span class="interactive-checkbox" data-dimensi="kritis" style="cursor:pointer; font-weight: bold; color: #0b5e56; font-size: 12.5px; margin-right: 4px;">${checkboxKritis}</span> 3. Penalaran Kritis
-          </td>
-          <td style="width: 25%; border: none !important; padding: 5px 0; font-size: 10.5px; vertical-align: middle;">
-            <span class="interactive-checkbox" data-dimensi="kreativitas" style="cursor:pointer; font-weight: bold; color: #0b5e56; font-size: 12.5px; margin-right: 4px;">${checkboxKreativitas}</span> 4. Kreativitas
+          <td style="width: 50%; border: none !important; padding: 8px 0 8px 10px; font-size: 11px; vertical-align: top;">
+            <div style="display: flex; gap: 8px; align-items: flex-start;">
+              <span class="interactive-checkbox" data-dimensi="kewargaan" style="cursor:pointer; font-weight: bold; color: #0b5e56; font-size: 12px; font-family: monospace; white-space: nowrap; display: inline-block; min-width: 32px; text-align: center; user-select: none;">${checkboxKewargaan}</span>
+              <div>
+                <b style="color: #0b5e56;">2. Kewargaan</b><br>
+                <span style="font-size: 10px; color: #576d6a; font-style: italic;">Indikator: Menghargai keberagaman teman, berpartisipasi menjaga ketertiban, dan taat aturan kelas.</span>
+              </div>
+            </div>
           </td>
         </tr>
         <tr style="border: none !important;">
-          <td style="width: 25%; border: none !important; padding: 5px 0; font-size: 10.5px; vertical-align: middle;">
-            <span class="interactive-checkbox" data-dimensi="kolaborasi" style="cursor:pointer; font-weight: bold; color: #0b5e56; font-size: 12.5px; margin-right: 4px;">${checkboxKolaborasi}</span> 5. Kolaborasi
+          <td style="border: none !important; padding: 8px 10px 8px 0; font-size: 11px; vertical-align: top;">
+            <div style="display: flex; gap: 8px; align-items: flex-start;">
+              <span class="interactive-checkbox" data-dimensi="kritis" style="cursor:pointer; font-weight: bold; color: #0b5e56; font-size: 12px; font-family: monospace; white-space: nowrap; display: inline-block; min-width: 32px; text-align: center; user-select: none;">${checkboxKritis}</span>
+              <div>
+                <b style="color: #0b5e56;">3. Penalaran Kritis</b><br>
+                <span style="font-size: 10px; color: #576d6a; font-style: italic;">Indikator: Mengajukan pertanyaan, menganalisis hubungan konsep, memproses data literasi/numerasi.</span>
+              </div>
+            </div>
           </td>
-          <td style="width: 25%; border: none !important; padding: 5px 0; font-size: 10.5px; vertical-align: middle;">
-            <span class="interactive-checkbox" data-dimensi="kemandirian" style="cursor:pointer; font-weight: bold; color: #0b5e56; font-size: 12.5px; margin-right: 4px;">${checkboxKemandirian}</span> 6. Kemandirian
+          <td style="border: none !important; padding: 8px 0 8px 10px; font-size: 11px; vertical-align: top;">
+            <div style="display: flex; gap: 8px; align-items: flex-start;">
+              <span class="interactive-checkbox" data-dimensi="kreativitas" style="cursor:pointer; font-weight: bold; color: #0b5e56; font-size: 12px; font-family: monospace; white-space: nowrap; display: inline-block; min-width: 32px; text-align: center; user-select: none;">${checkboxKreativitas}</span>
+              <div>
+                <b style="color: #0b5e56;">4. Kreativitas</b><br>
+                <span style="font-size: 10px; color: #576d6a; font-style: italic;">Indikator: Berperilaku produktif, melahirkan gagasan/karya asli, atau mencari alternatif solusi.</span>
+              </div>
+            </div>
           </td>
-          <td style="width: 25%; border: none !important; padding: 5px 0; font-size: 10.5px; vertical-align: middle;">
-            <span class="interactive-checkbox" data-dimensi="kesehatan" style="cursor:pointer; font-weight: bold; color: #0b5e56; font-size: 12.5px; margin-right: 4px;">${checkboxKesehatan}</span> 7. Kesehatan
+        </tr>
+        <!-- Baris 2: 5 s.d. 8 -->
+        <tr style="border: none !important;">
+          <td style="border: none !important; padding: 8px 10px 8px 0; font-size: 11px; vertical-align: top;">
+            <div style="display: flex; gap: 8px; align-items: flex-start;">
+              <span class="interactive-checkbox" data-dimensi="kolaborasi" style="cursor:pointer; font-weight: bold; color: #0b5e56; font-size: 12px; font-family: monospace; white-space: nowrap; display: inline-block; min-width: 32px; text-align: center; user-select: none;">${checkboxKolaborasi}</span>
+              <div>
+                <b style="color: #0b5e56;">5. Kolaborasi</b><br>
+                <span style="font-size: 10px; color: #576d6a; font-style: italic;">Indikator: Bekerja sama dalam kelompok, membagi peran secara adil, dan peka sosial.</span>
+              </div>
+            </div>
           </td>
-          <td style="width: 25%; border: none !important; padding: 5px 0; font-size: 10.5px; vertical-align: middle;">
-            <span class="interactive-checkbox" data-dimensi="komunikasi" style="cursor:pointer; font-weight: bold; color: #0b5e56; font-size: 12.5px; margin-right: 4px;">${checkboxKomunikasi}</span> 8. Komunikasi
+          <td style="border: none !important; padding: 8px 0 8px 10px; font-size: 11px; vertical-align: top;">
+            <div style="display: flex; gap: 8px; align-items: flex-start;">
+              <span class="interactive-checkbox" data-dimensi="kemandirian" style="cursor:pointer; font-weight: bold; color: #0b5e56; font-size: 12px; font-family: monospace; white-space: nowrap; display: inline-block; min-width: 32px; text-align: center; user-select: none;">${checkboxKemandirian}</span>
+              <div>
+                <b style="color: #0b5e56;">6. Kemandirian</b><br>
+                <span style="font-size: 10px; color: #576d6a; font-style: italic;">Indikator: Mengatur diri sendiri, bertanggung jawab atas tugasnya, dan beradaptasi pada tantangan.</span>
+              </div>
+            </div>
+          </td>
+        </tr>
+        <tr style="border: none !important;">
+          <td style="border: none !important; padding: 8px 10px 8px 0; font-size: 11px; vertical-align: top;">
+            <div style="display: flex; gap: 8px; align-items: flex-start;">
+              <span class="interactive-checkbox" data-dimensi="kesehatan" style="cursor:pointer; font-weight: bold; color: #0b5e56; font-size: 12px; font-family: monospace; white-space: nowrap; display: inline-block; min-width: 32px; text-align: center; user-select: none;">${checkboxKesehatan}</span>
+              <div>
+                <b style="color: #0b5e56;">7. Kesehatan</b><br>
+                <span style="font-size: 10px; color: #576d6a; font-style: italic;">Indikator: Menjaga kebugaran fisik, mengelola emosi belajar, and menjaga kebersihan lingkungan.</span>
+              </div>
+            </div>
+          </td>
+          <td style="border: none !important; padding: 8px 0 8px 10px; font-size: 11px; vertical-align: top;">
+            <div style="display: flex; gap: 8px; align-items: flex-start;">
+              <span class="interactive-checkbox" data-dimensi="komunikasi" style="cursor:pointer; font-weight: bold; color: #0b5e56; font-size: 12px; font-family: monospace; white-space: nowrap; display: inline-block; min-width: 32px; text-align: center; user-select: none;">${checkboxKomunikasi}</span>
+              <div>
+                <b style="color: #0b5e56;">8. Komunikasi</b><br>
+                <span style="font-size: 10px; color: #576d6a; font-style: italic;">Indikator: Menyimak instruksi, menggunakan simbol/bahasa matematis yang tepat saat berpendapat.</span>
+              </div>
+            </div>
           </td>
         </tr>
       </table>
     </div>
 
-    <h3 style="color: #0b5e56; font-size: 11pt; margin-top: 15px; margin-bottom: 5px;">Desain Pembelajaran</h3>
-    <table style="width: 100%; border-collapse: collapse; margin-top: 10px; margin-bottom: 20px;">
-      <tr>
-        <td class="fw-bold" style="width: 180px; border: 1px solid #a9c2be; padding: 8px; background-color: #eaf4f3; color: #0b5e56; font-size:9.5pt;">Tujuan Pembelajaran</td>
-        <td style="border: 1px solid #a9c2be; padding: 8px; font-size:9.5pt;" class="editable-content" data-field="tp">${tp}</td>
-      </tr>
-      <tr>
-        <td class="fw-bold" style="border: 1px solid #a9c2be; padding: 8px; background-color: #eaf4f3; color: #0b5e56; font-size:9.5pt;">Praktik Pedagogis</td>
-        <td style="border: 1px solid #a9c2be; padding: 8px; font-size:9.5pt;" class="editable-content" data-field="praktikPedagogis">${praktikPedagogis}</td>
-      </tr>
-      <tr>
-        <td class="fw-bold" style="border: 1px solid #a9c2be; padding: 8px; background-color: #eaf4f3; color: #0b5e56; font-size:9.5pt;">Kemitraan Pembelajaran</td>
-        <td style="border: 1px solid #a9c2be; padding: 8px; font-size:9.5pt;" class="editable-content" data-field="kemitraanPembelajaran">${kemitraanPembelajaran}</td>
-      </tr>
-      <tr>
-        <td class="fw-bold" style="border: 1px solid #a9c2be; padding: 8px; background-color: #eaf4f3; color: #0b5e56; font-size:9.5pt;">Lingkungan Pembelajaran</td>
-        <td style="border: 1px solid #a9c2be; padding: 8px; font-size:9.5pt;" class="editable-content" data-field="lingkunganPembelajaran">${lingkunganPembelajaran}</td>
-      </tr>
-      <tr>
-        <td class="fw-bold" style="border: 1px solid #a9c2be; padding: 8px; background-color: #eaf4f3; color: #0b5e56; font-size:9.5pt;">Pemanfaatan Digital</td>
-        <td style="border: 1px solid #a9c2be; padding: 8px; font-size:9.5pt;" class="editable-content" data-field="pemanfaatanDigital">${pemanfaatanDigital}</td>
-      </tr>
-    </table>
-
-    <h2>III. Fokus Pendekatan Deep Learning (Pembelajaran Mendalam)</h2>
+    <h2 style="font-size: 14px; border-bottom: 2px solid #0b5e56; padding-bottom: 4px; color: #0b5e56; margin-top: 25px;">III. KOMPONEN INTI</h2>
     
-    <div class="learning-box mindful-box">
-      <div class="box-header mindful-header">
-        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" style="width:18px;height:18px;display:inline-block;vertical-align:middle;margin-right:5px;color:#0f62fe;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M6.343 6.343l-.707-.707M14 12a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
-        Mindful Learning (Kesadaran Penuh)
-      </div>
-      <div class="editable-content" data-field="mindfulAct">${mindfulAct}</div>
+    <h3 style="font-size: 12px; font-weight: bold; color: #0b5e56; margin-top: 15px; margin-bottom: 5px;">A. Tujuan Pembelajaran (TP)</h3>
+    <div style="background-color: #f8faf9; padding: 12px; border-radius: 6px; border: 1px solid #e2ecea; font-size: 11px; line-height: 1.6; color: #2b3a38;" class="editable-content" data-field="tp">
+      1. Melalui pendekatan Konkret-Gambar-Abstrak (KGA), peserta didik mampu ${tp.replace(/^1\.\s*|2\.\s*/g, '') || `mengidentifikasi dan menjelaskan konsep ${topicName} secara visual dan logis.`}<br>
+      2. Melalui pemecahan masalah (Problem-Based), peserta didik mampu memecahkan masalah kontekstual nyata terkait <b>${topicName}</b> secara mandiri dan kritis.
     </div>
 
-    <div class="learning-box meaningful-box">
-      <div class="box-header meaningful-header">
-        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" style="width:18px;height:18px;display:inline-block;vertical-align:middle;margin-right:5px;color:#d87a00;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-        Meaningful Learning (Kebermaknaan Materi)
-      </div>
-      <div class="editable-content" data-field="meaningfulAct">${meaningfulAct}</div>
+    <h3 style="font-size: 12px; font-weight: bold; color: #0b5e56; margin-top: 15px; margin-bottom: 5px;">B. Pemahaman Bermakna (Pembelajaran Bermakna)</h3>
+    <div style="background-color: #f8faf9; padding: 10px 12px; border-radius: 6px; border: 1px solid #e2ecea; font-size: 11px; line-height: 1.5; color: #2b3a38;" class="editable-content" data-field="pemahamanBermakna">
+      ${pemahamanBermakna}
     </div>
 
-    <div class="learning-box joyful-box">
-      <div class="box-header joyful-header">
-        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" style="width:18px;height:18px;display:inline-block;vertical-align:middle;margin-right:5px;color:#198754;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-        Joyful Learning (Pembelajaran Menyenangkan & Kolaboratif)
-      </div>
-      <div class="editable-content" data-field="joyfulAct">${joyfulAct}</div>
+    <h3 style="font-size: 12px; font-weight: bold; color: #0b5e56; margin-top: 15px; margin-bottom: 5px;">C. Pertanyaan Pemantik (Memicu Rasa Ingin Tahu)</h3>
+    <div style="background-color: #f8faf9; padding: 10px 12px; border-radius: 6px; border: 1px solid #e2ecea; font-size: 11px; line-height: 1.5; color: #2b3a38;" class="editable-content" data-field="pemantik">
+      ${pemantik}
     </div>
 
-    <h2>IV. Komponen Inti</h2>
+    <h2 style="font-size: 14px; border-bottom: 2px solid #0b5e56; padding-bottom: 4px; color: #0b5e56; margin-top: 25px;">IV. SINTAKS LANGKAH PEMBELAJARAN MENDALAM (DEEP LEARNING)</h2>
     
-    <h3>1. Pemahaman Bermakna</h3>
-    <div class="editable-content" data-field="pemahamanBermakna">${pemahamanBermakna}</div>
+    <h3 style="font-size: 12px; font-weight: bold; color: #0b5e56; margin-top: 15px; margin-bottom: 5px;">1. Kegiatan Pendahuluan (10 Menit)</h3>
+    <ul style="margin: 0; padding-left: 20px; font-size: 11px; line-height: 1.6; color: #2b3a38;">
+      <li><b>Pembukaan Berkesadaran (Mindful):</b> Guru membuka kelas dengan pengkondisian mental siswa. Mengajak siswa rileks sejenak (doa bersama, mengecek kehadiran, menjaga emosi positif siswa dengan senyuman atau sapaan ramah).</li>
+      <li><b>Apersepsi & Motivasi Kontekstual (Meaningful):</b> Menghubungkan materi <b>${topicName}</b> dengan isu prioritas sekolah atau pengalaman nyata harian siswa di rumah maupun lingkungan sekitar.</li>
+      <li><b>Penyampaian Target (Joyful):</b> Menjelaskan target capaian belajar serta alur aktivitas menyenangkan (bermain peran, eksplorasi kelompok, dst) dan teknis penilaian yang ramah anak.</li>
+    </ul>
 
-    <h3>2. Pertanyaan Pemantik</h3>
-    <div class="editable-content" data-field="pemantik">${pemantik}</div>
+    <h3 style="font-size: 12px; font-weight: bold; color: #0b5e56; margin-top: 15px; margin-bottom: 5px;">2. Kegiatan Inti (50 Menit)</h3>
+    <ul style="margin: 0; padding-left: 20px; font-size: 11px; line-height: 1.6; color: #2b3a38;">
+      <li><b>Tahap 1: Orientasi Masalah & Stimulasi Nyata (Berkesadaran)</b><br>
+        Peserta didik dihadapkan pada situasi menantang, cerita tidak lengkap, teka-teki, atau benda konkret di dalam kelas yang memicu rasa ingin tahu.
+      </li>
+      <li><b>Tahap 2: Pembelajaran Konkret (Manipulasi Objek)</b><br>
+        Peserta didik mengeksplorasi dan memanipulasi alat peraga nyata, benda sekitar, atau media fisik dalam kelompok kecil secara aktif.
+      </li>
+      <li><b>Tahap 3: Pembelajaran Gambar (Representasi Visual)</b><br>
+        Peserta didik menuangkan hasil manipulasi konkret ke dalam representasi gambar, sketsa visual, grafik, diagram, atau tabel di lembar kerja kelompok.
+      </li>
+      <li><b>Tahap 4: Pembelajaran Abstrak (Simbolisasi Matematis/Bahasa)</b><br>
+        Peserta didik dibimbing menerjemahkan representasi gambar menjadi simbol formal, kalimat matematika resmi, atau istilah konseptual yang tepat.
+      </li>
+      <li><b>Tahap 5: Berbagi Gagasan & Evaluasi (Komunikasi/Kolaborasi)</b><br>
+        Perwakilan kelompok mempresentasikan proses berpikirnya secara sadar di depan kelas, menerima tanggapan konstruktif, serta dikonfirmasi secara komprehensif oleh guru.
+      </li>
+    </ul>
 
-    <h2>V. Langkah-Langkah Pembelajaran</h2>
-    <table>
-      <thead>
-        <tr>
-          <th style="width: 130px;">Tahap Kegiatan</th>
-          <th>Sintaks Pembelajaran & Aktivitas Guru/Siswa</th>
-          <th style="width: 90px; text-align: center;">Waktu</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td class="fw-bold">Awal / Pendahuluan</td>
-          <td class="editable-content" data-field="langkahPendahuluan">${langkahPendahuluan}</td>
-          <td class="text-center">10 Menit</td>
-        </tr>
-        <tr>
-          <td class="fw-bold">Kegiatan Inti</td>
-          <td class="editable-content" data-field="langkahInti">${langkahInti}</td>
-          <td class="text-center">50 Menit</td>
-        </tr>
-        <tr>
-          <td class="fw-bold">Kegiatan Penutup</td>
-          <td class="editable-content" data-field="langkahPenutup">${langkahPenutup}</td>
-          <td class="text-center">10 Menit</td>
-        </tr>
-      </tbody>
-    </table>
+    <h3 style="font-size: 12px; font-weight: bold; color: #0b5e56; margin-top: 15px; margin-bottom: 5px;">3. Kegiatan Penutup (10 Menit)</h3>
+    <ul style="margin: 0; padding-left: 20px; font-size: 11px; line-height: 1.6; color: #2b3a38;">
+      <li><b>Refleksi Berlapis (As Learning):</b> Siswa bersama guru menarik kesimpulan harian dan merefleksikan emosi belajar serta tingkat keterlibatan aktif mereka hari ini.</li>
+      <li><b>Asesmen Spontan:</b> Pemberian tes lisan singkat atau kuis interaktif harian untuk mendeteksi tingkat pemahaman instan siswa.</li>
+      <li><b>Tindak Lanjut & Penutup:</b> Penugasan rumah kontekstual sederhana, doa penutup bersama, dan pemberian apresiasi positif (applause atau kata motivasi).</li>
+    </ul>
 
-    <h2>VI. Asesmen / Penilaian</h2>
-    <h3>A. Asesmen Formatif (Proses)</h3>
-    <div class="editable-content" data-field="asesmenFormatif">${asesmenFormatif}</div>
+    <h2 style="font-size: 14px; border-bottom: 2px solid #0b5e56; padding-bottom: 4px; color: #0b5e56; margin-top: 25px;">V. SISTEM ASESMEN PENDIDIKAN MENDALAM</h2>
+    <ol style="margin: 0; padding-left: 20px; font-size: 11px; line-height: 1.6; color: #2b3a38;">
+      <li><b>Asesmen Awal (Diagnostik):</b> Menilai kesiapan kompetensi prasyarat dasar sebelum siklus pembelajaran topik dimulai.</li>
+      <li><b>Asesmen Formatif (For/As Learning):</b> Menggunakan catatan anekdot, lembar observasi partisipasi diskusi, serta rubrik perkembangan karakter dimensi profil lulusan selama kegiatan inti.</li>
+      <li><b>Asesmen Sumatif (Of Learning):</b> Evaluasi akhir berupa kuis objektif pemahaman materi, penugasan masalah non-rutin, atau unjuk karya proyek di akhir bab.</li>
+    </ol>
+
+    <h2 style="font-size: 14px; border-bottom: 2px solid #0b5e56; padding-bottom: 4px; color: #0b5e56; margin-top: 25px;">VI. LAMPIRAN OPERASIONAL</h2>
     
-    <h3>B. Asesmen Sumatif (Hasil Akhir)</h3>
-    <div class="editable-content" data-field="asesmenSumatif">${asesmenSumatif}</div>
+    <h3 style="font-size: 12px; font-weight: bold; color: #0b5e56; margin-top: 15px; margin-bottom: 5px;">A. Lembar Kerja Peserta Didik (LKPD)</h3>
+    <div style="background-color: #f8faf9; padding: 10px 12px; border-radius: 6px; border: 1px solid #e2ecea; font-size: 11px; line-height: 1.5; color: #2b3a38; font-style: italic;">
+      * Lampiran LKPD tersedia pada menu tab terpisah, berisi format kolom identitas kelompok, eksplorasi KGA berbasis manipulasi benda nyata, ruang sketsa gambar visual, serta ruang perumusan simbol/bahasa resmi.
+    </div>
 
-    <h2>VII. Refleksi Hasil Belajar</h2>
-    <h3>A. Refleksi Guru</h3>
-    <div class="editable-content" data-field="refleksiGuru">${refleksiGuru}</div>
-    
-    <h3>B. Refleksi Siswa</h3>
-    <div class="editable-content" data-field="refleksiSiswa">${refleksiSiswa}</div>
+    <h3 style="font-size: 12px; font-weight: bold; color: #0b5e56; margin-top: 15px; margin-bottom: 5px;">B. Ringkasan Bahan Ajar</h3>
+    <div style="background-color: #f8faf9; padding: 10px 12px; border-radius: 6px; border: 1px solid #e2ecea; font-size: 11px; line-height: 1.5; color: #2b3a38; font-style: italic;">
+      * Ringkasan materi lengkap untuk literasi numerasi pendukung siswa tersedia di tab menu Bahan Ajar.
+    </div>
+
+    <h3 style="font-size: 12px; font-weight: bold; color: #0b5e56; margin-top: 15px; margin-bottom: 5px;">C. Instrumen & Rubrik Penilaian Sikap (Otomatis)</h3>
+    <div style="overflow-x: auto; width: 100%; margin-top: 8px;">
+      <table style="width: 100%; border-collapse: collapse; min-width: 700px;">
+        <thead>
+          <tr style="background-color: #eaf4f3;">
+            <th style="border: 1px solid #a9c2be; padding: 6px; font-size: 9.5pt; color: #0b5e56; font-weight: bold; text-align: left;">Nama Peserta Didik</th>
+            <th style="border: 1px solid #a9c2be; padding: 6px; font-size: 9.5pt; color: #0b5e56; font-weight: bold; text-align: left; width: 150px;">Dimensi DPL Pilihan</th>
+            <th style="border: 1px solid #a9c2be; padding: 6px; font-size: 9.5pt; color: #0b5e56; font-weight: bold; text-align: left;">Skor 4 (Sangat Berkembang)</th>
+            <th style="border: 1px solid #a9c2be; padding: 6px; font-size: 9.5pt; color: #0b5e56; font-weight: bold; text-align: left;">Skor 3 (Berkembang)</th>
+            <th style="border: 1px solid #a9c2be; padding: 6px; font-size: 9.5pt; color: #0b5e56; font-weight: bold; text-align: left;">Skor 2 (Mulai Berkembang)</th>
+            <th style="border: 1px solid #a9c2be; padding: 6px; font-size: 9.5pt; color: #0b5e56; font-weight: bold; text-align: left;">Skor 1 (Belum Berkembang)</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${rubrikSikapRows}
+        </tbody>
+      </table>
+    </div>
 
     ${compileTandaTangan()}
   `;
@@ -5742,6 +5855,8 @@ function compileHeaderIdentitas(judulDokumen) {
 }
 
 function compileTandaTangan() {
+  const kotaName = state.teacherProfile.kota || "Karangmangu";
+  const tahunAjar = state.teacherProfile.tahunAjaran ? state.teacherProfile.tahunAjaran.split('/')[0] : "2026";
   return `
     <div class="no-print" style="margin-top: 40px; border-top: 1px dashed var(--border-color); padding-top: 20px;"></div>
     <table style="width: 100%; border: none !important; margin-top: 30px; font-size: 12px; border-collapse: collapse;">
@@ -5753,7 +5868,7 @@ function compileTandaTangan() {
           NIP. ${state.teacherProfile.nipKepala}
         </td>
         <td style="width: 50%; border: none !important; text-align: center; padding: 10px 0;">
-          Karangmangu, ........................ 2026<br>
+          ${kotaName}, ........................ ${tahunAjar}<br>
           Guru Kelas ${state.selectedClass}<br><br><br><br>
           <span class="fw-bold" style="text-decoration: underline;">${state.teacherProfile.namaGuru}</span><br>
           NIP. ${state.teacherProfile.nip}
