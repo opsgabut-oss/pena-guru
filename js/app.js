@@ -320,8 +320,968 @@ function getCachedContent(field, defaultVal) {
   return defaultVal;
 }
 
+// Helper to generate highly topic-specific Questions, LKPD tasks, and Rubrics dynamically
+function getTopicSpecificQA(subjectId, topicName) {
+  const topicLower = (topicName || "").toLowerCase();
+  const subLower = (subjectId || "").toLowerCase();
+  
+  // Clean topicName for rendering (remove brackets/extra symbols)
+  const cleanTopic = topicName.replace(/[\[\]]/g, "");
+
+  const res = {
+    questions: [],
+    lkpdExercises: "",
+    rubricExercises: "",
+    kunciJawaban: ""
+  };
+
+  // Helper to get random item nouns for math/science
+  const items = ["kelereng", "buku tulis", "pensil warna", "kancing baju", "stik es krim"];
+  const item = items[Math.floor(cleanTopic.length % items.length)];
+
+  if (subLower.includes("matematika")) {
+    if (topicLower.includes("pecahan") || topicLower.includes("bagi") || topicLower.includes("pembagian") || topicLower.includes("persepuluh") || topicLower.includes("persen")) {
+      res.questions = [
+        `Apa arti dari pembagian pecahan senilai dalam topik "${cleanTopic}" dan mengapa melipat kertas lipat bisa membuktikannya?`,
+        `Jika sepotong kue dipotong menjadi 6 bagian sama besar untuk dibagikan secara adil, berapakah nilai pecahan untuk 2 potongan kue tersebut?`,
+        `Bagaimana cara membuktikan bahwa pecahan 2/4 nilainya setara dengan pecahan 1/2?`
+      ];
+      res.lkpdExercises = `
+        <p><b>C. Tantangan 1: Mengamati Pecahan dengan Kertas Lipat</b><br>
+        1. Lipatlah kertas origamimu menjadi 4 bagian sama besar. Arsir 2 bagian. Berapa bagian pecahan yang diarsir?<br>A. 1/4<br>B. 2/4 (atau 1/2)<br>C. 3/4</p>
+        <p>2. Jika Helen memotong satu buah melon menjadi 8 bagian, lalu membagikannya kepada 4 teman secara adil, berapakah potongan melon yang diterima masing-masing anak?<br>A. 2 potongan<br>B. 3 potongan<br>C. 4 potongan</p>
+        <p><b>D. Tantangan 2: Soal Cerita Uraian</b><br>
+        Tuliskan contoh pembagian makanan secara adil yang menerapkan konsep "${cleanTopic}" yang pernah kamu lakukan di rumah bersama saudaramu!</p>
+      `;
+      res.rubricExercises = `
+        <p>1. Tentukan pecahan paling sederhana dari 4/8!<br>A. 1/2<br>B. 1/4<br>C. 3/4</p>
+        <p>2. Slamet mempunyai selembar roti, lalu memotongnya menjadi 6 bagian. Roti tersebut diberikan kepada teman sebanyak 2 bagian. Berapa sisa roti Slamet dalam bentuk pecahan?<br>A. 2/6<br>B. 4/6<br>C. 5/6</p>
+        <p>3. Gambarkan arsiran lingkaran untuk menunjukkan bentuk pecahan 3/4!</p>
+      `;
+      res.kunciJawaban = `
+        1. A (1/2) - Skor: 30<br>
+        2. B (4/6) - Skor: 30<br>
+        3. Gambar lingkaran terbagi 4 bagian sama besar dengan 3 bagian diarsir - Skor: 40
+      `;
+    } else if (topicLower.includes("10.000") || topicLower.includes("digit") || topicLower.includes("ribuan") || (topicLower.includes("cacah") && !topicLower.includes("100"))) {
+      res.questions = [
+        `Jika kalian membeli jus mangga di warung seharga Rp7.350, bagaimana cara kalian mengeja nama bilangan tersebut?`,
+        `Mengapa angka nol (0) di tengah bilangan seperti 5.091 tidak dieja kata "nol"? Tuliskan cara bacanya!`,
+        `Puncak Gunung Semeru tingginya 3.676 meter. Bagaimana cara kita menuliskan lambang angka tersebut?`
+      ];
+      res.lkpdExercises = `
+        <p><b>C. Tantangan 1: Mengamati Nilai Tempat Belanja</b><br>
+        Slamet membeli biskuit di warung seharga Rp7.350,00. Slamet membayar menggunakan selembar uang pecahan Rp9.500,00 dan menerima kembalian sebesar Rp2.150,00.</p>
+        <p>1. Tentukan nilai tempat angka 7.350:<br>Ribuan = 7, Ratusan = 3, Puluhan = 5, Satuan = 0.<br>
+        Cara Membaca Bilangan 7.350 adalah: <i>Tujuh Ribu Tiga Ratus Lima Puluh Rupiah</i>.</p>
+        <p>2. Tentukan nilai tempat angka 2.150:<br>Ribuan = 2, Ratusan = 1, Puluhan = 5, Satuan = 0.<br>
+        Cara Membaca Bilangan 2.150 adalah: <i>Dua Ribu Seratus Lima Puluh Rupiah</i>.</p>
+      `;
+      res.rubricExercises = `
+        <p>1. Lambang bilangan 5.091 dibaca...<br>A. Lima ribu sembilan puluh satu<br>B. Lima ribu sembilan ratus satu<br>C. Lima ribu nol ratus sembilan puluh satu</p>
+        <p>2. Lambang bilangan 1.206 dibaca...<br>A. Seribu dua ratus enam<br>B. Satu ribu dua ratus enam<br>C. Seribu dua puluh enam</p>
+        <p>3. Jarak dari minimarket ke rumah Helen adalah tiga ribu dua ratus delapan puluh enam meter. Tuliskan lambang bilangannya!</p>
+      `;
+      res.kunciJawaban = `
+        1. A (Lima ribu sembilan puluh satu) - Skor: 30<br>
+        2. A (Seribu dua ratus enam) - Skor: 30<br>
+        3. Lambang angka: 3.286 - Skor: 40
+      `;
+    } else if (topicLower.includes("tambah") || topicLower.includes("jumlah") || topicLower.includes("penjumlahan") || topicLower.includes("kurang") || topicLower.includes("selisih") || topicLower.includes("pengurangan")) {
+      res.questions = [
+        `Sebutkan contoh transaksi belanja di warung terdekat yang menerapkan penjumlahan dan pengurangan!`,
+        `Bagaimana cara mudah menjumlahkan bilangan bersusun dengan teknik menyimpan jika nilainya lebih dari 9?`,
+        `Jika kamu memiliki 15 butir kelereng dan memberikan 7 butir kepada temanmu, berapa sisa kelerengmu saat ini?`
+      ];
+      res.lkpdExercises = `
+        <p><b>C. Tantangan 1: Operasi Bilangan</b><br>
+        1. Kakak memiliki 25 butir ${item}, lalu dibelikan Ayah lagi sebanyak 17 butir. Berapakah jumlah total ${item} Kakak?<br>A. 40 butir<br>B. 42 butir<br>C. 45 butir</p>
+        <p>2. Di atas piring terdapat 32 kue. Setelah dimakan bersama-sama, tersisa 15 kue di piring. Berapa jumlah kue yang telah dimakan?<br>A. 17 kue<br>B. 18 kue<br>C. 20 kue</p>
+        <p><b>D. Tantangan 2: Soal Cerita Uraian</b><br>
+        Tuliskan cara penyelesaian bersusun untuk menghitung 48 + 25 secara rapi!</p>
+      `;
+      res.rubricExercises = `
+        <p>1. Hitunglah hasil dari 56 - 29 bersusun!<br>A. 27<br>B. 28<br>C. 37</p>
+        <p>2. Tentukan nilai tempat angka 7 pada bilangan 73!<br>A. Satuan<br>B. Puluhan<br>C. Ratusan</p>
+        <p>3. Ani membeli pensil seharga Rp3.000 dan buku seharga Rp5.000. Jika ia membayar dengan uang Rp10.000, berapakah kembalian yang diterima Ani?</p>
+      `;
+      res.kunciJawaban = `
+        1. A (27) - Skor: 30<br>
+        2. B (Puluhan) - Skor: 30<br>
+        3. Total belanja Rp8.000, kembalian Rp10.000 - Rp8.000 = Rp2.000 - Skor: 40
+      `;
+    } else if (topicLower.includes("kali") || topicLower.includes("perkalian")) {
+      res.questions = [
+        "Mengapa perkalian sering disebut sebagai penjumlahan yang berulang?",
+        `Bagaimana susunan baris dan kolom (matriks stik es krim) membantu kita menghitung perkalian bertema "${cleanTopic}"?`,
+        "Berapakah hasil dari 6 dikalikan dengan 4?"
+      ];
+      res.lkpdExercises = `
+        <p><b>C. Tantangan 1: Kelompok Perkalian</b><br>
+        1. Ubahlah penjumlahan berulang 5 + 5 + 5 + 5 ke dalam bentuk perkalian!<br>A. 3 x 5<br>B. 4 x 5<br>C. 5 x 5</p>
+        <p>2. Ada 4 kotak mainan di meja. Setiap kotak berisi 8 mobil-mobilan. Berapa jumlah total mobil-mobilan tersebut?<br>A. 28 mobil<br>B. 32 mobil<br>C. 36 mobil</p>
+        <p><b>D. Tantangan 2: Soal Uraian</b><br>
+        Gambarkan susunan grid bintang berukuran 3 baris x 5 kolom, lalu tentukan hasil perkaliannya!</p>
+      `;
+      res.rubricExercises = `
+        <p>1. Berapakah hasil dari 7 x 6?<br>A. 42<br>B. 48<br>C. 54</p>
+        <p>2. Jika 9 x 3 = 27, tentukan bentuk penjumlahan berulangnya!<br>A. 9+9+9<br>B. 3+3+3+3+3+3+3+3+3<br>C. A dan B benar</p>
+        <p>3. Paman membeli 5 kantong plastik jeruk. Setiap kantong berisi 12 buah jeruk. Hitunglah jumlah total jeruk yang dibeli Paman!</p>
+      `;
+      res.kunciJawaban = `
+        1. A (42) - Skor: 30<br>
+        2. C (A dan B benar secara matematis) - Skor: 30<br>
+        3. 5 x 12 = 60 buah jeruk - Skor: 40
+      `;
+    } else if (topicLower.includes("bangun") || topicLower.includes("geometri") || topicLower.includes("datar") || topicLower.includes("ruang") || topicLower.includes("sudut")) {
+      res.questions = [
+        "Sebutkan 3 benda nyata di dalam ruang kelas kita yang berbentuk persegi panjang!",
+        "Apa perbedaan utama antara bangun datar segitiga dengan segiempat?",
+        "Bagaimana cara kita membuat sudut siku-siku menggunakan lipatan kertas?"
+      ];
+      res.lkpdExercises = `
+        <p><b>C. Tantangan 1: Mengamati Bentuk Bangun</b><br>
+        1. Bangun datar yang memiliki 4 sisi sama panjang dan 4 sudut siku-siku disebut...<br>A. Persegi panjang<br>B. Persegi<br>C. Segitiga</p>
+        <p>2. Di bawah ini benda nyata yang permukaannya berbentuk lingkaran adalah...<br>A. Permukaan buku tulis<br>B. Roda sepeda<br>C. Atap rumah segitiga</p>
+        <p><b>D. Tantangan 2: Soal Uraian</b><br>
+        Gambarkan bangun segitiga sama sisi dan tandai letak ketiga sudutnya secara jelas!</p>
+      `;
+      res.rubricExercises = `
+        <p>1. Jumlah sudut yang dimiliki oleh bangun segitiga adalah...<br>A. 3 sudut<br>B. 4 sudut<br>C. 5 sudut</p>
+        <p>2. Bangun ruang yang memiliki bentuk seperti kotak sepatu disebut...<br>A. Kubus<br>B. Balok<br>C. Bola</p>
+        <p>3. Sebutkan nama-nama bangun ruang yang membentuk benda jam dinding bulat, kaleng susu cair, dan buah jeruk!</p>
+      `;
+      res.kunciJawaban = `
+        1. A (3 sudut) - Skor: 30<br>
+        2. B (Balok) - Skor: 30<br>
+        3. Jam dinding (Lingkaran/Tabung), Kaleng susu (Tabung), Buah jeruk (Bola) - Skor: 40
+      `;
+    } else if (topicLower.includes("ukur") || topicLower.includes("panjang") || topicLower.includes("berat") || topicLower.includes("volume") || topicLower.includes("jam") || topicLower.includes("waktu") || topicLower.includes("uang")) {
+      res.questions = [
+        "Mengapa kita membutuhkan penggaris standar daripada jengkal tangan untuk mengukur meja?",
+        "Bagaimana cara membaca jarum panjang dan pendek pada jam dinding?",
+        "Sebutkan pecahan uang rupiah mainan yang nilainya setara dengan satu lembar uang Rp10.000!"
+      ];
+      res.lkpdExercises = `
+        <p><b>C. Tantangan 1: Mengukur Dimensi</b><br>
+        1. Jika panjang pensilmu adalah 14 cm and panjang penghapusmu adalah 5 cm, berapakah selisih panjang keduanya?<br>A. 8 cm<br>B. 9 cm<br>C. 19 cm</p>
+        <p>2. Jarum pendek jam menunjuk angka 9 dan jarum panjang menunjuk angka 12. Jam tersebut menunjukkan pukul...<br>A. 09.00<br>B. 12.00<br>C. 12.09</p>
+        <p><b>D. Tantangan 2: Soal Uraian</b><br>
+        Gambarkan jarum jam dinding analog untuk menunjukkan waktu pukul 04.30 sore!</p>
+      `;
+      res.rubricExercises = `
+        <p>1. Satuan panjang baku yang biasanya tertera pada penggaris sekolah adalah...<br>A. Kilogram (kg)<br>B. Sentimeter (cm)<br>C. Meter (m)</p>
+        <p>2. Ani memiliki uang 2 lembar Rp5.000. Uang Ani setara dengan...<br>A. 1 lembar Rp10.000<br>B. 5 lembar Rp2.000<br>C. Pilihan A dan B benar</p>
+        <p>3. Hitunglah total berat belanjaan Ibu jika Ibu membeli 2 kg beras dan 3 kg gula pasir di warung tetangga!</p>
+      `;
+      res.kunciJawaban = `
+        1. B (Sentimeter) - Skor: 30<br>
+        2. C (A dan B benar) - Skor: 30<br>
+        3. 2 kg + 3 kg = 5 kg total berat belanjaan Ibu - Skor: 40
+      `;
+    } else {
+      // Heuristic Fallback for Mathematics
+      res.questions = [
+        `Bagaimana konsep matematika tentang "${cleanTopic}" membantu kita memecahkan masalah sehari-hari secara adil?`,
+        "Mengapa kita harus menggambarkan pola visual terlebih dahulu sebelum menuliskan simbol formal perhitungan matematika?",
+        "Bagaimana caramu membuktikan bahwa hasil pengerjaan kelompokmu sudah benar?"
+      ];
+      res.lkpdExercises = `
+        <p><b>C. Tantangan 1: Studi Kasus Toko Kelontong</b><br>
+        Helen membeli perlengkapan belajar di toko alat tulis. Ia melihat data harga barang dan menyusun kelompok benda untuk menghitung konsep "${cleanTopic}".</p>
+        <p>1. Di meja ada 12 buah ${item}. Budi mengambil 5 buah. Berapa sisa ${item} yang ada di meja sekarang?<br>A. 5 buah<br>B. 7 buah<br>C. 8 buah</p>
+        <p>2. Dari penyusunan stik hitung di atas, lambang bilangan yang tepat untuk hasil akhirnya adalah...<br>A. Angka 7<br>B. Angka 12<br>C. Angka 5</p>
+        <p><b>D. Tantangan 2: Soal Cerita Uraian</b><br>
+        Tuliskan satu contoh bagaimana kamu menerapkan konsep "${cleanTopic}" ini ketika beraktivitas di rumah!</p>
+      `;
+      res.rubricExercises = `
+        <p>1. Selesaikan persoalan matematika terkait "${cleanTopic}" yang telah dipelajari dengan jujur!<br>A. Hasil benar dan runtut<br>B. Hasil salah<br>C. Meniru pekerjaan teman</p>
+        <p>2. Sebutkan satu manfaat mempelajari materi ini dalam kegiatan jual beli di pasar tradisional!</p>
+      `;
+      res.kunciJawaban = `
+        1. A (Hasil benar dan runtut) - Skor: 50<br>
+        2. Membantu menghitung kembalian uang belanja agar tidak salah - Skor: 50
+      `;
+    }
+  }
+  else if (subLower.includes("koding")) {
+    if (topicLower.includes("algoritma") || topicLower.includes("langkah logis")) {
+      res.questions = [
+        "Apa pengertian algoritma dalam koding dan mengapa urutannya tidak boleh tertukar?",
+        "Sebutkan contoh algoritma sederhana yang kamu lakukan sebelum makan siang!",
+        "Apa yang terjadi jika urutan langkah menyalakan laptop diacak?"
+      ];
+      res.lkpdExercises = `
+        <p><b>C. Tantangan 1: Algoritma Runtun</b><br>
+        1. Urutan langkah sistematis untuk menyelesaikan masalah disebut...<br>A. Variabel<br>B. Algoritma<br>C. Loop</p>
+        <p>2. Susunlah algoritma membuat teh manis berikut: (1) Seduh teh, (2) Tuang air panas, (3) Masukkan gula, (4) Aduk rata. Urutan yang logis adalah...<br>A. 2-1-3-4<br>B. 3-2-1-4<br>C. 1-2-3-4</p>
+        <p><b>D. Tantangan 2: Diagram Alir Mandiri</b><br>
+        Tuliskan algoritma mencuci tangan kelompokmu menggunakan kata-kata singkat terurut!</p>
+      `;
+      res.rubricExercises = `
+        <p>1. Mengapa algoritma koding harus disusun secara logis dan terstruktur?<br>A. Supaya komputer tidak bingung dan tidak eror<br>B. Supaya komputer bisa berpikir sendiri tanpa kode<br>C. Supaya tampilan komputer penuh warna</p>
+        <p>2. Manakah algoritma yang benar untuk masuk kelas pagi?<br>A. Bel berbunyi -> berbaris -> bersalaman -> masuk kelas<br>B. Masuk kelas -> bersalaman -> bel berbunyi -> berbaris</p>
+        <p>3. Buatlah bagan alir (flowchart) sederhana dari algoritma menyalakan lampu kamar tidur!</p>
+      `;
+      res.kunciJawaban = `
+        1. A (Supaya komputer tidak bingung) - Skor: 30<br>
+        2. A (Bel berbunyi -> berbaris -> bersalaman -> masuk kelas) - Skor: 30<br>
+        3. Gambar diagram alir terurut (Mulai -> Klik Saklar -> Lampu Menyala -> Selesai) - Skor: 40
+      `;
+    } else if (topicLower.includes("antarmuka") || topicLower.includes("scratch") || topicLower.includes("sprite") || topicLower.includes("stage")) {
+      res.questions = [
+        "Di bagian antarmuka mana kita dapat melihat jalannya program animasi koding (Stage/Block Palette)?",
+        "Apa kegunaan dari Sprite List pada editor Scratch?",
+        "Bagaimana cara kita menambahkan background/latar belakang baru di Stage?"
+      ];
+      res.lkpdExercises = `
+        <p><b>C. Tantangan 1: Bagian Scratch</b><br>
+        1. Karakter atau objek gambar yang bisa dikode dan digerakkan di Scratch disebut...<br>A. Backdrop<br>B. Sprite<br>C. Stage</p>
+        <p>2. Tempat berkumpulnya kumpulan blok kode perintah seperti Gerakan, Tampilan, dan Suara disebut...<br>A. Script Area<br>B. Block Palette<br>C. Sprite List</p>
+      `;
+      res.rubricExercises = `
+        <p>1. Area kerja tempat kita menata dan menyatukan blok-blok kode Scratch disebut...<br>A. Script Area<br>B. Stage<br>C. File Menu</p>
+        <p>2. Jika kita ingin menghapus sprite kucing bawaan Scratch, tombol gambar apa yang harus diklik pada Sprite List?<br>A. Tombol Tong Sampah<br>B. Tombol Tambah<br>C. Tombol Mata</p>
+        <p>3. Sebutkan fungsi dari tombol bendera hijau (Green Flag) dan tombol lingkaran merah (Red Stop) pada editor Scratch!</p>
+      `;
+      res.kunciJawaban = `
+        1. A (Script Area) - Skor: 30<br>
+        2. A (Tong Sampah) - Skor: 30<br>
+        3. Bendera Hijau untuk menjalankan program koding, Lingkaran Merah untuk menghentikan program - Skor: 40
+      `;
+    } else if (topicLower.includes("ulang") || topicLower.includes("loop") || topicLower.includes("cabang") || topicLower.includes("jika") || topicLower.includes("if") || topicLower.includes("else")) {
+      res.questions = [
+        "Apa perbedaan blok \"ulangi 10 kali\" dengan blok \"selamanya\" di Scratch?",
+        "Kapan kita harus menggunakan logika percabangan \"jika-maka (if-else)\" dalam koding?",
+        "Bagaimana cara mencegah sprite keluar dari pinggir layar menggunakan logika perulangan?"
+      ];
+      res.lkpdExercises = `
+        <p><b>C. Tantangan 1: Logika Koding</b><br>
+        1. Blok kode yang digunakan untuk mengulang suatu perintah secara terus-menerus adalah...<br>A. Ulangi 10<br>B. Selamanya (Forever)<br>C. Jika (If)</p>
+        <p>2. Blok koding yang dijalankan apabila suatu kondisi terpenuhi (misal menyentuh rintangan) menggunakan blok...<br>A. Gerakan<br>B. Tampilan<br>C. Jika... Maka (If... Then)</p>
+      `;
+      res.rubricExercises = `
+        <p>1. Manakah blok kode Sensor yang dipasang di dalam blok IF untuk mendeteksi warna rintangan?<br>A. Menyentuh warna (...) ?<br>B. Katakan hello!<br>C. Mainkan suara</p>
+        <p>2. Apa yang terjadi jika kita memasang perintah 'berputar 15 derajat' di dalam blok 'selamanya'?<br>A. Sprite diam saja<br>B. Sprite berputar terus-menerus tanpa henti<br>C. Sprite menghilang dari layar</p>
+        <p>3. Gambarkan susunan blok kode sederhana untuk membuat Sprite bergerak maju 10 langkah berulang selamanya!</p>
+      `;
+      res.kunciJawaban = `
+        1. A (Menyentuh warna) - Skor: 30<br>
+        2. B (Sprite berputar terus-menerus) - Skor: 30<br>
+        3. Gambar blok [selamanya] membungkus blok [gerak 10 langkah] - Skor: 40
+      `;
+    } else {
+      // Heuristic Fallback for Koding
+      res.questions = [
+        `Apa tujuan utama dari proyek koding bertema "${cleanTopic}" yang kita buat di Scratch hari ini?`,
+        `Bagaimana logika variabel atau perulangan membantumu mengefisiensikan program "${cleanTopic}" ini?`,
+        "Bagaimana caramu menguji (testing) dan men-debug bug agar game buatan kelompokmu bisa berjalan sukses?"
+      ];
+      res.lkpdExercises = `
+        <p><b>C. Tantangan 1: Perancangan Proyek Koding</b><br>
+        1. Langkah awal sebelum mengetik di perangkat digital Scratch adalah merancang alur logika menggunakan...<br>A. Coreldraw saja<br>B. Flowchart visual atau sketsa gambar alur<br>C. Langsung mematikan komputer</p>
+        <p>2. Menemukan kesalahan logika pada blok kode program dan memperbaikinya disebut...<br>A. Coding<br>B. Debugging<br>C. Compilation</p>
+      `;
+      res.rubricExercises = `
+        <p>1. Tuliskan susunan blok koding Scratch yang kelompokmu gunakan untuk merancang proyek "${cleanTopic}"!</p>
+        <p>2. Apa fungsi tombol Bendera Hijau (Green Flag) pada program Scratch?</p>
+      `;
+      res.kunciJawaban = `
+        1. Susunan blok logis Scratch (misal Event clicked, Control forever/if) - Skor: 50<br>
+        2. Memulai jalannya kode program yang telah disusun - Skor: 50
+      `;
+    }
+  }
+  else if (subLower.includes("ipas")) {
+    if (topicLower.includes("cahaya") || topicLower.includes("cermin") || topicLower.includes("optik") || topicLower.includes("pantul")) {
+      res.questions = [
+        "Sebutkan 4 sifat cahaya yang telah kamu buktikan melalui praktikum senter hari ini!",
+        "Mengapa bayangan kita bisa terbentuk ketika berdiri di depan cermin datar?",
+        "Apa contoh peristiwa pembiasan cahaya yang bisa kita temui di rumah?"
+      ];
+      res.lkpdExercises = `
+        <p><b>C. Tantangan 1: Sifat Cahaya</b><br>
+        1. Senter yang diarahkan ke gelas bening membuktikan bahwa cahaya dapat...<br>A. Dibiaskan<br>B. Menembus benda bening<br>C. Dipantulkan</p>
+        <p>2. Pensil yang dimasukkan ke dalam gelas berisi air jernih tampak seperti patah. Hal ini karena sifat cahaya...<br>A. Merambat lurus<br>B. Dapat diuraikan<br>C. Dapat dibiaskan</p>
+      `;
+      res.rubricExercises = `
+        <p>1. Manakah di bawah ini yang merupakan sumber cahaya alami terbesar di bumi?<br>A. Lampu neon<br>B. Senter baterai<br>C. Matahari</p>
+        <p>2. Peristiwa terbentuknya pelangi di langit setelah hujan membuktikan bahwa cahaya dapat...<br>A. Diuraikan (Dispersi)<br>B. Merambat lurus<br>C. Menembus karton gelap</p>
+        <p>3. Jelaskan mengapa kita tidak bisa melihat benda di dalam kotak kardus tertutup rapat yang gelap tanpa lubang!</p>
+      `;
+      res.kunciJawaban = `
+        1. C (Matahari) - Skor: 30<br>
+        2. A (Diuraikan) - Skor: 30<br>
+        3. Karena tidak ada cahaya yang merambat masuk ke kotak dan memantul ke mata kita - Skor: 40
+      `;
+    } else if (topicLower.includes("magnet") || topicLower.includes("kutub") || topicLower.includes("tarik")) {
+      res.questions = [
+        "Apa yang terjadi jika dua kutub magnet yang sama didekatkan satu sama lain?",
+        "Sebutkan 3 jenis logam nyata yang dapat ditarik dengan kuat oleh magnet!",
+        "Di mana saja gaya magnet diterapkan pada benda-benda rumah tangga (seperti kulkas)?"
+      ];
+      res.lkpdExercises = `
+        <p><b>C. Tantangan 1: Gaya Magnet</b><br>
+        1. Ujung magnet yang memiliki gaya tarik paling kuat disebut...<br>A. Sisi luar<br>B. Kutub magnet<br>C. Garis magnet</p>
+        <p>2. Benda di bawah ini yang dapat ditarik dengan kuat oleh magnet adalah...<br>A. Paku besi dan klip kertas logam<br>B. Penghapus karet dan daun kering<br>C. Gelas plastik dan pensil kayu</p>
+      `;
+      res.rubricExercises = `
+        <p>1. Jika kutub Utara (U) magnet didekatkan dengan kutub Selatan (S) magnet lainnya, yang terjadi adalah...<br>A. Saling tolak-menolak<br>B. Saling tarik-menarik<br>C. Diam saja</p>
+        <p>2. Jenis bahan yang sama sekali tidak dapat ditarik oleh gaya magnet disebut bahan...<br>A. Magnetik (Feromagnetik)<br>B. Non-magnetik<br>C. Elektromagnetik</p>
+        <p>3. Tuliskan hasil pengamatan praktikum kelompokmu ketika magnet didekatkan ke peniti logam dibandingkan ke penggaris plastik!</p>
+      `;
+      res.kunciJawaban = `
+        1. B (Saling tarik-menarik) - Skor: 30<br>
+        2. B (Non-magnetik) - Skor: 30<br>
+        3. Peniti logam menempel kuat karena bersifat feromagnetik, penggaris plastik tidak menempel - Skor: 40
+      `;
+    } else if (topicLower.includes("tumbuh") || topicLower.includes("daun") || topicLower.includes("akar") || topicLower.includes("tanaman") || topicLower.includes("fotosintesis")) {
+      res.questions = [
+        "Apa fungsi utama dari akar bagi kelangsungan hidup tumbuhan?",
+        "Sebutkan zat apa saja yang dibutuhkan oleh tumbuhan hijau untuk melakukan proses fotosintesis!",
+        "Mengapa warna daun pada umumnya berwarna hijau?"
+      ];
+      res.lkpdExercises = `
+        <p><b>C. Tantangan 1: Bagian Tumbuhan</b><br>
+        1. Bagian tumbuhan yang berfungsi sebagai tempat berlangsungnya proses fotosintesis (membuat makanan) adalah...<br>A. Akar<br>B. Daun (Klorofil)<br>C. Batang</p>
+        <p>2. Zat hijau daun yang berfungsi menyerap cahaya matahari dalam fotosintesis disebut...<br>A. Stomata<br>B. Klorofil<br>C. Oksigen</p>
+      `;
+      res.rubricExercises = `
+        <p>1. Gas yang dihasilkan oleh tumbuhan dari proses fotosintesis dan dihirup oleh manusia adalah...<br>A. Karbondioksida<br>B. Oksigen<br>C. Nitrogen</p>
+        <p>2. Tumbuhan menyerap air dan unsur hara dari dalam tanah menggunakan...<br>A. Bunga<br>B. Batang<br>C. Akar</p>
+        <p>3. Tuliskan 3 cara nyata merawat tanaman hias di pot kelas agar tidak layu dan tumbuh subur!</p>
+      `;
+      res.kunciJawaban = `
+        1. B (Oksigen) - Skor: 30<br>
+        2. C (Akar) - Skor: 30<br>
+        3. Menyiram air secara teratur, memberi pupuk tanah, menaruh di tempat yang cukup sinar matahari - Skor: 40
+      `;
+    } else {
+      // Heuristic Fallback for IPAS
+      res.questions = [
+        `Berdasarkan praktikum tadi, apa faktor utama yang menyebabkan fenomena sains "${cleanTopic}" dapat terjadi?`,
+        `Sebutkan 2 contoh nyata penerapan atau keberadaan konsep "${cleanTopic}" di sekitar lingkungan rumahmu!`,
+        `Apa dampak negatif yang terjadi bagi kehidupan manusia jika proses "${cleanTopic}" mengalami kerusakan atau gangguan?`
+      ];
+      res.lkpdExercises = `
+        <p><b>C. Tantangan 1: Lembar Observasi Sains</b><br>
+        Lakukan penyelidikan atau diskusi kelompok mengenai topik "${cleanTopic}".</p>
+        <p>1. Fenomena alam atau interaksi sosial bertema "${cleanTopic}" membuktikan bahwa...<br>A. Segala sesuatu di alam terikat hubungan sebab-akibat yang nyata<br>B. Alam semesta bekerja secara kebetulan belaka<br>C. Kehidupan tidak dipengaruhi hukum fisika/biologi</p>
+        <p>2. Sikap terbaik untuk menyikapi kelestarian lingkungan terkait konsep ini adalah...<br>A. Merusak ekosistem<br>B. Ikut memelihara, menjaga kebersihan, dan melestarikan lingkungan sekitar<br>C. Masa bodoh</p>
+      `;
+      res.rubricExercises = `
+        <p>1. Tuliskan hasil pengamatan atau kesimpulan kelompokmu mengenai proses terjadinya "${cleanTopic}"!</p>
+        <p>2. Berikan 1 usulan tindakan nyata sederhana untuk memecahkan masalah terkait topik ini di sekolah!</p>
+      `;
+      res.kunciJawaban = `
+        1. Penjelasan logis proses ilmiah/sosial materi terkait - Skor: 50<br>
+        2. Usulan solusi logis pelestarian alam/sosial - Skor: 50
+      `;
+    }
+  }
+  else if (subLower.includes("pancasila")) {
+    if (topicLower.includes("simbol") || topicLower.includes("lambang") || topicLower.includes("sila")) {
+      res.questions = [
+        "Sebutkan 5 simbol sila yang tertera pada perisai burung Garuda Pancasila secara berurutan!",
+        "Apa makna dari simbol pohon beringin pada sila ketiga Pancasila?",
+        "Sebutkan contoh penerapan sila ke-1 Pancasila saat kamu berada di rumah!"
+      ];
+      res.lkpdExercises = `
+        <p><b>C. Tantangan 1: Simbol Pancasila</b><br>
+        1. Lambang dari Sila Pertama Pancasila (Ketuhanan Yang Maha Esa) adalah...<br>A. Rantai Emas<br>B. Bintang Emas<br>C. Kepala Banteng</p>
+        <p>2. Simbol Padi dan Kapas melambangkan sila kelima Pancasila yang berbunyi...<br>A. Persatuan Indonesia<br>B. Keadilan Sosial bagi Seluruh Rakyat Indonesia<br>C. Kemanusiaan yang Adil dan Beradab</p>
+      `;
+      res.rubricExercises = `
+        <p>1. Simbol rantai emas yang saling berkaitan melambangkan sila ke...<br>A. Dua (2)<br>B. Tiga (3)<br>C. Empat (4)</p>
+        <p>2. Semboyan negara \"Bhinneka Tunggal Ika\" tertulis pada pita yang dicengkeram oleh kaki burung...<br>A. Rajawali<br>B. Garuda Pancasila<br>C. Merpati</p>
+        <p>3. Tuliskan bunyi Sila ke-4 Pancasila secara lengkap dan benar!</p>
+      `;
+      res.kunciJawaban = `
+        1. A (Dua) - Skor: 30<br>
+        2. B (Garuda Pancasila) - Skor: 30<br>
+        3. Kerakyatan yang dipimpin oleh hikmat kebijaksanaan dalam permusyawaratan/perwakilan - Skor: 40
+      `;
+    } else if (topicLower.includes("gotong") || topicLower.includes("kerja") || topicLower.includes("sama") || topicLower.includes("bakti")) {
+      res.questions = [
+        "Apa arti dari gotong royong dan mengapa ia sangat penting bagi bangsa Indonesia?",
+        "Sebutkan contoh gotong royong yang biasa dilakukan di sekolah saat piket kelas!",
+        "Apa akibatnya jika semua orang bersikap egois dan tidak mau bekerja sama?"
+      ];
+      res.lkpdExercises = `
+        <p><b>C. Tantangan 1: Gotong Royong</b><br>
+        1. Manakah di bawah ini contoh sikap gotong royong di lingkungan masyarakat?<br>A. Kerja bakti membersihkan selokan desa<br>B. Mengerjakan ujian sekolah bersama-sama<br>C. Membuang sampah di sungai</p>
+        <p>2. Gotong royong membuat pekerjaan berat menjadi...<br>A. Lebih berat<br>B. Lebih ringan dan cepat selesai<br>C. Terhambat</p>
+      `;
+      res.rubricExercises = `
+        <p>1. Piket kelas membersihkan ruang kelas secara bersama-sama merupakan bentuk gotong royong di...<br>A. Sekolah<br>B. Rumah<br>C. Pasar</p>
+        <p>2. Nilai luhur gotong royong sesuai dengan pengamalan Pancasila sila ke...<br>A. Sila 1<br>B. Sila 3 dan 5<br>C. Sila 2</p>
+        <p>3. Ceritakan pengalaman gotong royong membersihkan rumah yang pernah kamu lakukan bersama keluargamu!</p>
+      `;
+      res.kunciJawaban = `
+        1. A (Sekolah) - Skor: 30<br>
+        2. B (Sila 3 dan 5) - Skor: 30<br>
+        3. Cerita pengalaman logis membantu menyapu/merapikan rumah - Skor: 40
+      `;
+    } else {
+      // Heuristic Fallback for Pancasila
+      res.questions = [
+        `Bagaimana cara kita mengamalkan nilai moral bertema "${cleanTopic}" di lingkungan sekolah?`,
+        "Mengapa mematuhi norma sosial dan kesepakatan kelas membuat hidup kita aman dan diawasi?",
+        "Sebutkan contoh perilaku melanggar tata tertib yang harus kita hindari demi kebaikan bersama!"
+      ];
+      res.lkpdExercises = `
+        <p><b>C. Tantangan 1: Sikap Karakter Luhur</b><br>
+        1. Penerapan nilai karakter luhur Pancasila bertema "${cleanTopic}" di kelas ditunjukkan dengan sikap...<br>A. Saling menyayangi, menghargai perbedaan, dan bergotong royong<br>B. Mengejek teman yang memiliki kekurangan fisik<br>C. Berbohong kepada guru</p>
+        <p>2. Apabila ada teman kelompokmu kesulitan merapikan peralatan kerja kelompok, sikap pancasilais yang tepat adalah...<br>A. Menertawakannya<br>B. Membantu dengan tulus secara gotong royong<br>C. Melaporkan ke guru agar dihukum</p>
+      `;
+      res.rubricExercises = `
+        <p>1. Tuliskan 3 aturan tata tertib yang berlaku di kelasmu saat jam pelajaran berlangsung secara jelas!</p>
+        <p>2. Mengapa semboyan Bhinneka Tunggal Ika sangat penting bagi persatuan seluruh rakyat Indonesia?</p>
+      `;
+      res.kunciJawaban = `
+        1. Tiga aturan sekolah logis (tenang menyimak, minta izin saat keluar, tidak gaduh) - Skor: 50<br>
+        2. Karena mempersatukan keberagaman suku, ras, dan agama di Indonesia - Skor: 50
+      `;
+    }
+  }
+  else if (subLower.includes("kristen") || subLower.includes("pai")) {
+    // Heuristic Fallback for Religion
+    res.questions = [
+      `Bagaimana cara kita mempraktikkan teladan firman Tuhan/hadis bertema "${cleanTopic}" di lingkungan rumah kita?`,
+      "Sebutkan adab berdoa/beribadah yang sopan, tenang, dan bersungguh-sungguh di hadapan Tuhan!",
+      "Mengapa kita harus mengasihi semua orang dan senang memaafkan kesalahan teman dengan tulus?"
+    ];
+    res.lkpdExercises = `
+      <p><b>C. Tantangan 1: Penerapan Karakter Iman</b><br>
+      1. Tindakan nyata bersyukur atas keluarga dan kehidupan pemberian Tuhan di rumah bertema "${cleanTopic}" adalah...<br>A. Menuruti nasihat orang tua dan rajin beribadah/belajar<br>B. Bermain game dan membantah orang tua<br>C. Malas bangun pagi</p>
+      <p>2. Sikap sopan saat berdoa bersama di kelas adalah...<br>A. Mengobrol dengan teman sebangku<br>B. Menundukkan kepala, melipat tangan/tertib, hening, dan fokus penuh kesadaran<br>C. Berteriak-teriak</p>
+    `;
+    res.rubricExercises = `
+      <p>1. Tuliskan doa pendek hasil karyamu sendiri sebagai wujud terima kasih atas berkat hari ini!</p>
+      <p>2. Sebutkan satu teladan moral yang bisa kamu petik dari kisah keagamaan bertema "${cleanTopic}"!</p>
+    `;
+    res.kunciJawaban = `
+      1. Doa syukur tulus dan sopan - Skor: 50<br>
+      2. Keteladanan moral logis yang sesuai - Skor: 50
+    `;
+  }
+  else { // Languages / default (indonesia, english, jawa, pjok, senirupa)
+    if (topicLower.includes("baca") || topicLower.includes("nyaring") || topicLower.includes("buku") || topicLower.includes("cerita")) {
+      res.questions = [
+        "Mengapa membaca nyaring membantu kita melatih artikulasi suara dan kepercayaan diri?",
+        "Sebutkan tokoh utama dan watak karakternya dalam cerita yang kita baca tadi!",
+        "Bagaimana caramu menceritakan kembali kisah cerita tadi kepada adikmu di rumah secara menarik?"
+      ];
+      res.lkpdExercises = `
+        <p><b>C. Tantangan 1: Membaca Pemahaman</b><br>
+        1. Membaca dengan lafal, artikulasi yang jelas, dan suara lantang terdengar disebut membaca...<br>A. Senyap<br>B. Nyaring<br>C. Cepat</p>
+        <p>2. Sikap yang baik saat mendengarkan teman membacakan cerita di depan kelas adalah...<br>A. Menyimak secara tertib dan menghargai<br>B. Ramai sendiri<br>C. Menggambar di buku tulis</p>
+      `;
+      res.rubricExercises = `
+        <p>1. Tokoh protagonis dalam sebuah cerita adalah tokoh yang berwatak...<br>A. Jahat<br>B. Baik<br>C. Lucu</p>
+        <p>2. Tanda baca yang digunakan untuk mengakhiri kalimat berita/pernyataan adalah tanda...<br>A. Tanya (?)<br>B. Titik (.)<br>C. Seru (!)</p>
+        <p>3. Tuliskan pesan moral yang terdapat dalam kisah cerita anak yang kamu baca hari ini!</p>
+      `;
+      res.kunciJawaban = `
+        1. B (Baik) - Skor: 30<br>
+        2. B (Titik) - Skor: 30<br>
+        3. Amanat moral yang logis (misal: rukun dengan teman, jujur) - Skor: 40
+      `;
+    } else {
+      // Universal Heuristic Fallback for Languages/Art/Sports
+      res.questions = [
+        `Dari aktivitas pembelajaran materi "${cleanTopic}" hari ini, apa kesimpulan atau pelajaran utama yang wajib kita terapkan?`,
+        `Mengapa kita harus menyusun rancangan visual (gambar/peta pikiran) terlebih dahulu sebelum mengerjakan proyek "${cleanTopic}"?`,
+        "Sebutkan contoh sikap santun dalam mengomunikasikan ide atau gerakan di depan kelas!"
+      ];
+      res.lkpdExercises = `
+        <p><b>C. Tantangan 1: Pemahaman Konseptual Terstruktur</b><br>
+        1. Menyusun kalimat atau gerakan fisik secara teratur bertema "${cleanTopic}" melatih kita untuk...<br>A. Berpikir runtut, kreatif, dan sistematis<br>B. Mengerjakan tugas asal-asalan<br>C. Menyalin pekerjaan orang lain</p>
+        <p>2. Sikap kerja sama gotong royong kelompok saat menyelesaikan tugas "${cleanTopic}" ditunjukkan dengan...<br>A. Bertengkar memperebutkan spidol warna<br>B. Saling berbagi tugas secara adil dan ramah membantu rekan kesulitan<br>C. Diam saja tidak ikut berdiskusi</p>
+      `;
+      res.rubricExercises = `
+        <p>1. Tuliskan 3 kosakata atau istilah utama yang kamu pelajari terkait materi "${cleanTopic}" hari ini!</p>
+        <p>2. Ceritakan bagaimana caramu menerapkan keterampilan dari materi ini saat beraktivitas di rumah!</p>
+      `;
+      res.kunciJawaban = `
+        1. 3 istilah tepat terkait topik - Skor: 50<br>
+        2. Cerita penerapan logis di rumah - Skor: 50
+      `;
+    }
+  }
+  
+  return res;
+}
+
 // ----------------------------------------------------
-// DYNAMIC SUBJECT MAPPING ENGINE (Kemendikdasmen No 13/2025)
+// DYNAMIC KOMPONEN INTI GENERATOR (Referensi Buku Paket)
+// Menghasilkan TP, Pemahaman Bermakna, Pertanyaan Pemantik
+// yang detail dan kontekstual per topik per mapel.
+// ----------------------------------------------------
+function getKomponenInti(subjectId, topicName) {
+  const t = (topicName || "").toLowerCase();
+  const sub = (subjectId || "").toLowerCase();
+  const clean = topicName.replace(/[\[\]]/g, "");
+
+  let tp = "";
+  let meaningful = "";
+  let pemantik = "";
+
+  // ===================== MATEMATIKA =====================
+  if (sub.includes("matematika")) {
+    if (t.includes("10.000") || t.includes("digit") || t.includes("ribuan") || (t.includes("cacah") && !t.includes("100") && !t.includes("ratus ribu") && !t.includes("juta"))) {
+      // Kelas 4
+      tp = `<ol>
+        <li>Melalui aktivitas permainan kartu bilangan, peserta didik mampu <b>membaca bilangan cacah sampai 10.000</b> dengan benar dan mandiri.</li>
+        <li>Melalui analisis studi kasus harga barang dan data geografis, peserta didik mampu <b>menuliskan lambang bilangan cacah sampai 10.000</b> secara tepat.</li>
+      </ol>`;
+      meaningful = `Kemampuan membaca dan menulis bilangan ribuan sangat krusial agar peserta didik dapat memeriksa kembalian uang belanja, memahami jarak antar tempat, serta membaca data informasi publik berbasis angka dengan teliti.`;
+      pemantik = `<ol>
+        <li>"Jika kalian membeli jus mangga di minimarket dan melihat label harga tertulis angka 6.750, bagaimana cara kalian mengejanya?"</li>
+        <li>"Pernahkah kalian mendengar bahwa puncak Gunung Semeru itu tingginya tiga ribu enam ratus tujuh puluh enam meter? Bagaimana cara kita menuliskan angka tersebut?"</li>
+      </ol>`;
+    } else if (t.includes("100.000") || t.includes("ratus ribu") || t.includes("juta") || t.includes("cacah besar")) {
+      // Kelas 5-6
+      tp = `<ol>
+        <li>Melalui pengamatan infografis populasi penduduk atau wilayah, peserta didik mampu <b>membaca dan menyajikan bilangan cacah besar</b> hingga ratusan ribu/jutaan secara benar.</li>
+        <li>Melalui simulasi perencanaan anggaran sekolah, peserta didik mampu <b>membandingkan dan mengurutkan nominal bilangan besar</b> dengan teliti.</li>
+      </ol>`;
+      meaningful = `Pemahaman bilangan cacah besar membantu siswa mencerna statistik global (seperti jumlah penduduk kota, kapasitas stadion olahraga) dan merancang anggaran keuangan berskala besar di kehidupan nyata.`;
+      pemantik = `<ol>
+        <li>"Jika sebuah stadion sepak bola diisi penuh oleh 85.432 penonton, bagaimana cara kita membaca angka tersebut agar semua orang paham?"</li>
+        <li>"Mana yang lebih besar antara anggaran pembangunan taman kota sebesar Rp750.000 atau Rp705.000? Bagaimana kalian membandingkannya?"</li>
+      </ol>`;
+    } else if (t.includes("pecahan") || t.includes("senilai") || t.includes("campuran") || t.includes("desimal") || t.includes("persen")) {
+      // Kelas 4-6
+      tp = `<ol>
+        <li>Melalui kegiatan membagi makanan konkret atau melipat kertas, peserta didik mampu <b>mengidentifikasi bentuk pecahan biasa, senilai, dan desimal</b> dengan tepat.</li>
+        <li>Melalui diskusi kelompok, peserta didik mampu <b>mengubah pecahan biasa menjadi pecahan campuran, desimal, atau persen</b> secara akurat.</li>
+      </ol>`;
+      meaningful = `Konsep pecahan, desimal, dan persen membantu kita membagi barang secara adil, menghitung diskon belanja di swalayan (misal 20% OFF), serta menakar resep makanan secara presisi.`;
+      pemantik = `<ol>
+        <li>"Jika Ibu memotong sebuah martabak manis menjadi 8 bagian sama besar, dan kamu memakan 3 bagian, bagaimana kamu menuliskan bagian martabak yang sudah dimakan dalam bentuk pecahan?"</li>
+        <li>"Ketika di toko mainan tertulis diskon 50%, apa hubungannya dengan pecahan setengah (1/2) bagian?"</li>
+      </ol>`;
+    } else if (t.includes("luas") || t.includes("volume") || t.includes("sudut") || t.includes("panjang") || t.includes("lebar")) {
+      // Kelas 3-6
+      tp = `<ol>
+        <li>Melalui kegiatan pengukuran permukaan meja atau lantai kelas, peserta didik mampu <b>menghitung luas bangun datar</b> menggunakan satuan baku secara mandiri.</li>
+        <li>Melalui praktikum mengisi kubus kecil ke dalam wadah, peserta didik mampu <b>menentukan volume bangun ruang</b> secara tepat.</li>
+      </ol>`;
+      meaningful = `Keterampilan mengukur luas dan volume sangat penting saat menentukan jumlah keramik lantai yang harus dibeli, kapasitas air dalam bak mandi, atau menata letak barang di dalam kardus kemasan.`;
+      pemantik = `<ol>
+        <li>"Jika Ayah ingin memasang ubin di kamarmu yang berukuran 3 meter x 3 meter, bagaimana cara kita mengetahui jumlah ubin yang dibutuhkan?"</li>
+        <li>"Bagaimana cara kita mengetahui air di dalam botol ini lebih banyak daripada air di dalam gelas tanpa menumpahkannya?"</li>
+      </ol>`;
+    } else if (t.includes("pola") || t.includes("bilangan loncat") || t.includes("barisan")) {
+      // Kelas 1-4
+      tp = `<ol>
+        <li>Melalui pengamatan pola gambar konkret, peserta didik mampu <b>menemukan aturan pola berulang dan melanjutkannya</b> secara mandiri.</li>
+        <li>Melalui permainan angka loncat, peserta didik mampu <b>melanjutkan pola barisan bilangan</b> secara tepat.</li>
+      </ol>`;
+      meaningful = `Mengenali pola membantu kita memprediksi urutan kejadian, seperti jadwal piket, perulangan motif kain batik tradisional, dan memecahkan teka-teki logika berpikir.`;
+      pemantik = `<ol>
+        <li>"Perhatikan ubin kelas kita yang berwarna-warni. Adakah pola susunan warna yang berulang?"</li>
+        <li>"Jika kita memiliki deret angka: 3, 6, 9, 12, ..., angka berapa yang muncul berikutnya setelah 12? Apa aturan yang kamu gunakan?"</li>
+      </ol>`;
+    } else if (t.includes("penjumlahan") || t.includes("pengurangan") || t.includes("tambah") || t.includes("kurang")) {
+      // Kelas 1-3
+      tp = `<ol>
+        <li>Melalui simulasi transaksi uang saku harian, peserta didik mampu <b>menyelesaikan penjumlahan dan pengurangan bilangan cacah</b> secara runtut dan mandiri.</li>
+        <li>Melalui permainan papan angka, peserta didik mampu <b>menghitung hasil operasi hitung campuran sederhana</b> secara tepat.</li>
+      </ol>`;
+      meaningful = `Operasi tambah-kurang adalah bekal utama bertransaksi belanja sehari-hari di kantin sekolah atau pasar, serta menghitung sisa persediaan barang milik kita.`;
+      pemantik = `<ol>
+        <li>"Jika kamu diberi uang saku Rp5.000 oleh Ibu, lalu membeli es krim seharga Rp2.000, berapa sisa uang kembalian yang harus kamu terima?"</li>
+        <li>"Ada 8 pensil di atas mejamu. Jika 3 pensil dipinjam oleh teman sebangkumu, berapa pensil yang tersisa di mejamu?"</li>
+      </ol>`;
+    } else if (t.includes("perkalian") || t.includes("pembagian") || t.includes("kali") || t.includes("bagi")) {
+      // Kelas 2-4
+      tp = `<ol>
+        <li>Melalui pengelompokan benda konkret, peserta didik mampu <b>memahami konsep perkalian</b> sebagai penjumlahan berulang secara mandiri.</li>
+        <li>Melalui aktivitas membagi permen sama banyak, peserta didik mampu <b>menyelesaikan operasi pembagian</b> sebagai pengurangan berulang secara adil.</li>
+      </ol>`;
+      meaningful = `Perkalian dan pembagian mempercepat kita dalam menghitung barang kelompok besar secara efisien, serta membagi makanan atau mainan secara merata kepada teman-teman.`;
+      pemantik = `<ol>
+        <li>"Ibu membawa 4 kantong plastik apel. Setiap kantong berisi 5 apel. Bagaimana cara cepat mengetahui jumlah seluruh apel tanpa menghitungnya satu per satu?"</li>
+        <li>"Jika kamu memiliki 12 permen cokelat dan ingin membaginya sama rata kepada 3 teman dekatmu, berapa permen yang didapatkan oleh masing-masing anak?"</li>
+      </ol>`;
+    } else if (t.includes("nilai tempat") || t.includes("puluhan") || t.includes("ratusan") || t.includes("satuan")) {
+      // Kelas 1-2
+      tp = `<ol>
+        <li>Melalui penggunaan sedotan ikat kelompok, peserta didik mampu <b>menentukan nilai tempat puluhan dan satuan</b> secara visual dengan tepat.</li>
+        <li>Melalui pembacaan lambang bilangan dua angka, peserta didik mampu <b>menuliskan dekomposisi nilai tempat</b> secara mandiri.</li>
+      </ol>`;
+      meaningful = `Memahami nilai tempat puluhan dan satuan memudahkan kita dalam membaca harga jajanan kantin dan menghitung jumlah koleksi kartu mainan secara teratur.`;
+      pemantik = `<ol>
+        <li>"Pada angka 25, angka manakah yang bertugas sebagai puluhan dan angka mana yang bertugas sebagai satuan?"</li>
+        <li>"Jika kita mengikat 10 sedotan menjadi satu ikat, dan kita punya 3 ikat sedotan serta 4 sedotan lepas, berapa total sedotan kita?"</li>
+      </ol>`;
+    } else {
+      // Fallback Matematika
+      tp = `<ol>
+        <li>Melalui pemecahan masalah kontekstual dan diskusi kelompok, peserta didik mampu <b>menganalisis konsep dasar tentang ${clean}</b> secara logis dan mandiri.</li>
+        <li>Melalui pengerjaan lembar kerja terstruktur, peserta didik mampu <b>menyelesaikan permasalahan numerasi terkait ${clean}</b> secara tepat.</li>
+      </ol>`;
+      meaningful = `Konsep dasar <b>${clean}</b> melatih logika berpikir kita agar lebih teliti, teratur, dan mampu mengambil keputusan numerik secara rasional di kehidupan sehari-hari.`;
+      pemantik = `<ol>
+        <li>"Menurut pendapatmu, mengapa kita perlu memahami materi ${clean} ini? Di manakah konsep ini akan kamu pakai dalam kehidupanmu?"</li>
+        <li>"Dapatkah kamu memberikan satu contoh penerapan konsep ${clean} saat kamu sedang bermain bersama teman-teman?"</li>
+      </ol>`;
+    }
+  }
+  // ===================== BAHASA INDONESIA =====================
+  else if (sub.includes("indonesia") && !sub.includes("ipas")) {
+    if (t.includes("bunyi") || t.includes("abjad") || t.includes("suku kata") || t.includes("huruf vokal")) {
+      // Kelas 1
+      tp = `<ol>
+        <li>Melalui kegiatan mendengarkan rekaman suara alam, peserta didik mampu <b>membedakan bunyi alam dan bunyi buatan</b> dengan teliti.</li>
+        <li>Melalui permainan kartu huruf, peserta didik mampu <b>menyusun suku kata sederhana</b> menjadi kata nama benda di sekitar dengan benar.</li>
+      </ol>`;
+      meaningful = `Mengenal bunyi dan huruf abjad adalah kunci utama agar kita bisa membaca buku dongeng yang menarik, menulis nama diri sendiri, serta mengomunikasikan keinginan kita dengan jelas kepada guru dan orang tua.`;
+      pemantik = `<ol>
+        <li>"Pernahkah kalian mendengar bunyi gemercik air hujan atau klakson motor di depan rumah? Bunyi mana yang berasal dari alam dan mana yang buatan manusia?"</li>
+        <li>"Huruf apakah yang mengawali nama panggilan kalian masing-masing? Mari kita sebutkan satu per satu!"</li>
+      </ol>`;
+    } else if (t.includes("baca") || t.includes("nyaring") || t.includes("dongeng") || t.includes("cerita")) {
+      // Kelas 2-4
+      tp = `<ol>
+        <li>Melalui kegiatan membaca nyaring bersama, peserta didik mampu <b>membaca teks naratif dengan lafal dan intonasi yang tepat</b> serta penuh percaya diri.</li>
+        <li>Melalui diskusi isi cerita, peserta didik mampu <b>mengidentifikasi tokoh-tokoh beserta wataknya</b> dalam dongeng secara mandiri.</li>
+      </ol>`;
+      meaningful = `Membaca cerita membantu kita memetik pelajaran moral berharga (akhlak) dari perilaku tokoh cerita, serta melatih kemampuan bertutur kata secara santun di depan umum.`;
+      pemantik = `<ol>
+        <li>"Siapa tokoh cerita dongeng yang paling kalian sukai? Mengapa kalian menyukainya? Sifat baik apa yang bisa kita tiru darinya?"</li>
+        <li>"Mengapa kita perlu mengatur nada suara (intonasi) saat membacakan sebuah cerita untuk teman-teman kita?"</li>
+      </ol>`;
+    } else if (t.includes("wawancara") || t.includes("laporan") || t.includes("surat") || t.includes("diskusi")) {
+      // Kelas 4-6
+      tp = `<ol>
+        <li>Melalui simulasi wawancara terpadu, peserta didik mampu <b>merumuskan daftar pertanyaan wawancara menggunakan kata tanya ADiKSiMBa</b> secara tepat.</li>
+        <li>Melalui penulisan surat pribadi/resmi, peserta didik mampu <b>menulis laporan hasil wawancara atau surat</b> dengan struktur bahasa Indonesia yang baku.</li>
+      </ol>`;
+      meaningful = `Keterampilan berwawancara dan menulis surat melatih kita berkomunikasi secara formal, santun, dan mampu menggali informasi berharga dari narasumber di luar lingkungan sekolah.`;
+      pemantik = `<ol>
+        <li>"Jika kalian diberi kesempatan untuk mewawancarai Kepala Sekolah kita, pertanyaan menarik apa yang paling ingin kalian ajukan?"</li>
+        <li>"Bagaimana cara menuliskan bagian pembuka surat izin sakit yang sopan untuk dikirimkan kepada wali kelasmu?"</li>
+      </ol>`;
+    } else {
+      tp = `<ol>
+        <li>Melalui kegiatan membaca kritis dan berdiskusi, peserta didik mampu <b>menemukan informasi penting dari bacaan bertema ${clean}</b> secara tepat.</li>
+        <li>Melalui praktik menulis mandiri, peserta didik mampu <b>mengekspresikan gagasan kreatif menggunakan ejaan bahasa Indonesia yang disempurnakan (EYD)</b>.</li>
+      </ol>`;
+      meaningful = `Kemampuan berbahasa Indonesia yang baik memudahkan kita memahami instruksi tertulis, menyampaikan isi kepala secara runut, dan menghargai karya sastra luhur bangsa.`;
+      pemantik = `<ol>
+        <li>"Ketika kamu membaca teks tentang ${clean}, bagian manakah yang paling menarik perhatianmu? Mengapa?"</li>
+        <li>"Mengapa penggunaan tanda baca titik (.) dan koma (,) sangat penting dalam penulisan kalimat kita?"</li>
+      </ol>`;
+    }
+  }
+  // ===================== IPAS (IPA-IPS) =====================
+  else if (sub.includes("ipas") || sub.includes("ipa") || sub.includes("ips")) {
+    if (t.includes("cahaya") || t.includes("cermin") || t.includes("optik") || t.includes("pantul")) {
+      // Kelas 4-5
+      tp = `<ol>
+        <li>Melalui eksperimen menggunakan senter dan cermin, peserta didik mampu <b>membuktikan sifat-sifat cahaya (merambat lurus, dipantulkan, dibiaskan)</b> secara langsung.</li>
+        <li>Melalui diskusi kelompok, peserta didik mampu <b>menganalisis prinsip kerja alat optik sederhana</b> seperti lup atau periskop dengan tepat.</li>
+      </ol>`;
+      meaningful = `Memahami sifat cahaya menjelaskan mengapa kita bisa bercermin, bagaimana pelangi terbentuk setelah hujan, dan pentingnya kaca spion kendaraan untuk keselamatan berkendara sehari-hari.`;
+      pemantik = `<ol>
+        <li>"Mengapa sendok yang diletakkan di dalam gelas berisi air jernih terlihat patah atau bengkok? Sifat cahaya manakah yang bekerja?"</li>
+        <li>"Bagaimana cermin kecil pada spion mobil/motor membantu pengemudi melihat objek besar di belakangnya?"</li>
+      </ol>`;
+    } else if (t.includes("organ") || t.includes("tubuh") || t.includes("napas") || t.includes("cerna") || t.includes("darah")) {
+      // Kelas 5-6
+      tp = `<ol>
+        <li>Melalui pengamatan torso atau gambar organ, peserta didik mampu <b>menjelaskan sistem pernapasan dan pencernaan manusia</b> beserta fungsinya dengan rinci.</li>
+        <li>Melalui pembuatan poster kesehatan, peserta didik mampu <b>merumuskan langkah-langkah pencegahan penyakit organ tubuh</b> secara mandiri.</li>
+      </ol>`;
+      meaningful = `Mengenal anatomi tubuh sendiri menumbuhkan rasa syukur dan kepedulian untuk menjaga kesehatan dengan mengonsumsi makanan bergizi serta menghindari rokok dan polusi.`;
+      pemantik = `<ol>
+        <li>"Ke mana perginya nasi goreng yang kita makan pagi tadi? Bagaimana tubuh kita menyerap sari makanan tersebut?"</li>
+        <li>"Mengapa napas kita terasa terengah-engah setelah berlari kencang di lapangan? Apa yang terjadi di dalam paru-paru kita?"</li>
+      </ol>`;
+    } else if (t.includes("fotosintesis") || t.includes("tumbuh") || t.includes("daun") || t.includes("akar")) {
+      // Kelas 3-4
+      tp = `<ol>
+        <li>Melalui pengamatan tanaman di halaman sekolah, peserta didik mampu <b>mengidentifikasi bagian-bagian tumbuhan dan fungsinya</b> secara mandiri.</li>
+        <li>Melalui eksperimen menutup daun dengan kertas timah, peserta didik mampu <b>menjelaskan peran fotosintesis dalam menghasilkan oksigen</b> bagi makhluk hidup.</li>
+      </ol>`;
+      meaningful = `Tumbuhan hijau adalah paru-paru bumi yang menyuplai oksigen yang kita hirup, serta menjadi penyedia pangan utama bagi manusia dan hewan di ekosistem.`;
+      pemantik = `<ol>
+        <li>"Mengapa tanaman yang jarang disiram dan tidak terkena sinar matahari di dalam rumah lama-kelamaan akan layu dan mati?"</li>
+        <li>"Dapatkah kalian bayangkan apa yang akan terjadi dengan seluruh makhluk hidup di bumi jika tidak ada tumbuhan hijau satu pun?"</li>
+      </ol>`;
+    } else if (t.includes("sejarah") || t.includes("pahlawan") || t.includes("kerajaan") || t.includes("candi")) {
+      // Kelas 4-6
+      tp = `<ol>
+        <li>Melalui telaah peta sejarah, peserta didik mampu <b>mengidentifikasi peninggalan kerajaan Hindu, Buddha, dan Islam di Indonesia</b> secara kronologis.</li>
+        <li>Melalui diskusi tokoh pahlawan daerah, peserta didik mampu <b>meneladani sikap patriotisme dan rela berkorban</b> dalam kehidupan berbangsa.</li>
+      </ol>`;
+      meaningful = `Mempelajari sejarah bangsa memperkokoh rasa cinta tanah air, mengajarkan nilai perjuangan, dan menghargai keragaman situs cagar budaya sebagai identitas nasional.`;
+      pemantik = `<ol>
+        <li>"Apakah di sekitar tempat tinggalmu terdapat situs bersejarah seperti candi, makam kuno, atau monumen perjuangan? Kisah apa yang ada di baliknya?"</li>
+        <li>"Mengapa para pahlawan bangsa dahulu bersedia gugur demi merebut kemerdekaan Indonesia? Nilai apa yang bisa kita tiru di sekolah?"</li>
+      </ol>`;
+    } else if (t.includes("kuman") || t.includes("sehat") || t.includes("bersih") || t.includes("sakit")) {
+      // Kelas 1-2
+      tp = `<ol>
+        <li>Melalui kegiatan simulasi memakai glitter/tepung, peserta didik mampu <b>mempraktikkan cara mencuci tangan 6 langkah WHO</b> secara mandiri.</li>
+        <li>Melalui pengamatan gambar kebersihan diri, peserta didik mampu <b>membedakan kebiasaan sehat dan tidak sehat</b> dengan tepat.</li>
+      </ol>`;
+      meaningful = `Kebiasaan hidup bersih sejak dini melindungi kita dari kuman penyebab sakit perut dan flu, serta menjaga tubuh kita tetap bugar untuk belajar dan bermain setiap hari.`;
+      pemantik = `<ol>
+        <li>"Mengapa kita harus mencuci tangan menggunakan sabun setelah selesai bermain di luar rumah atau sebelum makan?"</li>
+        <li>"Bagaimana kuman yang ukurannya sangat kecil dan tidak terlihat bisa membuat perut kita terasa sakit?"</li>
+      </ol>`;
+    } else {
+      tp = `<ol>
+        <li>Melalui observasi lapangan dan diskusi terarah, peserta didik mampu <b>menjelaskan fenomena sains/sosial terkait ${clean}</b> secara ilmiah dan kontekstual.</li>
+        <li>Melalui penyusunan infografis sederhana, peserta didik mampu <b>menyajikan keterkaitan fenomena ${clean} terhadap kelestarian alam dan kesejahteraan masyarakat</b>.</li>
+      </ol>`;
+      meaningful = `Mempelajari fenomena <b>${clean}</b> melatih kecakapan inkuiri siswa untuk berpikir kritis, mencintai lingkungan hidup, serta peduli terhadap kondisi sosial masyarakat sekitar.`;
+      pemantik = `<ol>
+        <li>"Pernahkah kalian mengamati fenomena ${clean} di lingkungan sekitar rumah atau sekolah? Apa yang ada di pikiran kalian saat melihatnya?"</li>
+        <li>"Bagaimana peran aktif kita sebagai anak sekolah untuk mendukung dampak positif dari materi ${clean} di lingkungan kita?"</li>
+      </ol>`;
+    }
+  }
+  // ===================== PANCASILA =====================
+  else if (sub.includes("pancasila")) {
+    if (t.includes("sila") || t.includes("garuda") || t.includes("lambang") || t.includes("simbol")) {
+      tp = `<ol>
+        <li>Melalui pengamatan burung Garuda Pancasila, peserta didik mampu <b>mengidentifikasi lambang sila Pancasila</b> secara tepat dan berurutan.</li>
+        <li>Melalui bermain peran drama pendek, peserta didik mampu <b>menunjukkan contoh perilaku sehari-hari yang mengamalkan sila-sila Pancasila</b>.</li>
+      </ol>`;
+      meaningful = `Pancasila adalah pemersatu keberagaman suku dan agama di Indonesia, memandu kita untuk hidup rukun, adil, toleran, dan bergotong royong di lingkungan sekolah maupun rumah.`;
+      pemantik = `<ol>
+        <li>"Perhatikan simbol kepala banteng dan pohon beringin pada dada burung Garuda. Sila keberapakah yang mereka lambangkan? Apa maknanya?"</li>
+        <li>"Bagaimana sikap kita apabila melihat teman kelas yang terjatuh dari sepeda? Pengamalan sila Pancasila keberapakah itu?"</li>
+      </ol>`;
+    } else if (t.includes("hak") || t.includes("kewajiban") || t.includes("aturan") || t.includes("tanggung jawab")) {
+      tp = `<ol>
+        <li>Melalui diskusi tata tertib kelas, peserta didik mampu <b>membedakan hak dan kewajiban anak</b> di sekolah dan di rumah secara mandiri.</li>
+        <li>Melalui pembuatan jadwal piket mandiri, peserta didik mampu <b>melaksanakan kewajiban piket kelas secara bertanggung jawab</b>.</li>
+      </ol>`;
+      meaningful = `Keseimbangan antara hak dan kewajiban mendidik kita menjadi pribadi yang disiplin, bertanggung jawab, menghormati privasi orang lain, dan menciptakan ketertiban bersama.`;
+      pemantik = `<ol>
+        <li>"Sebagai anak, kalian berhak mendapatkan kasih sayang dan ruang belajar yang nyaman. Lalu, apa kewajiban yang harus kalian berikan kepada orang tua?"</li>
+        <li>"Mengapa di sekolah dipasang aturan tidak boleh membuang sampah sembarangan? Aturan ini melindungi hak siapa?"</li>
+      </ol>`;
+    } else {
+      tp = `<ol>
+        <li>Melalui refleksi diri dan studi kasus sosial, peserta didik mampu <b>mengidentifikasi penerapan nilai Pancasila terkait ${clean}</b> dalam kehidupan bernegara.</li>
+        <li>Melalui aksi nyata di kelas, peserta didik mampu <b>mempraktikkan karakter profil pelajar Pancasila</b> (mandiri, bergotong royong, berkebinekaan global) bertema ${clean}.</li>
+      </ol>`;
+      meaningful = `Mempelajari nilai-nilai <b>${clean}</b> menumbuhkan karakter nasionalis yang beradab, berjiwa toleran, mengutamakan persatuan, dan siap berkolaborasi demi kebaikan bersama.`;
+      pemantik = `<ol>
+        <li>"Bagaimana cara kita menunjukkan sikap toleransi ketika mendiskusikan materi ${clean} bersama teman-teman yang berbeda pendapat?"</li>
+        <li>"Apa yang akan terjadi di sekolah apabila nilai luhur ${clean} tidak kita terapkan dalam kehidupan sehari-hari?"</li>
+      </ol>`;
+    }
+  }
+  // ===================== PAI (AGAMA ISLAM) =====================
+  else if (sub.includes("pai")) {
+    if (t.includes("wudhu") || t.includes("tayamum") || t.includes("shalat") || t.includes("salat") || t.includes("ibadah")) {
+      tp = `<ol>
+        <li>Melalui praktik langsung dengan bimbingan guru, peserta didik mampu <b>memperagakan tata cara bersuci (wudhu/tayamum) dan gerakan shalat</b> secara berurutan.</li>
+        <li>Melalui hafalan bacaan shalat, peserta didik mampu <b>melafalkan bacaan shalat lima waktu</b> dengan makhraj yang benar.</li>
+      </ol>`;
+      meaningful = `Shalat adalah tiang agama Islam yang mengajarkan kebersihan diri (melalui wudhu), kedisiplinan menghargai waktu, serta ketenangan batin untuk mendekatkan diri kepada Allah SWT.`;
+      pemantik = `<ol>
+        <li>"Mengapa kita wajib membasuh wajah dan tangan sebelum menghadap Allah SWT saat shalat? Apa hikmah kebersihannya?"</li>
+        <li>"Bagaimana perasaanmu setelah melaksanakan shalat lima waktu secara tepat waktu dan berjamaah di masjid?"</li>
+      </ol>`;
+    } else if (t.includes("asmaul") || t.includes("sifat") || t.includes("allah") || t.includes("iman")) {
+      tp = `<ol>
+        <li>Melalui lantunan nasyid, peserta didik mampu <b>menghafal Asmaul Husna</b> beserta terjemahannya secara mandiri.</li>
+        <li>Melalui diskusi kisah teladan nabi, peserta didik mampu <b>meniru sifat kasih sayang (Ar-Rahman) dan kejujuran</b> di kehidupan sehari-hari.</li>
+      </ol>`;
+      meaningful = `Mengenal Asmaul Husna menumbuhkan rasa cinta yang mendalam kepada Allah SWT, serta membimbing akhlak kita agar menjadi anak yang penyayang, jujur, dan pemaaf.`;
+      pemantik = `<ol>
+        <li>"Allah bersifat Al-Basir (Maha Melihat). Apakah kita tetap bisa berbohong ketika tidak ada orang lain di sekitar kita? Siapa yang melihat kita?"</li>
+        <li>"Bagaimana caramu membuktikan rasa sayang kepada hewan peliharaanmu sebagai wujud meneladani sifat Ar-Rahman?"</li>
+      </ol>`;
+    } else {
+      tp = `<ol>
+        <li>Melalui kajian ayat Al-Qur'an dan hadits teladan, peserta didik mampu <b>memahami ajaran Islam terkait ${clean}</b> secara baik dan benar.</li>
+        <li>Melalui pembiasaan akhlakul karimah, peserta didik mampu <b>mengamalkan adab islami bertema ${clean}</b> dalam interaksi sosial sehari-hari.</li>
+      </ol>`;
+      meaningful = `Memahami konsep <b>${clean}</b> mendekatkan diri kita pada tuntunan syariat Islam demi keselamatan dunia dan akhirat, serta memperindah akhlak kita di hadapan sesama manusia.`;
+      pemantik = `<ol>
+        <li>"Bagaimana ajaran Rasulullah SAW mengajari kita bersikap sopan santun yang berkaitan dengan materi ${clean}?"</li>
+        <li>"Sebutkan satu contoh perilaku baik sehari-hari di rumah yang mencerminkan pemahamanmu tentang ${clean}!"</li>
+      </ol>`;
+    }
+  }
+  // ===================== KODING =====================
+  else if (sub.includes("koding")) {
+    if (t.includes("algoritma") || t.includes("langkah logis")) {
+      tp = `<ol>
+        <li>Melalui permainan menyusun kartu instruksi, peserta didik mampu <b>menyusun algoritma sederhana</b> berupa urutan langkah logis untuk menyelesaikan tugas harian secara runtut.</li>
+        <li>Melalui simulasi 'Robot dan Programmer', peserta didik mampu <b>membuktikan pentingnya urutan langkah</b> yang benar dalam menjalankan perintah.</li>
+      </ol>`;
+      meaningful = `Algoritma adalah fondasi berpikir komputasional yang kita gunakan setiap hari tanpa disadari, seperti mengikuti resep masakan (langkah demi langkah), mengikuti prosedur cuci tangan yang benar, atau menyusun strategi permainan agar bisa menang.`;
+      pemantik = `<ol>
+        <li>"Bayangkan kamu ingin membuat segelas teh manis. Coba sebutkan langkah-langkahnya dari awal sampai akhir. Apa yang terjadi jika urutan langkahnya ditukar?"</li>
+        <li>"Mengapa GPS di handphone orang tuamu bisa menemukan rute tercepat ke suatu tempat? Apakah itu menggunakan algoritma?"</li>
+      </ol>`;
+    } else if (t.includes("scratch") || t.includes("antarmuka") || t.includes("sprite") || t.includes("stage")) {
+      tp = `<ol>
+        <li>Melalui eksplorasi langsung aplikasi Scratch, peserta didik mampu <b>mengidentifikasi bagian-bagian antarmuka</b> (Stage, Sprite List, Block Palette, Script Area) secara mandiri.</li>
+        <li>Melalui praktik drag-and-drop blok perintah, peserta didik mampu <b>membuat program sederhana</b> yang menggerakkan Sprite di layar.</li>
+      </ol>`;
+      meaningful = `Mengenal antarmuka Scratch mempersiapkan siswa menjadi kreator digital yang mampu membuat animasi, game interaktif, dan cerita digital sendiri, bukan sekadar menjadi pengguna pasif teknologi.`;
+      pemantik = `<ol>
+        <li>"Tahukah kalian bahwa game-game yang kalian mainkan di komputer semuanya dibuat menggunakan kode program? Apakah kalian ingin bisa membuat game sendiri?"</li>
+        <li>"Perhatikan layar Scratch ini. Menurutmu, di area mana kita menempatkan blok-blok perintah agar karakter kucing bisa bergerak?"</li>
+      </ol>`;
+    } else if (t.includes("loop") || t.includes("ulang") || t.includes("perulangan")) {
+      tp = `<ol>
+        <li>Melalui simulasi gerakan berulang, peserta didik mampu <b>memahami konsep perulangan (loop)</b> dan membedakan 'ulangi N kali' dengan 'selamanya'.</li>
+        <li>Melalui pembuatan animasi Scratch, peserta didik mampu <b>menerapkan blok perulangan</b> untuk mengefisiensikan kode program.</li>
+      </ol>`;
+      meaningful = `Perulangan adalah konsep yang kita temui setiap hari: detak jantung berulang, jarum jam berputar terus-menerus, dan lagu yang dimainkan berulang di playlist. Dalam koding, perulangan menghemat waktu karena kita tidak perlu menulis perintah yang sama berulang kali.`;
+      pemantik = `<ol>
+        <li>"Bayangkan kamu diminta menggambar 100 bintang di kertas. Apakah kamu akan menggambar satu per satu, atau adakah cara yang lebih cepat dan efisien?"</li>
+        <li>"Apa perbedaan antara 'ulangi 5 kali' dan 'ulangi selamanya' dalam kehidupan nyata? Berikan contohnya!"</li>
+      </ol>`;
+    } else if (t.includes("cabang") || t.includes("kondisi") || t.includes("if") || t.includes("jika")) {
+      tp = `<ol>
+        <li>Melalui permainan logika "Jika-Maka", peserta didik mampu <b>memahami konsep percabangan (if-else)</b> sebagai pengambilan keputusan dalam program.</li>
+        <li>Melalui pembuatan game sederhana di Scratch, peserta didik mampu <b>menerapkan blok percabangan</b> untuk membuat program yang responsif terhadap kondisi tertentu.</li>
+      </ol>`;
+      meaningful = `Logika percabangan adalah dasar pengambilan keputusan yang kita lakukan setiap hari: "Jika hujan, bawa payung; jika tidak, pakai topi." Dalam teknologi, logika ini digunakan oleh mesin ATM, lampu lalu lintas otomatis, dan asisten virtual.`;
+      pemantik = `<ol>
+        <li>"Apa yang kalian lakukan setiap pagi sebelum berangkat sekolah: jika cuaca panas, memakai topi; jika cuaca hujan, memakai jas hujan. Apakah itu contoh logika percabangan?"</li>
+        <li>"Bagaimana cara membuat karakter Scratch yang bisa berhenti bergerak ketika menyentuh dinding tepi layar?"</li>
+      </ol>`;
+    } else {
+      tp = `<ol>
+        <li>Melalui praktik proyek koding bertema <b>${clean}</b>, peserta didik mampu merancang dan menyusun blok kode program secara logis dan terstruktur.</li>
+        <li>Melalui proses debugging bersama, peserta didik mampu menemukan dan memperbaiki kesalahan logika pada program <b>${clean}</b> secara mandiri.</li>
+      </ol>`;
+      meaningful = `Keterampilan berpikir komputasional bertema <b>${clean}</b> melatih siswa untuk memecah masalah besar menjadi langkah-langkah kecil, berpikir logis, dan menciptakan solusi kreatif — kemampuan yang dibutuhkan di era digital masa depan.`;
+      pemantik = `<ol>
+        <li>"Apa langkah pertama yang harus kita lakukan sebelum mulai menulis kode program di komputer? Mengapa perencanaan (flowchart) itu penting?"</li>
+        <li>"Pernahkah program yang kamu buat mengalami error (bug)? Apa yang kamu rasakan dan bagaimana cara kamu memperbaikinya?"</li>
+      </ol>`;
+    }
+  }
+  // ===================== PJOK (PENJASORKES) =====================
+  else if (sub.includes("pjok") || sub.includes("olahraga")) {
+    if (t.includes("senam") || t.includes("irama") || t.includes("gerak") || t.includes("tempo")) {
+      tp = `<ol>
+        <li>Melalui senam kesegaran jasmani terpadu, peserta didik mampu <b>melakukan gerak dasar lokomotor dan manipulatif sesuai irama musik</b> dengan kompak.</li>
+        <li>Melalui latihan berulang, peserta didik mampu <b>menjaga keseimbangan dan kelenturan tubuh</b> sesuai ketukan tempo musik senam.</li>
+      </ol>`;
+      meaningful = `Senam irama menjaga kelenturan otot tubuh, melatih koordinasi otak-otot motorik, serta membiasakan kita untuk hidup bugar dan riang gembira melalui olahraga.`;
+      pemantik = `<ol>
+        <li>"Bagaimana perasaan kalian saat melakukan gerakan melompat dan melambaikan tangan secara serentak mengikuti ketukan musik yang riang?"</li>
+        <li>"Mengapa kita perlu melakukan peregangan otot (pemanasan) terlebih dahulu agar tidak mengalami kram atau cedera saat senam?"</li>
+      </ol>`;
+    } else {
+      tp = `<ol>
+        <li>Melalui praktik peragaan teknik di lapangan, peserta didik mampu <b>mempraktikkan gerak dasar spesifik dalam materi ${clean}</b> secara benar dan aman.</li>
+        <li>Melalui permainan tim kolaboratif, peserta didik mampu <b>menunjukkan sportivitas, kejujuran, dan kerja sama kelompok</b> yang solid.</li>
+      </ol>`;
+      meaningful = `Aktivitas fisik bertema <b>${clean}</b> memupuk kebugaran organ jantung, memperkuat otot-otot tubuh, serta melatih mental tangguh, disiplin, dan sportivitas pantang menyerah.`;
+      pemantik = `<ol>
+        <li>"Dapatkah kalian menyebutkan gerakan dasar apa saja yang paling penting dipraktikkan dalam olahraga ${clean}?"</li>
+        <li>"Bagaimana sikap kita sebagai olahragawan yang baik apabila tim kita belum berhasil memenangkan pertandingan hari ini?"</li>
+      </ol>`;
+    }
+  }
+  // ===================== SENI RUPA / SENI MUSIK =====================
+  else if (sub.includes("senirupa") || sub.includes("seni") || sub.includes("musik")) {
+    if (t.includes("gambar") || t.includes("sketsa") || t.includes("warna") || t.includes("lukis") || t.includes("kolase")) {
+      tp = `<ol>
+        <li>Melalui pengamatan alam sekitar sekolah, peserta didik mampu <b>mengidentifikasi kombinasi warna, garis, dan tekstur seni rupa</b> secara mandiri.</li>
+        <li>Melalui pembuatan karya menggambar ekspresif, peserta didik mampu <b>menghasilkan lukisan/sketsa kreatif</b> yang mencerminkan imajinasinya secara indah.</li>
+      </ol>`;
+      meaningful = `Seni rupa ekspresif melatih kepekaan rasa estetika (keindahan), menyalurkan emosi positif lewat goresan warna, dan memicu daya kreativitas mendesain objek visual.`;
+      pemantik = `<ol>
+        <li>"Warna-warna apa saja yang menurut kalian paling cocok dipadukan untuk menggambarkan suasana matahari terbit di pegunungan?"</li>
+        <li>"Bagaimana tekstur permukaan daun kering membantu kita membuat karya kolase atau jiplakan gambar yang unik?"</li>
+      </ol>`;
+    } else {
+      tp = `<ol>
+        <li>Melalui apresiasi seni dan praktik berkarya, peserta didik mampu <b>mengenal teknik dan keindahan karya seni rupa bertema ${clean}</b> secara kreatif.</li>
+        <li>Melalui pameran apresiasi kelas, peserta didik mampu <b>memberikan ulasan positif dan membangun atas karya seni milik temannya</b>.</li>
+      </ol>`;
+      meaningful = `Mempelajari seni rupa bertema <b>${clean}</b> menumbuhkan apresiasi kebudayaan lokal, melatih ketelitian motorik halus tangan, serta menumbuhkan rasa bangga atas karya orisinal ciptaan sendiri.`;
+      pemantik = `<ol>
+        <li>"Bahan bekas atau bahan alam apa saja di sekitar rumahmu yang bisa kita daur ulang menjadi pajangan seni bertema ${clean}?"</li>
+        <li>"Mengapa setiap orang memiliki cara menggambar yang berbeda-beda meskipun objek gambar yang dilihat sama? Di manakah letak keunikannya?"</li>
+      </ol>`;
+    }
+  }
+  // ===================== KRISTEN =====================
+  else if (sub.includes("kristen")) {
+    if (t.includes("kasih") || t.includes("yesus") || t.includes("tuhan") || t.includes("doa")) {
+      tp = `<ol>
+        <li>Melalui pembacaan kisah Alkitab, peserta didik mampu <b>menceritakan teladan kasih Yesus Kristus</b> dan menjelaskan maknanya bagi kehidupan sehari-hari.</li>
+        <li>Melalui doa dan refleksi bersama, peserta didik mampu <b>mengungkapkan rasa syukur</b> kepada Tuhan atas berkat keluarga, kesehatan, dan persahabatan.</li>
+      </ol>`;
+      meaningful = `Kasih adalah hukum utama ajaran Kristiani: "Kasihilah sesamamu manusia seperti dirimu sendiri." Memahami kasih Kristus membantu kita bersikap pengampun, murah hati, dan peduli terhadap sesama — terutama mereka yang membutuhkan pertolongan.`;
+      pemantik = `<ol>
+        <li>"Tuhan Yesus mengajarkan kita untuk mengasihi semua orang, bahkan musuh kita. Menurutmu, mengapa hal itu sangat sulit namun sangat penting?"</li>
+        <li>"Sebutkan satu hal yang kamu syukuri hari ini. Bagaimana cara kamu mengucapkan terima kasih kepada Tuhan atas berkat tersebut?"</li>
+      </ol>`;
+    } else {
+      tp = `<ol>
+        <li>Melalui pembacaan Firman Tuhan dan diskusi kelompok, peserta didik mampu <b>memahami nilai-nilai iman Kristen</b> yang terkandung dalam materi ${clean}.</li>
+        <li>Melalui refleksi doa pribadi, peserta didik mampu <b>menerapkan teladan moral Alkitab</b> terkait ${clean} dalam pergaulan sehari-hari dengan sesama.</li>
+      </ol>`;
+      meaningful = `Mempelajari <b>${clean}</b> dalam perspektif iman Kristen membantu peserta didik bertumbuh dalam karakter yang mencerminkan buah Roh: kasih, sukacita, damai sejahtera, kesabaran, kemurahan, kebaikan, kesetiaan, kelemahlembutan, dan penguasaan diri.`;
+      pemantik = `<ol>
+        <li>"Pelajaran berharga apa yang bisa kita petik dari kisah Alkitab tentang ${clean} untuk diterapkan di sekolah dan rumah?"</li>
+        <li>"Bagaimana kamu bisa menjadi berkat bagi teman-temanmu melalui nilai-nilai yang terkandung dalam materi ${clean}?"</li>
+      </ol>`;
+    }
+  }
+  // ===================== BAHASA INGGRIS =====================
+  else if (sub.includes("english") || sub.includes("inggris")) {
+    tp = `<ol>
+      <li>Through interactive games and flashcards, students are able to <b>identify and pronounce English vocabulary</b> about ${clean} correctly.</li>
+      <li>Through pair dialogues, students are able to <b>practice speaking simple English phrases</b> in daily life situations with confidence.</li>
+    </ol>`;
+    meaningful = `Learning English opens a window to communicate globally, understand international technology, read guidance on toys, and share our culture with friends from other countries.`;
+    pemantik = `<ol>
+      <li>"Do you know the English word for items in your pencil case? What is the English of 'buku' and 'pensil'?"</li>
+      <li>"Why do you think learning English is cool and fun for your future travel plans?"</li>
+    </ol>`;
+  }
+  // ===================== BAHASA JAWA =====================
+  else if (sub.includes("jawa")) {
+    tp = `<ol>
+      <li>Melalui kegiatan maos lan mirengaken pacelathon, peserta didik mampu <b>mahami unggah-ungguh basa Jawa (Ngoko lan Krama)</b> kanthi bener.</li>
+      <li>Melalui praktik micara, peserta didik mampu <b>nggunakake basa Jawa krama alus</b> nalika matur marang bapak/ibu guru utawa wong tuwa kanthi sopan santun.</li>
+    </ol>`;
+    meaningful = `Basa Jawa lan unggah-ungguh mulang kita tata krama lan budi pekerti luhur kanggo ngajeni wong sing luwih tuwa, minangka warisan kabudayan sing kudu diuri-uri.`;
+    pemantik = `<ol>
+      <li>"Kapan awake dhewe nggunakake basa Jawa ngoko lan kapan kudu nggunakake basa Jawa krama?"</li>
+      <li>"Kepriye carane matur 'kula badhe dhateng wingking' marang Ibu Guru kanthi sopan lan trep?"</li>
+    </ol>`;
+  }
+  // ===================== FALLBACK UNIVERSAL =====================
+  else {
+    tp = `<ol>
+      <li>Melalui kegiatan pembelajaran aktif, diskusi kelompok, dan penugasan terstruktur, peserta didik mampu <b>mengidentifikasi konsep esensial terkait ${clean}</b> secara mandiri dan kritis.</li>
+      <li>Melalui penyajian karya kreatif, peserta didik mampu <b>menyimplukan keterkaitan materi ${clean} dengan kehidupan nyata sehari-hari</b>.</li>
+    </ol>`;
+    meaningful = `Materi <b>${clean}</b> memberikan wawasan penting untuk membimbing nalar kritis siswa, kepedulian sosial, serta melatih kemandirian dalam memecahkan persoalan sehari-hari.`;
+    pemantik = `<ol>
+      <li>"Apakah kalian pernah mendengar atau melihat topik ${clean} di media atau obrolan keluarga? Apa yang kalian ketahui?"</li>
+      <li>"Bagaimana materi ${clean} ini bisa membantu kalian menjadi pribadi yang lebih bijak, disiplin, atau kreatif?"</li>
+    </ol>`;
+  }
+
+  return { tp, meaningful, pemantik };
+}
+
+// ----------------------------------------------------
+// DYNAMIC SUBJECT MAPPING ENGINE (Permendikdasmen No 13/2025)
 // ----------------------------------------------------
 function getSubjectDetails(subjectId, topicName) {
   // Tentukan kategori mata pelajaran berdasarkan ID
@@ -1830,6 +2790,12 @@ function getSubjectDetails(subjectId, topicName) {
     details.pemanfaatanDigital = `Laptop, Proyektor untuk menampilkan buku cerita elektronik (e-book), modul literasi di portal Rumah Belajar (https://rumah.pendidikan.go.id/), Speaker aktif untuk menyimak pembacaan dongeng, serta Interactive Flat Panel (IFP) untuk menyusun kalimat acak.`;
   }
 
+  // Override tp, meaningful, pemantik with rich, textbook-quality content from getKomponenInti
+  const komponenInti = getKomponenInti(subjectId, topicName);
+  if (komponenInti.tp) details.tp = komponenInti.tp;
+  if (komponenInti.meaningful) details.meaningful = komponenInti.meaningful;
+  if (komponenInti.pemantik) details.pemantik = komponenInti.pemantik;
+
   details.bahanAjarText = generateDetailedBahanAjarText(category, topicName, subjectId);
   details.lkpdContent = generateDetailedLkpd(category, topicName, subjectId);
   details.rubricContent = generateDetailedAsesmen(category, topicName, subjectId);
@@ -1844,7 +2810,53 @@ function generateDetailedBahanAjarText(category, topicName, subjectId) {
   
   if (category === "matematika") {
     let mainExplanation = "";
-    if (lowTopic.includes("hitung") || lowTopic.includes("bilangan 1 sampai 5") || lowTopic.includes("angka 0-10") || lowTopic.includes("bilangan cacah") || lowTopic.includes("bilangan sampai")) {
+    if (lowTopic.includes("10.000") || lowTopic.includes("digit") || lowTopic.includes("ribuan") || (lowTopic.includes("cacah") && !lowTopic.includes("100"))) {
+      mainExplanation = `
+        <p><b>A. Membaca Bilangan Cacah Ribuan:</b></p>
+        <p>Bilangan cacah yang memiliki empat angka dinamakan bilangan ribuan. Untuk membaca bilangan tersebut dengan benar, kita harus melihat posisinya dari kiri ke kanan menggunakan aturan nilai tempat sebagai berikut:</p>
+        <ol>
+          <li><b>Angka Pertama (Paling Kiri):</b> Menunjukkan nilai Ribuan, dibaca dengan menambahkan kata "Ribu" di belakang angka tersebut.</li>
+          <li><b>Angka Kedua:</b> Menunjukkan nilai Ratusan, dibaca dengan menambahkan kata "Ratus" di belakang angka tersebut.</li>
+          <li><b>Angka Ketiga:</b> Menunjukkan nilai Puluhan, dibaca dengan menambahkan kata "Puluh" di belakang angka tersebut.</li>
+          <li><b>Angka Keempat (Paling Kanan):</b> Menunjukkan nilai Satuan, cukup dibaca angkanya saja.</li>
+        </ol>
+        <p><i>Contoh Kasus (Jarak Jalan):</i> Jarak dari rumah Helen ke minimarket adalah 3.286 meter.</p>
+        <ul>
+          <li>Angka 3 menempati posisi Ribuan &rarr; Dibaca: Tiga Ribu</li>
+          <li>Angka 2 menempati posisi Ratusan &rarr; Dibaca: Dua Ratus</li>
+          <li>Angka 8 menempati posisi Puluhan &rarr; Dibaca: Delapan Puluh</li>
+          <li>Angka 6 menempati posisi Satuan &rarr; Dibaca: Enam</li>
+          <li>Maka, <b>3.286</b> dibaca: <i>"Tiga Ribu Dua Ratus Delapan Puluh Enam"</i>.</li>
+        </ul>
+        
+        <p><b>B. Aturan Khusus Angka Nol (0) dan Angka Satu (1):</b></p>
+        <ul>
+          <li><b>Aturan Angka Nol (0):</b> Jika menemukan angka nol (0) di posisi ratusan, puluhan, atau satuan, maka posisi tersebut TIDAK PERLU DIBACA.
+            <ul>
+              <li><i>Contoh 1 (Speedometer motor):</i> 5.091 dibaca <i>"Lima Ribu Sembilan Puluh Satu"</i> (ratusan dilewati).</li>
+              <li><i>Contoh 2:</i> 7.003 dibaca <i>"Tujuh Ribu Tiga"</i>.</li>
+              <li><i>Contoh 3:</i> 6.570 dibaca <i>"Enam Ribu Lima Ratus Tujuh Puluh"</i>.</li>
+            </ul>
+          </li>
+          <li><b>Aturan Angka Satu (1) di Posisi Ribuan:</b> Jika angka pertama (paling kiri) adalah angka 1, maka tidak dibaca "Satu Ribu", melainkan wajib dibaca "Seribu".
+            <ul>
+              <li><i>Contoh:</i> 1.025 dibaca <i>"Seribu Dua Puluh Lima"</i>.</li>
+            </ul>
+          </li>
+        </ul>
+
+        <p><b>C. Menuliskan Lambang Bilangan Cacah:</b></p>
+        <p>Untuk menuliskan angka dari nama bilangan lisan, kita tentukan angka pengisinya secara bertahap dari ribuan hingga satuan.</p>
+        <p><i>Contoh Kasus Puncak Mahameru (Gunung Semeru):</i> Puncak Gunung Semeru memiliki ketinggian tiga ribu enam ratus tujuh puluh enam meter di atas permukaan laut. Cara menulis angkanya:</p>
+        <ul>
+          <li>Kata "tiga ribu" &rarr; Tulis angka 3 di posisi paling depan.</li>
+          <li>Kata "enam ratus" &rarr; Tulis angka 6 setelah angka 3.</li>
+          <li>Kata "tujuh puluh" &rarr; Tulis angka 7 setelah angka 6.</li>
+          <li>Kata "enam" &rarr; Tulis angka 6 di posisi paling belakang.</li>
+          <li>Maka lambang bilangannya ditulis: <b>3.676</b>.</li>
+        </ul>
+      `;
+    } else if (lowTopic.includes("hitung") || lowTopic.includes("bilangan 1 sampai 5") || lowTopic.includes("angka 0-10") || lowTopic.includes("bilangan sampai")) {
       mainExplanation = `
         <p><b>A. Mengenal Konsep Bilangan & Angka:</b></p>
         <p>Bilangan adalah konsep abstrak yang digunakan untuk menyatakan kuantitas atau banyaknya suatu benda. Lambang bilangan (seperti 1, 2, 3, dst.) adalah simbol tertulis yang kita pakai untuk menuliskan kuantitas tersebut. Untuk menguasai bilangan, kita harus memahami tiga hubungan utama:</p>
@@ -2404,7 +3416,40 @@ function generateDetailedBahanAjarText(category, topicName, subjectId) {
 
   if (category === "pancasila") {
     let mainExplanation = "";
-    if (lowTopic.includes("simbol") || lowTopic.includes("sila") || lowTopic.includes("pancasila") || lowTopic.includes("lambang")) {
+    if (lowTopic.includes("perumus") || lowTopic.includes("tokoh") || lowTopic.includes("bpupki") || lowTopic.includes("sejarah")) {
+      mainExplanation = `
+        <p><b>A. Sejarah Perumusan Pancasila & Sidang BPUPKI:</b></p>
+        <p>Pancasila sebagai dasar negara dirumuskan melalui proses musyawarah yang panjang oleh para pendiri bangsa dalam sidang BPUPKI (Badan Penyelidik Usaha-usaha Persiapan Kemerdekaan Indonesia). Tiga tokoh utama yang mengusulkan rumusan dasar negara adalah:</p>
+        <ul>
+          <li><b>Moh. Yamin:</b> Mengusulkan gagasan lisan dan tertulis mengenai dasar negara yang mencakup peri kebangsaan, peri kemanusiaan, peri ketuhanan, peri kerakyatan, dan kesejahteraan rakyat.</li>
+          <li><b>Soepomo:</b> Menekankan konsep negara persatuan (integralistik) dan kekeluargaan di antara warga negara.</li>
+          <li><b>Soekarno:</b> Menyampaikan pidato pada tanggal 1 Juni 1945 yang memperkenalkan nama "Pancasila" sebagai dasar negara Indonesia merdeka.</li>
+        </ul>
+        <p><b>Semangat Kebersamaan dan Menghargai Perbedaan:</b> Para perumus Pancasila menunjukkan teladan mulia berupa sikap toleransi, kerendahan hati, dan komitmen tinggi untuk menghargai perbedaan pendapat demi tercapainya persatuan dan kemerdekaan bangsa Indonesia.</p>
+      `;
+    } else if (lowTopic.includes("bullying") || lowTopic.includes("perundungan") || lowTopic.includes("intimidasi")) {
+      mainExplanation = `
+        <p><b>A. Menghadapi Perundungan (Bullying) dengan Nilai Pancasila:</b></p>
+        <p>Perundungan atau bullying adalah tindakan tidak terpuji yang menyakiti fisik, verbal, atau psikologis seseorang secara sengaja dan berulang. Sebagai pelajar Pancasila, kita wajib menolak segala bentuk perundungan dengan menerapkan nilai-nilai Pancasila:</p>
+        <ul>
+          <li><b>Sila ke-2 (Kemanusiaan yang Adil dan Beradab):</b> Mengajarkan kita untuk saling menghormati harkat dan martabat sesama manusia. Menyakiti atau mengejek teman bertentangan dengan nilai kemanusiaan. Kita harus memperlakukan semua orang dengan kasih sayang dan keadilan.</li>
+          <li><b>Sila ke-3 (Persatuan Indonesia):</b> Mengajarkan kita untuk menjaga kerukunan dan persatuan. Tindakan bullying dapat merusak hubungan pertemanan dan memecah belah persatuan di sekolah. Kita harus merangkul semua teman tanpa membeda-bedakan.</li>
+        </ul>
+        <p><b>Cara Menghadapi Perundungan:</b> Jangan takut untuk melaporkan tindakan bullying kepada guru atau orang tua, hindari membalas dengan kekerasan, dan jadilah penolong bagi teman yang mengalami intimidasi.</p>
+      `;
+    } else if (lowTopic.includes("keluarga") || lowTopic.includes("rumah") || lowTopic.includes("komitmen")) {
+      mainExplanation = `
+        <p><b>A. Penerapan Nilai Pancasila di Lingkungan Keluarga:</b></p>
+        <p>Keluarga adalah lingkungan pertama tempat kita belajar mempraktikkan nilai-nilai luhur Pancasila. Penerapan komitmen sila ke-1 sampai ke-5 di rumah meliputi:</p>
+        <ul>
+          <li><b>Sila 1:</b> Berdoa bersama sebelum makan atau beribadah bersama anggota keluarga sebagai wujud ketaatan kepada Tuhan Yang Maha Esa.</li>
+          <li><b>Sila 2:</b> Menyayangi dan membantu adik yang sedang belajar, serta menghormati orang tua dengan berbicara sopan.</li>
+          <li><b>Sila 3:</b> Menjaga kerukunan antaranggota keluarga, tidak bertengkar dengan saudara, dan menunjukkan rasa cinta terhadap rumah sendiri.</li>
+          <li><b>Sila 4:</b> Mengadakan musyawarah keluarga untuk menentukan tujuan liburan atau pembagian tugas merapikan rumah.</li>
+          <li><b>Sila 5:</b> Melaksanakan pembagian tugas rumah secara adil dan seimbang sesuai dengan kemampuan masing-masing anggota keluarga, serta berhemat.</li>
+        </ul>
+      `;
+    } else if (lowTopic.includes("simbol") || lowTopic.includes("sila") || lowTopic.includes("pancasila") || lowTopic.includes("lambang")) {
       mainExplanation = `
         <p><b>A. Mengenal Simbol dan Sila Pancasila:</b></p>
         <p>Pancasila adalah dasar negara Indonesia. Lambang Pancasila berbentuk Burung Garuda yang gagah. Di dada Burung Garuda terdapat perisai yang memuat lima simbol sila Pancasila:</p>
@@ -2829,6 +3874,7 @@ function generateDetailedBahanAjarText(category, topicName, subjectId) {
 function generateDetailedLkpd(category, topicName, subjectId) {
   const lowTopic = topicName.toLowerCase();
   const meetingNum = state.selectedMeetingNum || 1;
+  const qa = getTopicSpecificQA(subjectId, topicName);
   let lkpdHtml = "";
   let subTitle = `LKPD: Tantangan Belajar`;
   let desc = `Topik: ${topicName} (Pertemuan ${meetingNum})`;
@@ -2837,7 +3883,71 @@ function generateDetailedLkpd(category, topicName, subjectId) {
     subTitle = "LKPD: Tantangan Matematika Ceria";
     
     // Level 1: Specific Subtopic Matching
-    if (lowTopic.includes("1 sampai 5") || lowTopic.includes("1-5")) {
+    if (lowTopic.includes("10.000") || lowTopic.includes("digit") || lowTopic.includes("ribuan") || (lowTopic.includes("cacah") && !lowTopic.includes("100"))) {
+      subTitle = "LEMBAR KERJA PESERTA DIDIK (LKPD)";
+      desc = `Mata Pelajaran: Matematika | Materi: Bilangan Cacah sampai 10.000`;
+      lkpdHtml = `
+        <p><b>A. Petunjuk Diskusi Kelompok:</b><br>
+        1. Siapkan paket kertas karton berukuran 10x10 cm yang telah disediakan guru.<br>
+        2. Tuliskan angka 0 s.d 9 menggunakan spidol warna di setiap kertas hingga membentuk kartu bilangan.<br>
+        3. Selesaikan persoalan tantangan belanja di bawah ini dengan berdiskusi bersama.</p>
+        
+        <p><b>B. Tantangan Kelompok: Kasus Belanja Slamet</b><br>
+        Slamet membeli biskuit dan beberapa makanan ringan di warung Ibu Helen seharga Rp7.350,00. Slamet membayar menggunakan selembar uang pecahan Rp9.500,00. Dari pembayaran tersebut, Slamet menerima uang kembalian sebesar Rp2.150,00.</p>
+        
+        <p>1. Susunlah angka-angka yang membentuk harga makanan ringan Slamet (7.350) ke dalam tabel nilai tempat berikut:</p>
+        <table style="width: 100%; border-collapse: collapse; margin: 10px 0; text-align: center;">
+          <thead>
+            <tr style="background-color: var(--primary-light); color: var(--primary);">
+              <th style="border: 1px solid var(--border-color); padding: 8px; width: 25%;">Ribuan</th>
+              <th style="border: 1px solid var(--border-color); padding: 8px; width: 25%;">Ratusan</th>
+              <th style="border: 1px solid var(--border-color); padding: 8px; width: 25%;">Puluhan</th>
+              <th style="border: 1px solid var(--border-color); padding: 8px; width: 25%;">Satuan</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td style="border: 1px solid var(--border-color); padding: 12px; font-weight: bold; font-size: 14px;">.....</td>
+              <td style="border: 1px solid var(--border-color); padding: 12px; font-weight: bold; font-size: 14px;">.....</td>
+              <td style="border: 1px solid var(--border-color); padding: 12px; font-weight: bold; font-size: 14px;">.....</td>
+              <td style="border: 1px solid var(--border-color); padding: 12px; font-weight: bold; font-size: 14px;">.....</td>
+            </tr>
+          </tbody>
+        </table>
+        <p>Cara Membaca Bilangan 7.350 adalah:<br>
+        <b>Jawaban:</b> ...........................................................................................................................................................</p>
+        
+        <p>2. Susunlah nominal kembalian uang Slamet (2.150) ke dalam tabel nilai tempat berikut:</p>
+        <table style="width: 100%; border-collapse: collapse; margin: 10px 0; text-align: center;">
+          <thead>
+            <tr style="background-color: var(--primary-light); color: var(--primary);">
+              <th style="border: 1px solid var(--border-color); padding: 8px; width: 25%;">Ribuan</th>
+              <th style="border: 1px solid var(--border-color); padding: 8px; width: 25%;">Ratusan</th>
+              <th style="border: 1px solid var(--border-color); padding: 8px; width: 25%;">Puluhan</th>
+              <th style="border: 1px solid var(--border-color); padding: 8px; width: 25%;">Satuan</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td style="border: 1px solid var(--border-color); padding: 12px; font-weight: bold; font-size: 14px;">.....</td>
+              <td style="border: 1px solid var(--border-color); padding: 12px; font-weight: bold; font-size: 14px;">.....</td>
+              <td style="border: 1px solid var(--border-color); padding: 12px; font-weight: bold; font-size: 14px;">.....</td>
+              <td style="border: 1px solid var(--border-color); padding: 12px; font-weight: bold; font-size: 14px;">.....</td>
+            </tr>
+          </tbody>
+        </table>
+        <p>Cara Membaca Bilangan 2.150 adalah:<br>
+        <b>Jawaban:</b> ...........................................................................................................................................................</p>
+        
+        <p><b>C. Tantangan Menulis Bilangan (Geografi Indonesia):</b><br>
+        Bacalah teks berikut dengan teliti bersama kelompokmu!<br>
+        <i>"Indonesia adalah wilayah yang kaya akan gunung berapi aktif. Salah satu gunung yang terkenal adalah Gunung Sinabung di Pulau Sumatra yang memiliki ketinggian dua ribu empat ratus enam puluh meter di atas permukaan laut. Selain itu, ada pula Gunung Rinjani di Pulau Lombok yang menjulang setinggi tiga ribu tujuh ratus dua puluh enam meter di atas permukaan laut."</i></p>
+        
+        <p>Bantulah Badan Geologi untuk menuliskan lambang angka ketinggian gunung tersebut:<br>
+        - Ketinggian Gunung Sinabung (dua ribu empat ratus  enam puluh) ditulis angkanya = <b>........................ meter</b><br>
+        - Ketinggian Gunung Rinjani (tiga ribu tujuh ratus dua puluh enam) ditulis angkanya = <b>........................ meter</b></p>
+      `;
+    } else if (lowTopic.includes("1 sampai 5") || lowTopic.includes("1-5")) {
       lkpdHtml = `
         <p><b>A. Tujuan Aktivitas:</b><br>Menghitung dan menuliskan lambang bilangan 1 sampai 5 menggunakan benda konkret.</p>
         <p><b>B. Langkah Kerja:</b><br>1. Ambil kancing baju yang diberikan guru.<br>2. Hitung jumlahnya (1 hingga 5).<br>3. Tuliskan lambang bilangannya.</p>
@@ -2889,47 +3999,7 @@ function generateDetailedLkpd(category, topicName, subjectId) {
       `;
     } else {
       // Level 2: Meeting Index Falling back (for Matematika)
-      if (meetingNum === 1) {
-        lkpdHtml = `
-          <p><b>A. Tujuan Aktivitas:</b><br>Memahami konsep dasar materi ${topicName} melalui eksplorasi terbimbing.</p>
-          <p><b>B. Langkah Kerja:</b><br>1. Amati penjelasan awal mengenai ${topicName}.<br>2. Gunakan stik hitung atau gambar visual.<br>3. Selesaikan soal latihan dasar secara mandiri.</p>
-          <p><b>C. Tantangan 1: Pilihan Ganda</b><br>
-          1. Mengapa penting memahami konsep awal dari ${topicName}?<br>A. Agar bisa bermain lebih lama<br>B. Menjadi dasar hitungan yang benar dan teliti<br>C. Meniru pekerjaan teman dengan cepat<br><br>
-          2. Penerapan matematika ${topicName} dalam kehidupan nyata misalnya saat...<br>A. Tidur malam<br>B. Menghitung mainan kita<br>C. Menonton televisi</p>
-          <p><b>D. Tantangan 2: Uraian</b><br>Tuliskan 1 pertanyaan yang masih membuatmu penasaran tentang materi ${topicName} ini!</p>
-          <p><b>E. Tantangan 3: Aktivitas Kelompok</b><br>Diskusikan bersama kelompokmu kegunaan materi ${topicName} di sekolah!</p>
-        `;
-      } else if (meetingNum === 2) {
-        lkpdHtml = `
-          <p><b>A. Tujuan Aktivitas:</b><br>Menerapkan rumus dan konsep hitung ${topicName} pada soal cerita sederhana.</p>
-          <p><b>B. Langkah Kerja:</b><br>1. Bacalah soal cerita dengan perlahan.<br>2. Temukan informasi apa yang diketahui dan ditanyakan.<br>3. Hitunglah hasil akhir secara teliti.</p>
-          <p><b>C. Tantangan 1: Pilihan Ganda</b><br>
-          1. Kakak membeli 10 buah buku, lalu memberikan 3 buku kepada adik. Kalimat matematika yang tepat adalah...<br>A. 10 + 3<br>B. 10 - 3<br>C. 10 x 3<br><br>
-          2. Hasil akhir dari perhitungan cerita di atas adalah...<br>A. 7 buku<br>B. 13 buku<br>C. 6 buku</p>
-          <p><b>D. Tantangan 2: Uraian</b><br>Selesaikan soal cerita berikut: Ibu memiliki 8 telur, digunakan memasak kue 4 telur. Berapa telur sisa ibu?</p>
-          <p><b>E. Tantangan 3: Aktivitas Kelompok</b><br>Buatlah satu soal cerita kelompok mengenai ${topicName} dan tantanglah kelompok lain untuk menjawabnya!</p>
-        `;
-      } else if (meetingNum === 3) {
-        lkpdHtml = `
-          <p><b>A. Tujuan Aktivitas:</b><br>Menganalisis dan membandingkan bentuk atau hasil hitung materi ${topicName}.</p>
-          <p><b>B. Langkah Kerja:</b><br>1. Perhatikan dua kelompok data atau gambar yang disajikan guru.<br>2. Cari perbedaan hasil hitung atau cirinya.<br>3. Tuliskan perbandingannya.</p>
-          <p><b>C. Tantangan 1: Pilihan Ganda</b><br>
-          1. Manakah hasil yang lebih besar di bawah ini?<br>A. 8 ditambah 4<br>B. 15 dikurangi 5<br>C. 6 ditambah 3<br><br>
-          2. Mengapa kita harus teliti dalam membandingkan ukuran atau nilai matematika?<br>A. Agar dipuji rajin<br>B. Agar hasilnya akurat dan tidak keliru<br>C. Mempercepat waktu pengerjaan</p>
-          <p><b>D. Tantangan 2: Uraian</b><br>Tuliskan perbandingan hasil: 12 - 4 ... 5 + 4 (isi dengan lebih besar, lebih kecil, atau sama dengan)!</p>
-          <p><b>E. Tantangan 3: Aktivitas Kelompok</b><br>Ukur panjang meja belajar kalian menggunakan jengkal tangan masing-masing, bandingkan hasilnya!</p>
-        `;
-      } else {
-        lkpdHtml = `
-          <p><b>A. Tujuan Aktivitas:</b><br>Menyelesaikan proyek kreatif numerasi terkait ${topicName} secara berkelompok.</p>
-          <p><b>B. Langkah Kerja:</b><br>1. Siapkan kertas gambar, gunting, dan pensil warna.<br>2. Gambar diagram atau pola hitung materi ${topicName}.<br>3. Hias dengan warna kesukaanmu.</p>
-          <p><b>C. Tantangan 1: Pilihan Ganda</b><br>
-          1. Bekerja sama menyelesaikan tantangan matematika tersulit membuat tugas menjadi...<br>A. Lebih berat<br>B. Lebih mudah dan menyenangkan<br>C. Tidak selesai-selesai<br><br>
-          2. Sikap Profil Pelajar Pancasila yang kita tunjukkan saat berdiskusi adalah...<br>A. Marah jika pendapat berbeda<br>B. Saling mendengarkan dan bergotong royong<br>C. Diam saja tidak membantu</p>
-          <p><b>D. Tantangan 2: Uraian</b><br>Tuliskan apa saja yang kamu pelajari selama mengerjakan tugas proyek ${topicName} ini!</p>
-          <p><b>E. Tantangan 3: Aktivitas Kelompok</b><br>Presentasikan hasil karya proyek gambar/diagram numerasi kelompokmu di depan kelas dengan percaya diri!</p>
-        `;
-      }
+      lkpdHtml = qa.lkpdExercises;
     }
   } else if (category === "indonesia") {
     subTitle = "LKPD: Literasi Bahasa Indonesia";
@@ -2987,47 +4057,7 @@ function generateDetailedLkpd(category, topicName, subjectId) {
       `;
     } else {
       // Level 2: Meeting Index Falling back (for Indonesia)
-      if (meetingNum === 1) {
-        lkpdHtml = `
-          <p><b>A. Tujuan Aktivitas:</b><br>Memahami ide pokok dan kosakata baru dari teks bacaan bertopik ${topicName}.</p>
-          <p><b>B. Langkah Kerja:</b><br>1. Bacalah teks cerita pendek yang dibagikan guru.<br>2. Garis bawahi kata-kata baru yang belum kamu ketahui artinya.<br>3. Jawab pertanyaan pemahaman cerita.</p>
-          <p><b>C. Tantangan 1: Pilihan Ganda</b><br>
-          1. Apa tujuan kita membaca teks cerita secara seksama?<br>A. Agar cepat mengantuk<br>B. Agar memahami isi cerita dan pesan yang disampaikan penulis<br>C. Mengisi waktu luang saja<br><br>
-          2. Tokoh utama dalam sebuah cerita adalah tokoh yang...<br>A. Sering muncul dan menjadi pusat cerita<br>B. Hanya muncul di akhir cerita<br>C. Tidak memiliki nama</p>
-          <p><b>D. Tantangan 2: Uraian</b><br>Tuliskan arti kata sulit yang kamu temukan setelah membaca teks materi ${topicName}!</p>
-          <p><b>E. Tantangan 3: Aktivitas Kelompok</b><br>Bacakan teks cerita secara bergantian (membaca nyaring) dengan intonasi yang baik di depan teman kelompokmu!</p>
-        `;
-      } else if (meetingNum === 2) {
-        lkpdHtml = `
-          <p><b>A. Tujuan Aktivitas:</b><br>Menulis kalimat sederhana secara runtut dengan struktur Subjek, Predikat, Objek (SPO).</p>
-          <p><b>B. Langkah Kerja:</b><br>1. Amati gambar situasi yang diberikan guru.<br>2. Tuliskan sebuah kalimat yang menceritakan gambar tersebut.<br>3. Pastikan menggunakan tanda titik di akhir kalimat.</p>
-          <p><b>C. Tantangan 1: Pilihan Ganda</b><br>
-          1. Susunan kalimat acak: "bola - Budi - menendang" yang benar adalah...<br>A. Bola menendang Budi<br>B. Budi menendang bola<br>C. Menendang Budi bola<br><br>
-          2. Di manakah letak tanda titik (.) pada kalimat berita yang benar?<br>A. Di awal kalimat<br>B. Di tengah kalimat<br>C. Di akhir kalimat</p>
-          <p><b>D. Tantangan 2: Uraian</b><br>Buatlah kalimat berita sederhana dari kata: <b>membaca</b> dan <b>menulis</b>!</p>
-          <p><b>E. Tantangan 3: Aktivitas Kelompok</b><br>Bermain bisik berantai: Bisikkan kalimat bertema ${topicName} kepada teman di sebelahmu, teman terakhir mengucapkan kalimat tersebut dengan keras!</p>
-        `;
-      } else if (meetingNum === 3) {
-        lkpdHtml = `
-          <p><b>A. Tujuan Aktivitas:</b><br>Mengemukakan pendapat secara lisan mengenai isi gambar cerita bertopik ${topicName}.</p>
-          <p><b>B. Langkah Kerja:</b><br>1. Amati gambar berseri yang dipasang di papan tulis.<br>2. Diskusikan jalan cerita gambar tersebut bersama kelompok.<br>3. Kemukakan pendapatmu dengan bahasa yang santun.</p>
-          <p><b>C. Tantangan 1: Pilihan Ganda</b><br>
-          1. Saat mengemukakan pendapat di depan kelas, sikap tubuh kita sebaiknya...<br>A. Berdiri tegap dan percaya diri<br>B. Bersembunyi di belakang guru<br>C. Berteriak marah<br><br>
-          2. Jika pendapat kita berbeda dengan teman kelompok, kita harus...<br>A. Mengajak berkelahi<br>B. Menghargai dan mendengarkan dengan baik<br>C. Mogok belajar</p>
-          <p><b>D. Tantangan 2: Uraian</b><br>Tuliskan pendapat singkatmu tentang tindakan tokoh yang suka membuang sampah di halaman sekolah pada gambar tersebut!</p>
-          <p><b>E. Tantangan 3: Aktivitas Kelompok</b><br>Diskusikan bersama kelompokmu pesan moral apa yang terkandung dalam cerita bergambar bertopik ${topicName}!</p>
-        `;
-      } else {
-        lkpdHtml = `
-          <p><b>A. Tujuan Aktivitas:</b><br>Menyusun kamus dinding visual kosakata baru bertema ${topicName}.</p>
-          <p><b>B. Langkah Kerja:</b><br>1. Tuliskan 3 kata kunci terkait ${topicName} di kartu kertas.<br>2. Gambarlah makna visual dari kata tersebut.<br>3. Tempelkan kartu tersebut pada majalah dinding kelas.</p>
-          <p><b>C. Tantangan 1: Pilihan Ganda</b><br>
-          1. Kamus visual membantu kita memahami arti kata baru melalui...<br>A. Angka hitung<br>B. Gambar/ilustrasi yang menarik<br>C. Suara rekaman<br><br>
-          2. Menghias kartu kosakata baru melatih rasa... kita.<br>A. Malas<br>B. Seni dan kreativitas<br>C. Mengantuk</p>
-          <p><b>D. Tantangan 2: Uraian</b><br>Tuliskan kalimat ajakan untuk melestarikan kebiasaan membaca nyaring di rumah!</p>
-          <p><b>E. Tantangan 3: Aktivitas Kelompok</b><br>Tampilkan kamus visual kata-kata bertopik ${topicName} hasil karya kelompokmu kepada kelompok lain untuk saling mengapresiasi!</p>
-        `;
-      }
+      lkpdHtml = qa.lkpdExercises;
     }
   } else {
     // Other subjects (Pancasila, PAI, IPAS, PJOK, Senirupa, English, Jawa, Koding)
@@ -3058,27 +4088,7 @@ function generateDetailedLkpd(category, topicName, subjectId) {
         `;
       } else {
         // Meeting fallback for Pancasila
-        if (meetingNum % 2 === 1) {
-          lkpdHtml = `
-            <p><b>A. Tujuan Aktivitas:</b><br>Memahami pengamalan nilai gotong royong di lingkungan sekolah.</p>
-            <p><b>B. Langkah Kerja:</b><br>1. Amati kegiatan piket kelas.<br>2. Diskusikan pentingnya kerja sama.<br>3. Tuliskan komitmen piket kelompok.</p>
-            <p><b>C. Tantangan 1: Pilihan Ganda</b><br>
-            1. Pekerjaan piket kelas akan terasa lebih ringan jika dikerjakan dengan cara...<br>A. Sendirian saja<br>B. Bersama-sama/gotong royong<br>C. Membayar orang lain<br><br>
-            2. Sikap yang baik saat teman meminta bantuan menyapu adalah...<br>A. Menolak kasar<br>B. Membantu dengan tulus ikhlas<br>C. Menertawakannya</p>
-            <p><b>D. Tantangan 2: Uraian</b><br>Mengapa kita harus saling tolong-menolong dengan teman di kelas?</p>
-            <p><b>E. Tantangan 3: Aktivitas Kelompok</b><br>Bersihkan laci meja dan rapikan sudut baca kelas secara bersama-sama dalam waktu 5 menit!</p>
-          `;
-        } else {
-          lkpdHtml = `
-            <p><b>A. Tujuan Aktivitas:</b><br>Mengenali perbedaan ciri fisik teman sebaya sebagai kekayaan identitas bangsa.</p>
-            <p><b>B. Langkah Kerja:</b><br>1. Perhatikan teman sebangkumu.<br>2. Catat warna rambut, bentuk rambut, dan warna kulit teman sebangkumu secara sopan.<br>3. Tuliskan di lembar pengamatan.</p>
-            <p><b>C. Tantangan 1: Pilihan Ganda</b><br>
-            1. Sikap kita terhadap teman yang memiliki warna kulit berbeda dari kita adalah...<br>A. Mengejeknya<br>B. Menghargai dan berteman akrab<br>C. Menjauhinya<br><br>
-            2. Kebhinekaan artinya... tetapi tetap satu jua.<br>A. Sama semua<br>B. Berbeda-beda<br>C. Bermusuhan</p>
-            <p><b>D. Tantangan 2: Uraian</b><br>Tuliskan apa saja keunikan diri yang kamu miliki dan kamu banggakan!</p>
-            <p><b>E. Tantangan 3: Aktivitas Kelompok</b><br>Gambarlah bentuk jabat tangan kelompok besar di kertas gambar dan warnailah dengan indah sebagai simbol persatuan!</p>
-          `;
-        }
+        lkpdHtml = qa.lkpdExercises;
       }
     } else if (category === "pai") {
       subTitle = "LKPD: Pendidikan Agama Islam & Budi Pekerti";
@@ -3104,27 +4114,7 @@ function generateDetailedLkpd(category, topicName, subjectId) {
         `;
       } else {
         // Meeting fallback for PAI
-        if (meetingNum % 2 === 1) {
-          lkpdHtml = `
-            <p><b>A. Tujuan Aktivitas:</b><br>Mengenal huruf-huruf Hijaiyah dan tanda baca (harakat) Al-Qur'an.</p>
-            <p><b>B. Langkah Kerja:</b><br>1. Bacalah huruf Hijaiyah Alif sampai Ya yang ditunjuk guru.<br>2. Sebutkan bunyi harakat Fathah, Kasrah, dan Dhommah.<br>3. Tuliskan di kotak jawaban.</p>
-            <p><b>C. Tantangan 1: Pilihan Ganda</b><br>
-            1. Huruf Hijaiyah yang berbunyi 'Ba' diberi tanda baca fathah di... huruf.<br>A. Atas<br>B. Bawah<br>C. Depan<br><br>
-            2. Jumlah huruf hijaiyah dasar ada... huruf.<br>A. 26<br>B. 29<br>C. 30</p>
-            <p><b>D. Tantangan 2: Uraian</b><br>Tuliskan bentuk huruf Hijaiyah: Jim, Ha, dan Kho secara mandiri!</p>
-            <p><b>E. Tantangan 3: Aktivitas Kelompok</b><br>Mencocokkan kartu huruf hijaiyah dengan cara bacanya bersama kelompok kecilmu!</p>
-          `;
-        } else {
-          lkpdHtml = `
-            <p><b>A. Tujuan Aktivitas:</b><br>Menerapkan rukun Islam dan rukun Iman dalam keseharian muslim.</p>
-            <p><b>B. Langkah Kerja:</b><br>1. Hafalkan 5 Rukun Islam dan 6 Rukun Iman.<br>2. Bedakan tindakan yang masuk kategori rukun Islam (seperti salat, zakat) dan rukun iman.<br>3. Catat di tabel.</p>
-            <p><b>C. Tantangan 1: Pilihan Ganda</b><br>
-            1. Rukun Islam yang kedua adalah mendirikan...<br>A. Puasa Ramadhan<br>B. Salat Fardu<br>C. Haji bagi yang mampu<br><br>
-            2. Iman kepada malaikat Allah termasuk rukun iman yang ke-...<br>A. 1<br>B. 2<br>C. 3</p>
-            <p><b>D. Tantangan 2: Uraian</b><br>Sebutkan 5 rukun Islam secara berurutan dan lengkap!</p>
-            <p><b>E. Tantangan 3: Aktivitas Kelompok</b><br>Menyanyikan lagu anak-anak bertema "Rukun Islam & Rukun Iman" bersama kelompokmu di depan kelas!</p>
-          `;
-        }
+        lkpdHtml = qa.lkpdExercises;
       }
     } else if (category === "ipas") {
       subTitle = "LKPD: Saintis Cilik (IPAS)";
@@ -3150,27 +4140,7 @@ function generateDetailedLkpd(category, topicName, subjectId) {
         `;
       } else {
         // Meeting fallback for IPAS
-        if (meetingNum % 2 === 1) {
-          lkpdHtml = `
-            <p><b>A. Tujuan Aktivitas:</b><br>Mengidentifikasi wujud zat (padat, cair, gas) di sekitar ruang kelas.</p>
-            <p><b>B. Langkah Kerja:</b><br>1. Carilah 3 benda berbeda wujud di sekitar kelas.<br>2. Amati sifat bentuk dan volumenya (apakah berubah-ubah atau tetap).<br>3. Tuliskan di tabel kerja.</p>
-            <p><b>C. Tantangan 1: Pilihan Ganda</b><br>
-            1. Benda padat memiliki sifat bentuk yang...<br>A. Selalu berubah mengikuti wadah<br>B. Tetap dan tidak berubah wujud secara spontan<br>C. Menjadi tidak terlihat<br><br>
-            2. Contoh perubahan wujud mencair terjadi pada...<br>A. Air dimasukkan lemari es<br>B. Es batu diletakkan di tempat terbuka<br>C. Kamper pakaian menyusut</p>
-            <p><b>D. Tantangan 2: Uraian</b><br>Tuliskan perbedaan sifat partikel benda padat dengan benda cair berdasarkan hasil belajarmu!</p>
-            <p><b>E. Tantangan 3: Aktivitas Kelompok</b><br>Lakukan eksperimen meniup balon dalam kelompok. Diskusikan mengapa balon bisa mengembang ketika ditiup!</p>
-          `;
-        } else {
-          lkpdHtml = `
-            <p><b>A. Tujuan Aktivitas:</b><br>Mengidentifikasi interaksi sosial masyarakat setempat dan peninggalan sejarah daerah.</p>
-            <p><b>B. Langkah Kerja:</b><br>1. Diskusikan profesi yang ada di sekitar lingkungan rumah anggota kelompok.<br>2. Identifikasi peninggalan sejarah lokal (misalnya prasasti, candi, atau cerita legenda).<br>3. Tuliskan laporannya.</p>
-            <p><b>C. Tantangan 1: Pilihan Ganda</b><br>
-            1. Kegiatan jual beli di pasar tradisional menunjukkan adanya interaksi di bidang...<br>A. Politik<br>B. Ekonomi<br>C. Keagamaan<br><br>
-            2. Candi Borobudur merupakan peninggalan bersejarah bercorak agama...<br>A. Islam<br>B. Buddha<br>C. Hindu</p>
-            <p><b>D. Tantangan 2: Uraian</b><br>Sebutkan 3 peninggalan sejarah kerajaan Hindu-Buddha yang ada di Indonesia!</p>
-            <p><b>E. Tantangan 3: Aktivitas Kelompok</b><br>Buatlah peta konsep visual sederhana mengenai peta profesi/pekerjaan masyarakat sekitar sekolahmu!</p>
-          `;
-        }
+        lkpdHtml = qa.lkpdExercises;
       }
     } else if (category === "pjok") {
       subTitle = "LKPD: Kebugaran dan Aktivitas Jasmani";
@@ -3196,27 +4166,7 @@ function generateDetailedLkpd(category, topicName, subjectId) {
         `;
       } else {
         // Meeting fallback for PJOK
-        if (meetingNum % 2 === 1) {
-          lkpdHtml = `
-            <p><b>A. Tujuan Aktivitas:</b><br>Mempraktikkan keseimbangan tubuh (senam lantai) secara aman.</p>
-            <p><b>B. Langkah Kerja:</b><br>1. Lakukan pemanasan peregangan otot lengan dan paha.<br>2. Rentangkan tangan, angkat satu kaki ditekuk di depan dada. Tahan selama 8 hitungan.<br>3. Lakukan sikap kapal terbang di atas matras.</p>
-            <p><b>C. Tantangan 1: Pilihan Ganda</b><br>
-            1. Menjaga keseimbangan berdiri dengan satu kaki melatih kekuatan otot...<br>A. Tangan<br>B. Kaki/Paha<br>C. Leher<br><br>
-            2. Sikap kapal terbang dilakukan dengan posisi badan condong ke... dan satu kaki lurus ke belakang.<br>A. Depan<br>B. Belakang<br>C. Samping</p>
-            <p><b>D. Tantangan 2: Uraian</b><br>Mengapa kita harus melakukan peregangan otot (pemanasan) sebelum olahraga berat? Jelaskan akibatnya jika terlewat!</p>
-            <p><b>E. Tantangan 3: Aktivitas Kelompok</b><br>Praktikkan gerakan berguling ke depan (roll depan) secara bergantian di bawah pengawasan dan bantuan guru!</p>
-          `;
-        } else {
-          lkpdHtml = `
-            <p><b>A. Tujuan Aktivitas:</b><br>Mengukur detak denyut nadi untuk mengetahui tingkat kebugaran jasmani.</p>
-            <p><b>B. Langkah Kerja:</b><br>1. Cari denyut nadi di pergelangan tangan kiri menggunakan jari telunjuk dan tengah.<br>2. Hitung jumlah denyut nadi selama 1 menit dalam kondisi santai.<br>3. Lakukan lari di tempat selama 1 menit, lalu hitung kembali denyut nadinya.</p>
-            <p><b>C. Tantangan 1: Pilihan Ganda</b><br>
-            1. Setelah melakukan aktivitas fisik yang berat, detak denyut nadi kita akan menjadi...<br>A. Lebih lambat<br>B. Lebih cepat dan kencang<br>C. Berhenti<br><br>
-            2. Denyut nadi dapat dideteksi dengan menempelkan jari pada...<br>A. Pergelangan tangan atau leher<br>B. Punggung kaki<br>C. Sikut lengan</p>
-            <p><b>D. Tantangan 2: Uraian</b><br>Sebutkan 3 contoh latihan jasmani yang berkhasiat melatih kekuatan otot perut dan lengan!</p>
-            <p><b>E. Tantangan 3: Aktivitas Kelompok</b><br>Lakukan lari cepat (sprint) berpasangan sejauh 15 meter. Catat waktu tempuh kelompokmu dalam tabel kelompok!</p>
-          `;
-        }
+        lkpdHtml = qa.lkpdExercises;
       }
     } else if (category === "senirupa") {
       subTitle = "LKPD: Seni Rupa Kreatif";
@@ -3242,27 +4192,7 @@ function generateDetailedLkpd(category, topicName, subjectId) {
         `;
       } else {
         // Meeting fallback for Seni Rupa
-        if (meetingNum % 2 === 1) {
-          lkpdHtml = `
-            <p><b>A. Tujuan Aktivitas:</b><br>Membuat bentuk patung hewan sederhana tiga dimensi (3D) menggunakan bahan lempung/plastisin.</p>
-            <p><b>B. Langkah Kerja:</b><br>1. Siapkan plastisin warna-warni.<br>2. Remas dan bentuk plastisin menjadi bagian kepala, badan, dan kaki hewan.<br>3. Rakit menjadi patung hewan utuh 3D.</p>
-            <p><b>C. Tantangan 1: Pilihan Ganda</b><br>
-            1. Karya seni rupa 3D adalah karya seni yang memiliki...<br>A. Hanya panjang dan lebar<br>B. Panjang, lebar, dan volume/ruang<br>C. Hanya warna saja<br><br>
-            2. Bahan yang lunak dan mudah dibentuk dengan tangan langsung untuk membuat patung adalah...<br>A. Batu marmer<br>B. Plastisin/lempung<br>C. Kayu jati</p>
-            <p><b>D. Tantangan 2: Uraian</b><br>Tuliskan perbedaan utama antara karya seni rupa 2 dimensi dengan 3 dimensi beserta contoh bendanya!</p>
-            <p><b>E. Tantangan 3: Aktivitas Kelompok</b><br>Buatlah kebun binatang mini di atas meja kerja kelompok menggunakan patung-patung plastisin buatan kalian!</p>
-          `;
-        } else {
-          lkpdHtml = `
-            <p><b>A. Tujuan Aktivitas:</b><br>Mempelajari roda warna dan membuat pencampuran warna sekunder secara praktis.</p>
-            <p><b>B. Langkah Kerja:</b><br>1. Siapkan cat air warna merah, kuning, dan biru.<br>2. Campurkan warna merah dengan kuning, biru dengan kuning, merah dengan biru.<br>3. Amati perubahan warna sekunder yang terbentuk.</p>
-            <p><b>C. Tantangan 1: Pilihan Ganda</b><br>
-            1. Campuran warna merah dengan kuning menghasilkan warna baru yaitu...<br>A. Hijau<br>B. Jingga/Orange<br>C. Ungu<br><br>
-            2. Warna dasar yang tidak bisa dibentuk dari pencampuran warna lain dinamakan warna...<br>A. Sekunder<br>B. Primer<br>C. Tersier</p>
-            <p><b>D. Tantangan 2: Uraian</b><br>Tuliskan warna apa yang terbentuk dari perpaduan warna biru dan warna kuning!</p>
-            <p><b>E. Tantangan 3: Aktivitas Kelompok</b><br>Warnailah gambar roda warna kelompokmu menggunakan teknik pencampuran warna cat air secara rapi!</p>
-          `;
-        }
+        lkpdHtml = qa.lkpdExercises;
       }
     } else if (category === "english") {
       subTitle = "LKPD: Fun English Activity";
@@ -3288,27 +4218,7 @@ function generateDetailedLkpd(category, topicName, subjectId) {
         `;
       } else {
         // Meeting fallback for English
-        if (meetingNum % 2 === 1) {
-          lkpdHtml = `
-            <p><b>A. Learning Objectives:</b><br>Describe family members (father, mother, brother, sister) and their traits.</p>
-            <p><b>B. Procedures:</b><br>1. Bring a photo or draw a picture of your family.<br>2. Write down the label of each family member (e.g., father, mother).<br>3. Present your family picture to your seatmate.</p>
-            <p><b>C. Challenge 1: Multiple Choice</b><br>
-            1. The English word for "ibu kandung" is...<br>A. Father<br>B. Mother<br>C. Sister<br><br>
-            2. "This is my grandfather." Grandfather in Indonesian is...<br>A. Nenek<br>B. Kakek<br>C. Paman</p>
-            <p><b>D. Challenge 2: Essay</b><br>Translate the sentence into English: "Saya sayang keluarga saya."</p>
-            <p><b>E. Challenge 3: Group Activity</b><br>Roleplay a small family gathering. Take roles as grandfather, father, mother, and children!</p>
-          `;
-        } else {
-          lkpdHtml = `
-            <p><b>A. Learning Objectives:</b><br>Identify the names of domestic and wild animals in English.</p>
-            <p><b>B. Procedures:</b><br>1. Match animal pictures with their English names.<br>2. Pronounce the animal names with your teacher.<br>3. Describe your favorite pet.</p>
-            <p><b>C. Challenge 1: Multiple Choice</b><br>
-            1. An animal that has a long trunk and is very big is an...<br>A. Cat<br>B. Elephant<br>C. Rabbit<br><br>
-            2. What is the English word for "kucing peliharaan"?<br>A. Lion<br>B. Pet Cat<br>C. Dog</p>
-            <p><b>D. Challenge 2: Essay</b><br>Spell the English word for "kupu-kupu" and "burung" correctly!</p>
-            <p><b>E. Challenge 3: Group Activity</b><br>Imitate animal movements and sounds. Other groups guess the animal's English name!</p>
-          `;
-        }
+        lkpdHtml = qa.lkpdExercises;
       }
     } else if (category === "jawa") {
       subTitle = "LKPD: Sinau Basa Jawa Ceria";
@@ -3334,27 +4244,7 @@ function generateDetailedLkpd(category, topicName, subjectId) {
         `;
       } else {
         // Meeting fallback for Jawa
-        if (meetingNum % 2 === 1) {
-          lkpdHtml = `
-            <p><b>A. Ancas Piwulang:</b><br>Kenal karo paraga tokoh Pandhawa ing crita pewayangan Jawa.</p>
-            <p><b>B. Langkah Kerja:</b><br>1. Amati gambar wayang Pandhawa Lima.<br>2. Sebutna jeneng-jeneng Pandhawa kanthi runtut.<br>3. Tulisake cirine paraga Puntadewa lan Werkudara.</p>
-            <p><b>C. Tantangan 1: Pilihan Ganda</b><br>
-            1. Pandhawa iku cacahe ana...<br>A. Telu<br>B. Lima<br>C. Pitu<br><br>
-            2. Sedulur Pandhawa kang paling tuwa lan nduweni watak sabar banget yaiku...<br>A. Werkudara<br>B. Puntadewa/Yudhistira<br>C. Janaka</p>
-            <p><b>D. Tantangan 2: Uraian</b><br>Sebutna jeneng Pandhawa lima kanthi lengkap lan runtut!</p>
-            <p><b>E. Tantangan 3: Aktivitas Kelompok</b><br>Cocokna gambar paraga wayang Pandhawa karo jenenge ing papan panel kelompok!</p>
-          `;
-        } else {
-          lkpdHtml = `
-            <p><b>A. Ancas Piwulang:</b><br>Nirukake lan mangerteni swara-swara kewan ing basa Jawa.</p>
-            <p><b>B. Langkah Kerja:</b><br>1. Rungokake swara kewan kang diunekake guru.<br>2. Tulisake arane kewan lan swarane.<br>3. Nembangake tembang dolanan "Gajah-Gajah".</p>
-            <p><b>C. Tantangan 1: Pilihan Ganda</b><br>
-            1. Kewan kang nduweni swara "kukuruyuk" ing wayah esuk yaiku...<br>A. Kucing<br>B. Jago/Pitik lanang<br>C. Wedhus<br><br>
-            2. Tembung "ingon-ingon" tegese kewan kang...<br>A. Diculne ing alas<br>B. Dipelihara ing omah<br>C. Kewan galak</p>
-            <p><b>D. Tantangan 2: Uraian</b><br>Tulisna tiruan swarane wedhus lan sapi kanthi bener!</p>
-            <p><b>E. Tantangan 3: Aktivitas Kelompok</b><br>Nembang bebarengan lagu dolanan "Mentok-Mentok" karo kelompokmu kanthi nari gembira!</p>
-          `;
-        }
+        lkpdHtml = qa.lkpdExercises;
       }
     } else if (category === "koding") {
       subTitle = "LKPD: Logika Koding & AI";
@@ -3380,37 +4270,13 @@ function generateDetailedLkpd(category, topicName, subjectId) {
         `;
       } else {
         // Meeting fallback for Koding
-        if (meetingNum % 2 === 1) {
-          lkpdHtml = `
-            <p><b>A. Tujuan Aktivitas:</b><br>Memahami logika kondisional percabangan "if-then-else" dalam pemrograman.</p>
-            <p><b>B. Langkah Kerja:</b><br>1. Amati contoh logika: "Jika Hujan, pakai payung. Jika Tidak, tidak pakai payung".<br>2. Selesaikan studi kasus logika kondisional yang diberikan guru.<br>3. Tuliskan diagram logikanya.</p>
-            <p><b>C. Tantangan 1: Pilihan Ganda</b><br>
-            1. Logika kondisional "if-then" digunakan ketika program memiliki...<br>A. Perintah yang diulang tanpa henti<br>B. Keputusan yang bergantung pada suatu kondisi benar/salah<br>C. Musik latar belakang<br><br>
-            2. "Jika nilai ulangan di atas 70, maka Lulus. Jika Tidak, maka Remedial". Jika Budi mendapat nilai 85, maka status Budi...<br>A. Remedial<br>B. Lulus<br>C. Tidak tahu</p>
-            <p><b>D. Tantangan 2: Uraian</b><br>Buatlah satu contoh logika kondisional "if-then-else" yang kamu temui dalam kehidupan sehari-hari di rumah!</p>
-            <p><b>E. Tantangan 3: Aktivitas Kelompok</b><br>Simulasikan game logika lampu lalu lintas kelompok: "If Red, Stop. If Yellow, Slow. If Green, Go". Peragakan di depan kelas secara bergantian!</p>
-          `;
-        } else {
-          lkpdHtml = `
-            <p><b>A. Tujuan Aktivitas:</b><br>Memahami konsep dasar Kecerdasan Artifisial (AI) dan cara robot mengenali benda.</p>
-            <p><b>B. Langkah Kerja:</b><br>1. Pahami bagaimana kamera komputer belajar mengenali gambar kucing dan anjing.<br>2. Diskusikan apa yang dimaksud dengan proses "latihan data" (training data).<br>3. Catat di tabel.</p>
-            <p><b>C. Tantangan 1: Pilihan Ganda</b><br>
-            1. Kepanjangan dari istilah AI adalah...<br>A. Active Internet<br>B. Artificial Intelligence (Kecerdasan Buatan)<br>C. Algorithm Instruction<br><br>
-            2. Robot pintar dapat mengenali wajah kita karena dilengkapi sensor berupa...<br>A. Speaker musik<br>B. Kamera visual<br>C. Kabel listrik</p>
-            <p><b>D. Tantangan 2: Uraian</b><br>Tuliskan 2 contoh penggunaan asisten pintar Kecerdasan Buatan (AI) yang kamu ketahui di handphone orang tuamu!</p>
-            <p><b>E. Tantangan 3: Aktivitas Kelompok</b><br>Diskusikan bersama kelompok: Manakah pekerjaan yang bisa dibantu oleh AI dan pekerjaan apa saja yang harus tetap dilakukan oleh manusia secara gotong royong!</p>
-          `;
-        }
+        lkpdHtml = qa.lkpdExercises;
       }
     } else {
-      task1 = `
-        <p><b>A. Tujuan Aktivitas:</b><br>Memahami materi ${topicName} secara mendalam melalui pemecahan tantangan kontekstual.</p>
-        <p><b>B. Langkah Kerja:</b><br>1. Baca rangkuman materi ${topicName} dengan saksama.<br>2. Selesaikan soal evaluasi kognitif secara mandiri.<br>3. Kerjakan proyek refleksi kelompok bersama teman sebangku.</p>
-        <p><b>C. Tantangan 1: Pilihan Ganda</b><br>
-        1. Mengenai topik ${topicName}, hal penting yang wajib kita terapkan adalah...<br>A. Menghafal teori tanpa praktik<br>B. Menghubungkan materi dengan tindakan nyata sehari-hari<br>C. Mengabaikan arahan guru<br><br>
-        2. Proses belajar ${topicName} melatih kita menjadi murid yang memiliki sikap...<br>A. Mandiri dan bernalar kritis<br>B. Pasif dan pemalu<br>C. Terburu-buru mengambil keputusan</p>
-        <p><b>D. Tantangan 2: Uraian</b><br>Sebutkan 1 permasalahan yang berhasil kamu selesaikan setelah mempelajari materi ${topicName}!</p>
-        <p><b>E. Tantangan 3: Aktivitas Kelompok</b><br>Diskusikan bersama kelompok mengenai kaitan antara ${topicName} dengan kepedulian lingkungan kelas. Tuliskan komitmen kelompok kalian!</p>
+      lkpdHtml = `
+        <p><b>A. Tujuan Aktivitas:</b><br>Memahami materi secara mendalam melalui pemecahan tantangan kontekstual.</p>
+        <p><b>B. Langkah Kerja:</b><br>1. Baca rangkuman materi dengan saksama.<br>2. Selesaikan soal evaluasi kognitif secara mandiri.<br>3. Kerjakan proyek refleksi kelompok bersama teman sebangku.</p>
+        ${qa.lkpdExercises}
       `;
     }
   }
@@ -3431,6 +4297,7 @@ function generateDetailedLkpd(category, topicName, subjectId) {
 function generateDetailedAsesmen(category, topicName, subjectId) {
   const lowTopic = topicName.toLowerCase();
   const meetingNum = state.selectedMeetingNum || 1;
+  const qa = getTopicSpecificQA(subjectId, topicName);
   let testQuestions = "";
   let rubricTable = "";
   let subTitle = `RUBRIK ASESMEN PEMBELAJARAN`;
@@ -3438,7 +4305,79 @@ function generateDetailedAsesmen(category, topicName, subjectId) {
 
   if (category === "matematika") {
     subTitle = "LEMBAR ASESMEN & RUBRIK PENILAIAN MATEMATIKA";
-    if (lowTopic.includes("1 sampai 5") || lowTopic.includes("1-5")) {
+    if (lowTopic.includes("10.000") || lowTopic.includes("digit") || lowTopic.includes("ribuan") || (lowTopic.includes("cacah") && !lowTopic.includes("100"))) {
+      subTitle = "INSTRUMEN ASESMEN MATEMATIKA";
+      desc = `Materi: Bilangan Cacah sampai 10.000 | Kelas IV`;
+      testQuestions = `
+        <h4 style="margin-top: 15px; border-bottom: 1px solid var(--border-color); padding-bottom: 5px;">I. ASESMEN SEBELUM BELAJAR (DIAGNOSTIK LISAN)</h4>
+        <p>1. <i>"Anak-anak, jika Ibu memberikan uang jajan sebesar angka 250, bagaimana kita membacanya?"</i><br>
+        2. <i>"Jika tertulis lambang bilangan 895, manakah angka yang menduduki nilai tempat ratusan?"</i></p>
+
+        <h4 style="margin-top: 25px; border-bottom: 1px solid var(--border-color); padding-bottom: 5px;">II. ASESMEN AKHIR BELAJAR (SUMATIF MANDIRI)</h4>
+        <p><b>KATEGORI A: MEMBACA BILANGAN</b><br>
+        Tuliskan nama atau cara membaca dari lambang bilangan cacah di bawah ini dengan tepat!</p>
+        <p>1. Lambang bilangan <b>5.091</b> dibaca:<br>
+        ......................................................................................................................................................</p>
+        <p>2. Lambang bilangan <b>1.206</b> dibaca:<br>
+        ......................................................................................................................................................</p>
+        <p>3. Lambang bilangan <b>6.002</b> dibaca:<br>
+        ......................................................................................................................................................</p>
+
+        <p><b>KATEGORI B: MENJODOHKAN (Tarik Garis)</b><br>
+        Tariklah garis lurus yang menghubungkan lambang bilangan di sisi kiri dengan nama pembacaan yang tepat di sisi kanan!</p>
+        <div style="display: flex; justify-content: space-between; max-width: 500px; margin: 15px 0; font-family: monospace;">
+          <div>
+            &bull; 2.903<br>
+            &bull; 2.145<br>
+            &bull; 6.002<br>
+            &bull; 9.045
+          </div>
+          <div>
+            &bull; Dua ribu seratus empat puluh lima<br>
+            &bull; Enam ribu dua<br>
+            &bull; Sembilan ribu empat puluh lima<br>
+            &bull; Dua ribu sembilan ratus tiga
+          </div>
+        </div>
+
+        <p><b>KATEGORI C: SOAL CERITA</b></p>
+        <p>1. Putu baru saja pulang berlibur dari pulau Bali dan membeli oleh-oleh gantungan kunci khas sebanyak "lima puluh lima" buah. Tuliskan lambang bilangan dari jumlah gantungan kunci yang dibeli oleh Putu tersebut!<br>
+        <b>Jawaban:</b> ........................................................</p>
+        <p>2. Jarak dari minimarket ke rumah Helen adalah tiga ribu dua ratus delapan puluh enam meter. Tuliskan lambang bilangan yang menunjukkan jarak rumah Helen tersebut!<br>
+        <b>Jawaban:</b> ........................................................</p>
+        
+        <h4 style="margin-top: 25px; border-bottom: 1px solid var(--border-color); padding-bottom: 5px;">III. KUNCI JAWABAN & PEDOMAN PENSKORAN</h4>
+        <p><b>A. Membaca Bilangan:</b><br>
+        1. Lima ribu sembilan puluh satu (Skor 15)<br>
+        2. Seribu dua ratus enam (Skor 15)<br>
+        3. Enam ribu dua (Skor 15)</p>
+        <p><b>B. Menjodohkan:</b><br>
+        - 2.903 &rarr; Dua ribu sembilan ratus tiga (Skor 10)<br>
+        - 2.145 &rarr; Dua ribu seratus empat puluh lima (Skor 10)<br>
+        - 6.002 &rarr; Enam ribu dua (Skor 10)<br>
+        - 9.045 &rarr; Sembilan ribu empat puluh lima (Skor 10)</p>
+        <p><b>C. Soal Cerita:</b><br>
+        1. Lambang angka: 55 (Skor 10)<br>
+        2. Lambang angka: 3.286 (Skor 10)</p>
+        <p style="background-color: var(--primary-light); padding: 8px; border-radius: 4px; font-size: 11px;">
+          <b>Pedoman Nilai Akhir:</b> Total Skor Maksimal = 100. Nilai = Total Skor.
+        </p>
+      `;
+      rubricTable = `
+        <tr>
+          <td><b>Membaca Bilangan s.d 10.000</b></td>
+          <td>Mampu membaca bilangan cacah 4 digit termasuk yang mengandung angka 0 dengan sangat lancar dan tepat.</td>
+          <td>Mampu membaca bilangan cacah 4 digit tetapi sesekali mengeja angka 0 (misal: "nol ratus").</td>
+          <td>Belum mampu membaca bilangan cacah 4 digit secara mandiri.</td>
+        </tr>
+        <tr>
+          <td><b>Menulis Lambang Bilangan</b></td>
+          <td>Sangat terampil mengubah nama bilangan lisan ke dalam lambang angka secara tepat tanpa kekeliruan posisi.</td>
+          <td>Dapat menuliskan lambang angka tetapi terdapat kesalahan penulisan angka nol di tengah.</td>
+          <td>Belum dapat merumuskan lambang angka bilangan ribuan secara tepat.</td>
+        </tr>
+      `;
+    } else if (lowTopic.includes("1 sampai 5") || lowTopic.includes("1-5")) {
       testQuestions = `
         <p>1. Berapakah jumlah gambar buah apel di bawah ini?<br>
         \uD83C\uDF4E \uD83C\uDF4E \uD83C\uDF4E<br>
@@ -3756,63 +4695,16 @@ function generateDetailedAsesmen(category, topicName, subjectId) {
       `;
     } else {
       // Matematika general meeting-level fallback
-      if (meetingNum === 1) {
-        testQuestions = `
-          <p>1. Mengapa penting memahami konsep awal dari materi ${topicName}?<br>A. Agar bisa bermain lebih lama<br>B. Menjadi dasar hitungan yang benar dan teliti<br>C. Meniru pekerjaan teman dengan cepat</p>
-          <p>2. Penerapan konsep ${topicName} dalam kehidupan sehari-hari membantu kita untuk...<br>A. Menjadi lebih malas<br>B. Memecahkan masalah nyata secara logis dan runtut<br>C. Mengabaikan tugas sekolah</p>
-          <p>3. Tuliskan ringkasan satu kalimat mengenai apa yang dimaksud dengan ${topicName}!</p>
-          
-          <h4 style="margin-top: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 5px;">II. KUNCI JAWABAN & PEDOMAN PENSKORAN</h4>
-          <p>1. <b>B (Menjadi dasar hitungan...)</b> - Skor: 30<br>
-          2. <b>B (Memecahkan masalah nyata...)</b> - Skor: 30<br>
-          3. <b>Definisi logis dan relevan sesuai materi ${topicName} (Kebijaksanaan guru)</b> - Skor: 40</p>
-        `;
-      } else if (meetingNum === 2) {
-        testQuestions = `
-          <p>1. Ketika menyelesaikan masalah hitung terkait ${topicName}, langkah pertama yang harus dilakukan adalah...<br>A. Langsung menghitung tanpa membaca<br>B. Mengidentifikasi informasi penting yang diketahui dalam soal<br>C. Menuliskan angka acak</p>
-          <p>2. Manakah di bawah ini yang merupakan contoh penerapan praktis ${topicName} di sekolah?<br>A. Membuang sampah sembarangan<br>B. Menghitung jumlah bangku kelas atau berbagi alat tulis secara merata<br>C. Berlari di lorong kelas</p>
-          <p>3. Buatlah satu soal cerita matematika bertema ${topicName} dan tuliskan langkah penyelesaiannya secara detail!</p>
-          
-          <h4 style="margin-top: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 5px;">II. KUNCI JAWABAN & PEDOMAN PENSKORAN</h4>
-          <p>1. <b>B (Mengidentifikasi informasi...)</b> - Skor: 30<br>
-          2. <b>B (Menghitung jumlah bangku...)</b> - Skor: 30<br>
-          3. <b>Soal cerita dan penyelesaian yang benar secara matematis (Kebijaksanaan guru)</b> - Skor: 40</p>
-        `;
-      } else if (meetingNum === 3) {
-        testQuestions = `
-          <p>1. Dalam membandingkan atau mengurutkan nilai dalam ${topicName}, kita harus memperhatikan...<br>A. Warna lambang bilangan<br>B. Nilai tempat bilangan (satuan, puluhan, ratusan)<br>C. Kecepatan menulis angka</p>
-          <p>2. Lambang perbandingan berikut yang menyatakan 'lebih kecil dari' adalah...<br>A. &gt;<br>B. &lt;<br>C. =</p>
-          <p>3. Urutkan bilangan berikut dari yang terbesar ke terkecil: 15, 23, 8, 12, 31! Jelaskan caramu membandingkannya!</p>
-          
-          <h4 style="margin-top: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 5px;">II. KUNCI JAWABAN & PEDOMAN PENSKORAN</h4>
-          <p>1. <b>B (Nilai tempat bilangan...)</b> - Skor: 30<br>
-          2. <b>B (&lt;)</b> - Skor: 30<br>
-          3. <b>31, 23, 15, 12, 8. Langkah: Bandingkan puluhan terlebih dahulu, lalu satuannya</b> - Skor: 40</p>
-        `;
-      } else {
-        testQuestions = `
-          <p>1. Mengapa evaluasi mandiri materi ${topicName} ini penting dilakukan?<br>A. Agar guru senang<br>B. Untuk melatih kemandirian dan merefleksikan sejauh mana pemahaman kita<br>C. Agar mendapatkan hadiah</p>
-          <p>2. Bekerja sama dalam kelompok saat memecahkan proyek matematika melatih kita untuk...<br>A. Saling mengobrol bebas<br>B. Berbagi tugas, mendengarkan pendapat teman, dan berpikir kritis bersama<br>C. Menyuruh satu orang mengerjakan semuanya</p>
-          <p>3. Sebutkan satu hal baru yang paling menantang yang telah kamu pelajari selama mempelajari bab ${topicName}!</p>
-          
-          <h4 style="margin-top: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 5px;">II. KUNCI JAWABAN & PEDOMAN PENSKORAN</h4>
-          <p>1. <b>B (Untuk melatih kemandirian...)</b> - Skor: 30<br>
-          2. <b>B (Berbagi tugas, mendengarkan...)</b> - Skor: 30<br>
-          3. <b>Refleksi jujur mengenai materi tersulit (Kebijaksanaan guru)</b> - Skor: 40</p>
-        `;
-      }
+      testQuestions = qa.rubricExercises + `
+        <h4 style="margin-top: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 5px;">II. KUNCI JAWABAN & PEDOMAN PENSKORAN</h4>
+        <p>${qa.kunciJawaban}</p>
+      `;
       rubricTable = `
         <tr>
-          <td><b>Nalar Numerasi</b></td>
-          <td>Mampu menghubungkan teori matematika ${topicName} dengan penyelesaian masalah sehari-hari secara logis.</td>
-          <td>Mampu menghitung secara teoritis namun kesulitan menerapkannya dalam soal cerita kontekstual.</td>
-          <td>Belum mampu menerapkan operasi matematika dasar pada topik ini.</td>
-        </tr>
-        <tr>
-          <td><b>Prosedur Penyelesaian</b></td>
-          <td>Menyusun langkah pengerjaan secara sistematis (diketahui, ditanyakan, dijawab) dan rapi.</td>
-          <td>Langsung menuliskan jawaban akhir tanpa mencantumkan cara atau langkah pengerjaan.</td>
-          <td>Langkah pengerjaan acak-acakan dan tidak sesuai dengan konsep matematika.</td>
+          <td><b>Pemahaman Konsep</b></td>
+          <td>Sangat memahami konsep dasar materi secara mendalam dan mampu menjelaskan/menerapkannya secara tepat.</td>
+          <td>Memahami konsep dasar materi tetapi masih melakukan sedikit kesalahan penafsiran.</td>
+          <td>Belum menguasai kompetensi dasar dari topik yang dipelajari.</td>
         </tr>
       `;
     }
@@ -3986,70 +4878,16 @@ function generateDetailedAsesmen(category, topicName, subjectId) {
       `;
     } else {
       // Bahasa Indonesia general meeting-level fallback
-      if (meetingNum === 1) {
-        testQuestions = `
-          <p>1. Tujuan utama kita membaca teks cerita bertema ${topicName} secara nyaring adalah...<br>
-          A. Membuat kelas menjadi bising<br>B. Melatih pelafalan kata, kelancaran membaca, dan memahami isi cerita<br>C. Membantu teman cepat tidur</p>
-          <p>2. Tokoh utama dalam suatu cerita biasanya ditunjukkan dengan ciri...<br>
-          A. Hanya disebut satu kali di akhir cerita<br>B. Menjadi pusat jalannya cerita dan sering muncul<br>C. Tidak memiliki dialog sama sekali</p>
-          <p>3. Sebutkan judul cerita atau tema ${topicName} yang baru saja kamu baca dan sebutkan siapa tokoh utamanya!</p>
-          
-          <h4 style="margin-top: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 5px;">II. KUNCI JAWABAN & PEDOMAN PENSKORAN</h4>
-          <p>1. <b>B (Melatih pelafalan kata...)</b> - Skor: 30<br>
-          2. <b>B (Menjadi pusat jalannya cerita...)</b> - Skor: 30<br>
-          3. <b>Jawaban sesuai dengan bacaan aktif yang diberikan guru (Kebijaksanaan guru)</b> - Skor: 40</p>
-        `;
-      } else if (meetingNum === 2) {
-        testQuestions = `
-          <p>1. Susunan kalimat acak: "membaca - adik - buku" yang benar sesuai tata bahasa Indonesia adalah...<br>
-          A. Buku membaca adik<br>B. Adik membaca buku<br>C. Membaca adik buku</p>
-          <p>2. Penulisan tanda titik (.) pada sebuah kalimat berita diletakkan di...<br>
-          A. Awal kalimat<br>B. Akhir kalimat<br>C. Sela-sela kata</p>
-          <p>3. Buatlah kalimat sederhana yang mengandung kata 'sekolah' dan pastikan menggunakan huruf kapital serta tanda titik dengan tepat!</p>
-          
-          <h4 style="margin-top: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 5px;">II. KUNCI JAWABAN & PEDOMAN PENSKORAN</h4>
-          <p>1. <b>B (Adik membaca buku)</b> - Skor: 30<br>
-          2. <b>B (Akhir kalimat)</b> - Skor: 30<br>
-          3. <b>Kalimat logis bersubjek, berpredikat, berhuruf kapital awal, dan bertanda titik akhir (Contoh: "Budi pergi ke sekolah.")</b> - Skor: 40</p>
-        `;
-      } else if (meetingNum === 3) {
-        testQuestions = `
-          <p>1. Sikap yang baik saat mendengarkan teman lain sedang menyampaikan pendapat di depan kelas adalah...<br>
-          A. Memotong pembicaraannya dengan keras<br>B. Mendengarkan dengan tenang dan menghargai penjelasannya<br>C. Mengajak teman lain bermain sendiri</p>
-          <p>2. Sebelum berbicara di depan kelas untuk mengemukakan pendapat, sebaiknya kita...<br>
-          A. Langsung berteriak tanpa izin<br>B. Mengangkat tangan untuk meminta izin guru terlebih dahulu secara sopan<br>C. Menangis ketakutan</p>
-          <p>3. Tuliskan tanggapan atau pendapatmu dalam satu kalimat mengenai materi gambar cerita ${topicName} yang kamu amati!</p>
-          
-          <h4 style="margin-top: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 5px;">II. KUNCI JAWABAN & PEDOMAN PENSKORAN</h4>
-          <p>1. <b>B (Mendengarkan dengan tenang...)</b> - Skor: 30<br>
-          2. <b>B (Mengangkat tangan untuk meminta izin...)</b> - Skor: 30<br>
-          3. <b>Pendapat logis, santun, dan sesuai gambar yang dipelajari (Kebijaksanaan guru)</b> - Skor: 40</p>
-        `;
-      } else {
-        testQuestions = `
-          <p>1. Kamus dinding visual buatan kelompok berguna untuk...<br>
-          A. Mengotori dinding kelas agar ramai<br>B. Membantu seluruh siswa mengingat arti kosakata baru lewat gambar menarik<br>C. Bahan bermain tebak-tebakan saat istirahat saja</p>
-          <p>2. Menghias hasil tulisan kosakata baru melatih kemampuan kita di bidang...<br>A. Matematika hitung<br>B. Seni rupa dan kreativitas visual<br>C. Olahraga jasmani</p>
-          <p>3. Tuliskan 2 kosakata baru bertema ${topicName} yang kamu temukan minggu ini beserta artinya!</p>
-          
-          <h4 style="margin-top: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 5px;">II. KUNCI JAWABAN & PEDOMAN PENSKORAN</h4>
-          <p>1. <b>B (Membantu seluruh siswa mengingat...)</b> - Skor: 30<br>
-          2. <b>B (Seni rupa dan kreativitas visual)</b> - Skor: 30<br>
-          3. <b>Kosakata baru relevan beserta artinya secara tepat (Kebijaksanaan guru)</b> - Skor: 40</p>
-        `;
-      }
+      testQuestions = qa.rubricExercises + `
+        <h4 style="margin-top: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 5px;">II. KUNCI JAWABAN & PEDOMAN PENSKORAN</h4>
+        <p>${qa.kunciJawaban}</p>
+      `;
       rubricTable = `
         <tr>
-          <td><b>Pemahaman Membaca</b></td>
-          <td>Mampu menangkap makna teks bacaan ${topicName} dengan sangat baik serta mengartikan kata sulit.</td>
-          <td>Mampu menjawab pertanyaan literal teks tetapi kurang memahami pesan tersirat dari bacaan.</td>
-          <td>Belum mampu menceritakan kembali pokok informasi dari bacaan.</td>
-        </tr>
-        <tr>
-          <td><b>Tata Bahasa & Tanda Baca</b></td>
-          <td>Mampu menggunakan huruf kapital dan tanda baca (titik, tanya, seru) secara konsisten dan benar.</td>
-          <td>Mampu menulis kalimat tetapi sering melewatkan tanda titik di akhir kalimat.</td>
-          <td>Menulis kalimat tanpa memperhatikan aturan huruf kapital maupun tanda baca dasar.</td>
+          <td><b>Pemahaman Konsep</b></td>
+          <td>Sangat memahami konsep dasar materi secara mendalam dan mampu menjelaskan/menerapkannya secara tepat.</td>
+          <td>Memahami konsep dasar materi tetapi masih melakukan sedikit kesalahan penafsiran.</td>
+          <td>Belum menguasai kompetensi dasar dari topik yang dipelajari.</td>
         </tr>
       `;
     }
@@ -4082,756 +4920,25 @@ function generateDetailedAsesmen(category, topicName, subjectId) {
   }
 
   // Fallbacks for other subjects (Pancasila, PAI, IPAS, PJOK, Senirupa, English, Jawa, Koding)
-  let task1 = ``;
-  let rubRows = ``;
+  let task1 = qa.rubricExercises + `
+    <h4 style="margin-top: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 5px;">II. KUNCI JAWABAN & PEDOMAN PENSKORAN</h4>
+    <p>${qa.kunciJawaban}</p>
+  `;
+  let rubRows = `
+    <tr>
+      <td><b>Pemahaman Konsep</b></td>
+      <td>Sangat memahami konsep dasar materi secara mendalam dan mampu menjelaskan/menerapkannya secara tepat.</td>
+      <td>Memahami konsep dasar materi tetapi masih melakukan sedikit kesalahan penafsiran.</td>
+      <td>Belum menguasai kompetensi dasar dari topik yang dipelajari.</td>
+    </tr>
+    <tr>
+      <td><b>Kemandirian Tugas</b></td>
+      <td>Mengerjakan tugas secara mandiri, jujur, penuh konsentrasi, dan mengumpulkan tepat waktu.</td>
+      <td>Mengerjakan tugas mandiri tetapi mudah teralihkan konsentrasinya oleh keadaan sekitar.</td>
+      <td>Selalu meminta bantuan penuh dari orang lain untuk menyelesaikan tugas sederhana.</td>
+    </tr>
+  `;
 
-  if (category === "pancasila") {
-    subTitle = "LEMBAR ASESMEN & RUBRIK PENILAIAN PANCASILA";
-    if (meetingNum === 1) {
-      task1 = `
-        <p>1. Simbol sila ke-3 Pancasila (Persatuan Indonesia) digambarkan dengan...<br>A. Rantai emas<br>B. Pohon beringin<br>C. Kepala banteng</p>
-        <p>2. Simbol sila ke-1 Pancasila melambangkan cahaya rohani bagi bangsa Indonesia, yaitu...<br>A. Kepala banteng<br>B. Bintang<br>C. Padi dan Kapas</p>
-        <p>3. Sebutkan bunyi sila ke-5 Pancasila beserta lambang simbolnya secara tepat!</p>
-        
-        <h4 style="margin-top: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 5px;">II. KUNCI JAWABAN & PEDOMAN PENSKORAN</h4>
-        <p>1. <b>B (Pohon beringin)</b> - Skor: 30<br>
-        2. <b>B (Bintang)</b> - Skor: 30<br>
-        3. <b>Keadilan sosial bagi seluruh rakyat Indonesia; simbolnya Padi dan Kapas</b> - Skor: 40</p>
-      `;
-      rubRows = `
-        <tr>
-          <td><b>Pengenalan Simbol</b></td>
-          <td>Mampu menghafal seluruh simbol lambang negara Garuda Pancasila beserta sila yang diwakili tanpa kesalahan.</td>
-          <td>Mampu mengenali simbol sila Pancasila tetapi sesekali salah menyebutkan urutan silanya.</td>
-          <td>Belum hafal simbol-simbol sila Pancasila secara runtut.</td>
-        </tr>
-      `;
-    } else if (meetingNum === 2) {
-      task1 = `
-        <p>1. Contoh tindakan nyata gotong royong yang dapat kamu lakukan di lingkungan sekolah adalah...<br>A. Mengerjakan ujian matematika bersama teman sebangku<br>B. Ikut serta membersihkan halaman sekolah secara sukarela<br>C. Menonton teman piket sendirian</p>
-        <p>2. Sikap yang baik ketika melihat teman kelompok kesulitan membawa ember air adalah...<br>A. Membiarkannya<br>B. Segera membantunya mengangkat ember bersama-sama<br>C. Menertawakannya</p>
-        <p>3. Mengapa kegiatan gotong royong sangat penting diterapkan dalam kehidupan bermasyarakat?</p>
-        
-        <h4 style="margin-top: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 5px;">II. KUNCI JAWABAN & PEDOMAN PENSKORAN</h4>
-        <p>1. <b>B (Ikut serta membersihkan halaman...)</b> - Skor: 30<br>
-        2. <b>B (Segera membantunya mengangkat ember...)</b> - Skor: 30<br>
-        3. <b>Agar pekerjaan berat terasa ringan, cepat selesai, dan melatih kerukunan antar warga (Kebijaksanaan guru)</b> - Skor: 40</p>
-      `;
-      rubRows = `
-        <tr>
-          <td><b>Gotong Royong & Kerja Sama</b></td>
-          <td>Sangat proaktif membantu teman kelas dan antusias bekerja kelompok tanpa diperintah.</td>
-          <td>Mau bekerja sama tetapi perlu dorongan atau teguran halus dari guru terlebih dahulu.</td>
-          <td>Pasif dan enggan ikut serta dalam kegiatan piket kelas atau gotong royong.</td>
-        </tr>
-      `;
-    } else if (meetingNum === 3) {
-      task1 = `
-        <p>1. Peraturan tertulis di sekolah wajib ditaati oleh...<br>A. Siswa baru saja<br>B. Seluruh warga sekolah (kepala sekolah, guru, karyawan, dan siswa)<br>C. Orang tua siswa</p>
-        <p>2. Perilaku yang mencerminkan patuh aturan saat mengikuti pembelajaran di kelas adalah...<br>A. Mengobrol keras saat guru menjelaskan<br>B. Mendengarkan dengan tertib dan mengangkat tangan sebelum bertanya<br>C. Makan jajan di bawah laci meja</p>
-        <p>3. Sebutkan 2 aturan penting yang berlaku di rumahmu terkait pembagian waktu belajar dan bermain!</p>
-        
-        <h4 style="margin-top: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 5px;">II. KUNCI JAWABAN & PEDOMAN PENSKORAN</h4>
-        <p>1. <b>B (Seluruh warga sekolah...)</b> - Skor: 30<br>
-        2. <b>B (Mendengarkan dengan tertib...)</b> - Skor: 30<br>
-        3. <b>Contoh: Belajar pukul 19.00-20.00; handphone disimpan saat jam belajar (Kebijaksanaan guru)</b> - Skor: 40</p>
-      `;
-      rubRows = `
-        <tr>
-          <td><b>Kepatuhan Aturan</b></td>
-          <td>Selalu menaati aturan kelas dan sekolah dengan penuh kesadaran diri yang tinggi.</td>
-          <td>Mematuhi aturan jika diawasi oleh guru, tetapi melanggarnya saat guru tidak di kelas.</td>
-          <td>Sering melanggar peraturan kelas dan menunjukkan sikap acuh tak acuh.</td>
-        </tr>
-      `;
-    } else {
-      task1 = `
-        <p>1. Sikap toleransi yang tepat terhadap teman yang berbeda suku atau daerah asal adalah...<br>A. Menjauhinya dan tidak mau berteman<br>B. Saling menghormati, berteman akrab, dan belajar bahasa daerahnya<br>C. Mengolok-olok dialek bicaranya</p>
-        <p>2. Bhinneka Tunggal Ika memiliki arti...<br>A. Berbeda-beda tetapi tetap satu jua<br>B. Persatuan membawa kejayaan<br>C. Selalu sama dalam segala hal</p>
-        <p>3. Mengapa kita tidak boleh membeda-bedakan teman berdasarkan latar belakang agamanya saat bermain di halaman sekolah?</p>
-        
-        <h4 style="margin-top: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 5px;">II. KUNCI JAWABAN & PEDOMAN PENSKORAN</h4>
-        <p>1. <b>B (Saling menghormati...)</b> - Skor: 30<br>
-        2. <b>A (Berbeda-beda tetapi tetap satu jua)</b> - Skor: 30<br>
-        3. <b>Agar tercipta suasana sekolah yang aman, rukun, damai, dan menghindari perkelahian (Kebijaksanaan guru)</b> - Skor: 40</p>
-      `;
-      rubRows = `
-        <tr>
-          <td><b>Toleransi & Sikap Kebhinekaan</b></td>
-          <td>Sangat menghargai perbedaan latar belakang teman, ramah dan tidak memilih-milih teman bermain.</td>
-          <td>Menghargai perbedaan tetapi cenderung hanya berkelompok dengan teman seasal saja.</td>
-          <td>Menunjukkan sikap diskriminatif atau mengejek perbedaan teman.</td>
-        </tr>
-      `;
-    }
-    rubRows += `
-      <tr>
-        <td><b>Kemandirian Tugas</b></td>
-        <td>Menyelesaikan lembar asesmen mandiri secara jujur dan percaya diri tanpa menyontek.</td>
-        <td>Mengerjakan tugas secara mandiri tetapi sesekali melihat ke arah teman sebangku.</td>
-        <td>Selalu menyalin jawaban milik teman secara penuh.</td>
-      </tr>
-    `;
-  } else if (category === "pai") {
-    subTitle = "LEMBAR ASESMEN & RUBRIK PAI & BUDI PEKERTI";
-    if (meetingNum === 1) {
-      task1 = `
-        <p>1. Di bawah ini yang merupakan rukun iman yang pertama adalah iman kepada...<br>A. Kitab-kitab Allah<br>B. Malaikat Allah<br>C. Allah SWT</p>
-        <p>2. Kitab suci umat Islam yang diturunkan kepada Nabi Muhammad SAW sebagai mukjizat terbesar adalah...<br>A. Taurat<br>B. Al-Qur'an<br>C. Injil</p>
-        <p>3. Sebutkan 5 Rukun Islam secara lengkap dan berurutan!</p>
-        
-        <h4 style="margin-top: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 5px;">II. KUNCI JAWABAN & PEDOMAN PENSKORAN</h4>
-        <p>1. <b>C (Allah SWT)</b> - Skor: 30<br>
-        2. <b>B (Al-Qur'an)</b> - Skor: 30<br>
-        3. <b>1. Syahadat, 2. Salat, 3. Zakat, 4. Puasa Ramadhan, 5. Haji bagi yang mampu</b> - Skor: 40</p>
-      `;
-      rubRows = `
-        <tr>
-          <td><b>Aqidah Dasar</b></td>
-          <td>Memahami konsep rukun iman dan rukun Islam secara utuh serta mampu menyebutkannya dengan lancar.</td>
-          <td>Mampu menyebutkan rukun Islam/Iman tetapi urutannya masih ada yang terbalik.</td>
-          <td>Belum mengenal pembagian rukun iman dan rukun Islam dasar.</td>
-        </tr>
-      `;
-    } else if (meetingNum === 2) {
-      task1 = `
-        <p>1. Mengapa nabi Muhammad SAW digelari sebagai Al-Amin? Jelaskan artian sifat tersebut!<br>A. Karena cerdas<br>B. Karena dapat dipercaya dan selalu jujur<br>C. Karena berani berperang</p>
-        <p>2. Perilaku terpuji yang mencerminkan meneladani sifat jujur di sekolah adalah...<br>A. Menyontek lembar jawaban kawan<br>B. Mengembalikan pensil teman yang terjatuh di lantai secara jujur<br>C. Menyimpan uang temuan untuk diri sendiri</p>
-        <p>3. Tuliskan kisah keteladanan singkat mengenai sikap kasih sayang Nabi Muhammad kepada anak-anak kecil!</p>
-        
-        <h4 style="margin-top: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 5px;">II. KUNCI JAWABAN & PEDOMAN PENSKORAN</h4>
-        <p>1. <b>B (Karena dapat dipercaya...)</b> - Skor: 30<br>
-        2. <b>B (Mengembalikan pensil...)</b> - Skor: 30<br>
-        3. <b>Nabi menyayangi anak yatim, mengusap kepalanya, dan memberi pakaian/makanan layak (Kebijaksanaan guru)</b> - Skor: 40</p>
-      `;
-      rubRows = `
-        <tr>
-          <td><b>Keteladanan Akhlak</b></td>
-          <td>Menunjukkan pembiasaan jujur dan meniru teladan akhlak nabi dalam keseharian sekolah.</td>
-          <td>Memahami kisah keteladanan Nabi tetapi belum konsisten menerapkan kejujuran di kelas.</td>
-          <td>Kerap berkata dusta atau melakukan perbuatan tercela di sekolah.</td>
-        </tr>
-      `;
-    } else if (meetingNum === 3) {
-      task1 = `
-        <p>1. Gerakan berwudu setelah membasuh kedua tangan sampai siku adalah...<br>A. Membasuh muka/wajah<br>B. Mengusap sebagian kepala/rambut<br>C. Membasuh kedua kaki</p>
-        <p>2. Syarat mutlak sahnya ibadah salat fardu adalah suci dari...<br>A. Debu tipis<br>B. Hadas kecil dan hadas besar (melalui wudu atau tayammum)<br>C. Rasa lapar</p>
-        <p>3. Tuliskan doa niat wudu secara lengkap beserta lafal latinnya!</p>
-        
-        <h4 style="margin-top: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 5px;">II. KUNCI JAWABAN & PEDOMAN PENSKORAN</h4>
-        <p>1. <b>B (Mengusap sebagian kepala/rambut)</b> - Skor: 30<br>
-        2. <b>B (Hadas kecil dan hadas besar...)</b> - Skor: 30<br>
-        3. <b>Nawaitul wudhu'a lirof'il hadatsil ashghori fardhon lillahi ta'ala</b> - Skor: 40</p>
-      `;
-      rubRows = `
-        <tr>
-          <td><b>Praktik Bersuci (Wudu)</b></td>
-          <td>Sangat lancar memperagakan gerakan wudu secara tertib, sah, dan mengalir deras tanpa ragu.</td>
-          <td>Mampu berwudu tetapi urutan membasuh anggota tubuh ada yang tertukar (tidak tertib).</td>
-          <td>Belum menguasai tata cara membasuh wajah/tangan saat wudu dasar.</td>
-        </tr>
-      `;
-    } else {
-      task1 = `
-        <p>1. Cara berbakti kepada orang tua (birrul walidain) yang diajarkan dalam Islam adalah...<br>A. Berbicara keras membantah perintah ibu<br>B. Mendengarkan perkataan mereka dengan sopan dan mendoakannya<br>C. Menolak membantu menyapu rumah</p>
-        <p>2. Doa untuk kedua orang tua berbunyi: "Rabbighfirli waliwalidayya warhamhuma..." yang artinya memohon kepada Allah agar orang tua...<br>A. Menjadi kaya raya<br>B. Diberikan ampunan dan kasih sayang<br>C. Membelikan mainan baru</p>
-        <p>3. Mengapa menghormati dan patuh kepada guru di sekolah termasuk kewajiban seorang murid?</p>
-        
-        <h4 style="margin-top: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 5px;">II. KUNCI JAWABAN & PEDOMAN PENSKORAN</h4>
-        <p>1. <b>B (Mendengarkan perkataan mereka...)</b> - Skor: 30<br>
-        2. <b>B (Diberikan ampunan dan kasih sayang)</b> - Skor: 30<br>
-        3. <b>Karena guru adalah orang tua kita di sekolah yang mendidik dan memberikan ilmu bermanfaat (Kebijaksanaan guru)</b> - Skor: 40</p>
-      `;
-      rubRows = `
-        <tr>
-          <td><b>Budi Pekerti / Sopan Santun</b></td>
-          <td>Konsisten bertutur kata santun (menggunakan kata tolong, maaf, terima kasih) kepada guru dan orang tua.</td>
-          <td>Bersikap sopan kepada guru, tetapi sesekali masih berteriak keras saat berbicara dengan teman sebaya.</td>
-          <td>Sering berkata kasar dan bertindak tidak sopan di lingkungan sekolah.</td>
-        </tr>
-      `;
-    }
-    rubRows += `
-      <tr>
-        <td><b>Adab Belajar</b></td>
-        <td>Menunjukkan sikap khusyuk berdoa sebelum belajar dan tertib mengikuti materi.</td>
-        <td>Berdoa sebelum belajar tetapi pandangan masih teralihkan ke hal lain.</td>
-        <td>Bermain sendiri saat doa pembuka kelas dilafalkan.</td>
-      </tr>
-    `;
-  } else if (category === "ipas") {
-    subTitle = "LEMBAR ASESMEN & RUBRIK PENILAIAN IPAS";
-    if (meetingNum === 1) {
-      task1 = `
-        <p>1. Zat hijau daun yang berfungsi menangkap cahaya matahari untuk fotosintesis disebut...<br>A. Klorofil<br>B. Stomata<br>C. Oksigen</p>
-        <p>2. Bagian tumbuhan yang berfungsi menyerap air dan unsur hara dari dalam tanah adalah...<br>A. Daun<br>B. Akar<br>C. Bunga</p>
-        <p>3. Jelaskan alur proses fotosintesis pada tumbuhan hijau secara singkat serta sebutkan zat yang dihasilkannya!</p>
-        
-        <h4 style="margin-top: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 5px;">II. KUNCI JAWABAN & PEDOMAN PENSKORAN</h4>
-        <p>1. <b>A (Klorofil)</b> - Skor: 30<br>
-        2. <b>B (Akar)</b> - Skor: 30<br>
-        3. <b>Air + Karbondioksida + Cahaya (Klorofil) -> Karbohidrat (Glukosa) + Oksigen</b> - Skor: 40</p>
-      `;
-      rubRows = `
-        <tr>
-          <td><b>Pemahaman Konsep Biologi</b></td>
-          <td>Mampu menjelaskan fungsi bagian tumbuhan dan fotosintesis secara detail dan benar secara ilmiah.</td>
-          <td>Mampu menyebutkan organ tumbuhan tetapi keliru menguraikan proses fotosintesis secara runtut.</td>
-          <td>Belum memahami fungsi organ dasar tumbuhan hijau.</td>
-        </tr>
-      `;
-    } else if (meetingNum === 2) {
-      task1 = `
-        <p>1. Cahaya dapat dibiaskan ketika merambat melalui dua medium yang berbeda kerapatannya. Contoh peristiwa ini adalah...<br>A. Terbentuknya bayangan tubuh kita saat siang hari<br>B. Pensil yang tampak patah/bengkok saat dimasukkan ke dalam gelas berisi air bening<br>C. Cahaya senter yang menembus plastik mika transparan</p>
-        <p>2. Contoh pemantulan cahaya yang teratur dapat kita lihat pada peristiwa...<br>A. Cahaya matahari menyinari aspal jalan raya<br>B. Bayangan diri kita terpantul jelas di permukaan cermin datar yang bersih<br>C. Cahaya senter mengenai tembok kasar</p>
-        <p>3. Jelaskan 3 sifat cahaya yang telah kamu buktikan melalui rangkaian eksperimen sains sederhana!</p>
-        
-        <h4 style="margin-top: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 5px;">II. KUNCI JAWABAN & PEDOMAN PENSKORAN</h4>
-        <p>1. <b>B (Pensil tampak bengkok di gelas air)</b> - Skor: 30<br>
-        2. <b>B (Bayangan terpantul di cermin datar)</b> - Skor: 30<br>
-        3. <b>Cahaya dapat: merambat lurus, dipantulkan, dibiaskan, menembus benda bening (Tuliskan minimal 3 secara tepat)</b> - Skor: 40</p>
-      `;
-      rubRows = `
-        <tr>
-          <td><b>Pengamatan Eksperimen</b></td>
-          <td>Sangat terampil melakukan eksperimen sifat cahaya, mengumpulkan data, and merumuskan kesimpulan ilmiah.</td>
-          <td>Melakukan eksperimen secara antusias tetapi kesulitan menuliskan hasil analisis sifat cahaya.</td>
-          <td>Pasif dalam kegiatan kelompok eksperimen dan tidak mencatat data.</td>
-        </tr>
-      `;
-    } else if (meetingNum === 3) {
-      task1 = `
-        <p>1. Contoh peristiwa mencair dalam kehidupan sehari-hari adalah...<br>A. Air dimasukkan ke dalam lemari pembeku (freezer)<br>B. Es batu yang diletakkan di area terbuka lama-kelamaan menjadi air<br>C. Minyak goreng membeku saat dingin</p>
-        <p>2. Perubahan wujud dari zat gas menjadi zat cair dinamakan peristiwa...<br>A. Mengembun<br>B. Menyublim<br>C. Mengkristal</p>
-        <p>3. Jelaskan perbedaan sifat bentuk dan volume antara benda padat, benda cair, dan benda gas secara lengkap!</p>
-        
-        <h4 style="margin-top: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 5px;">II. KUNCI JAWABAN & PEDOMAN PENSKORAN</h4>
-        <p>1. <b>B (Es batu mencair)</b> - Skor: 30<br>
-        2. <b>A (Mengembun)</b> - Skor: 30<br>
-        3. <b>Padat: bentuk & volume tetap; Cair: bentuk berubah volume tetap; Gas: bentuk & volume berubah mengikuti wadah</b> - Skor: 40</p>
-      `;
-      rubRows = `
-        <tr>
-          <td><b>Klasifikasi Zat & Wujud</b></td>
-          <td>Menguasai karakteristik partikel wujud zat dan terampil menjelaskan siklus perubahan wujud zat dengan tepat.</td>
-          <td>Bisa menyebutkan contoh perubahan wujud tetapi keliru membedakan istilah mengembun dan mengkristal.</td>
-          <td>Belum memahami perbedaan dasar benda padat, cair, dan gas.</td>
-        </tr>
-      `;
-    } else {
-      task1 = `
-        <p>1. Interaksi sosial di bidang ekonomi yang bertujuan memenuhi kebutuhan hidup sehari-hari misalnya...<br>A. Mengikuti pemilihan ketua kelas<br>B. Kegiatan tawar-menawar harga sayur antara penjual dan pembeli di pasar tradisional<br>C. Menghadiri upacara hari Senin</p>
-        <p>2. Candi Borobudur di Jawa Tengah merupakan salah satu peninggalan sejarah penting bercorak agama...<br>A. Islam<br>B. Buddha<br>C. Hindu</p>
-        <p>3. Mengapa kita wajib melestarikan peninggalan sejarah dan adat istiadat yang ada di daerah tempat tinggal kita?</p>
-        
-        <h4 style="margin-top: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 5px;">II. KUNCI JAWABAN & PEDOMAN PENSKORAN</h4>
-        <p>1. <b>B (Kegiatan tawar-menawar...)</b> - Skor: 30<br>
-        2. <b>B (Buddha)</b> - Skor: 30<br>
-        3. <b>Sebagai warisan budaya bangsa, sarana belajar sejarah, dan identitas daerah (Kebijaksanaan guru)</b> - Skor: 40</p>
-      `;
-      rubRows = `
-        <tr>
-          <td><b>Analisis Sosial-Sejarah</b></td>
-          <td>Mampu menganalisis alur interaksi sosial kemasyarakatan dan menghargai nilai sejarah lokal secara kritis.</td>
-          <td>Mengetahui nama peninggalan sejarah tetapi kesulitan menghubungkannya dengan konteks kehidupan masa kini.</td>
-          <td>Belum mengenal profesi sosial masyarakat di daerahnya.</td>
-        </tr>
-      `;
-    }
-    rubRows += `
-      <tr>
-        <td><b>Sikap Ilmiah</b></td>
-        <td>Menunjukkan rasa ingin tahu yang tinggi, mengajukan pertanyaan kritis, dan objektif dalam pelaporan data.</td>
-        <td>Cukup berpartisipasi aktif, rasa ingin tahu sedang, menulis laporan dengan bantuan penuh.</td>
-        <td>Pasif dan tidak menunjukkan ketertarikan pada sains/sosial.</td>
-      </tr>
-    `;
-  } else if (category === "pjok") {
-    subTitle = "LEMBAR ASESMEN & RUBRIK PENILAIAN PJOK";
-    if (meetingNum === 1) {
-      task1 = `
-        <p>1. Ketika berlari cepat, posisi condong badan yang benar agar mendapatkan keseimbangan adalah condong ke...<br>A. Samping kanan<br>B. Depan<br>C. Belakang</p>
-        <p>2. Di bawah ini yang merupakan gerakan dasar lokomotor (berpindah tempat) adalah...<br>A. Meliukkan pinggang<br>B. Berjalan dan melompat rintangan<br>C. Memutar kedua pergelangan tangan</p>
-        <p>3. Jelaskan cara mendarat setelah melakukan lompat tinggi yang aman bagi persendian kaki!</p>
-        
-        <h4 style="margin-top: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 5px;">II. KUNCI JAWABAN & PEDOMAN PENSKORAN</h4>
-        <p>1. <b>B (Depan)</b> - Skor: 30<br>
-        2. <b>B (Berjalan dan melompat rintangan)</b> - Skor: 30<br>
-        3. <b>Mendarat dengan dua kaki secara bersamaan, lutut ditekuk/mengeper lentur (kucing mendarat) untuk meredam guncangan</b> - Skor: 40</p>
-      `;
-      rubRows = `
-        <tr>
-          <td><b>Keterampilan Lokomotor</b></td>
-          <td>Mampu memperagakan pola gerak berjalan, berlari, melompat secara seimbang, dinamis, dan aman.</td>
-          <td>Melakukan gerak lokomotor tetapi koordinasi tangan dan kaki saat berlari masih agak kaku.</td>
-          <td>Kesulitan berjalan lurus atau melompat dengan tumpuan yang benar.</td>
-        </tr>
-      `;
-    } else if (meetingNum === 2) {
-      task1 = `
-        <p>1. Saat menerima umpan bola kasti melambung dari teman, pandangan mata kita sebaiknya tertuju ke...<br>A. Lapangan rumput<br>B. Arah datangnya bola secara fokus<br>C. Guru olahraga di pinggir lapangan</p>
-        <p>2. Contoh nyata dari koordinasi gerak manipulatif (menggunakan alat bantu) adalah...<br>A. Mengayunkan tangan tanpa bola<br>B. Melempar bola ke sasaran keranjang dan menendang bola<br>C. Berdiri sikap kapal terbang</p>
-        <p>3. Jelaskan posisi kedua telapak tangan yang benar agar bola kasti yang melambung dapat ditangkap dengan mantap!</p>
-        
-        <h4 style="margin-top: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 5px;">II. KUNCI JAWABAN & PEDOMAN PENSKORAN</h4>
-        <p>1. <b>B (Arah datangnya bola)</b> - Skor: 30<br>
-        2. <b>B (Melempar bola ke sasaran...)</b> - Skor: 30<br>
-        3. <b>Kedua telapak tangan dirapatkan membentuk mangkuk menghadap ke atas/depan dada dengan jari-jari terbuka</b> - Skor: 40</p>
-      `;
-      rubRows = `
-        <tr>
-          <td><b>Koordinasi Manipulatif</b></td>
-          <td>Sangat konsisten melempar dan menangkap bola dengan ketepatan sasaran di atas 80%.</td>
-          <td>Mampu menangkap bola kasti tetapi sesekali bola terlepas karena jari kurang terbuka lebar.</td>
-          <td>Belum mampu menangkap bola kasti yang dilempar dari jarak dekat.</td>
-        </tr>
-      `;
-    } else if (meetingNum === 3) {
-      task1 = `
-        <p>1. Gerakan kapal terbang dalam senam lantai berguna untuk melatih kekuatan otot kaki dan...<br>A. Kelenturan punggung<br>B. Keseimbangan tubuh<br>C. Kecepatan lari</p>
-        <p>2. Posisi awal badan saat bersiap melakukan gerakan guling depan (roll depan) di atas matras adalah...<br>A. Berdiri tegap atau jongkok rileks<br>B. Berbaring telentang<br>C. Telungkup kaki lurus</p>
-        <p>3. Tuliskan 3 langkah detail melakukan sikap lilin yang aman beserta fungsi matras dalam aktivitas senam lantai!</p>
-        
-        <h4 style="margin-top: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 5px;">II. KUNCI JAWABAN & PEDOMAN PENSKORAN</h4>
-        <p>1. <b>B (Keseimbangan tubuh)</b> - Skor: 30<br>
-        2. <b>A (Berdiri tegap atau jongkok rileks)</b> - Skor: 30<br>
-        3. <b>Tidur telentang, angkat pinggang ke atas ditopang kedua tangan, luruskan kaki. Matras berfungsi meredam benturan tulang belakang</b> - Skor: 40</p>
-      `;
-      rubRows = `
-        <tr>
-          <td><b>Keseimbangan & Senam</b></td>
-          <td>Mampu mempertahankan posisi keseimbangan kapal terbang selama 8 detik tanpa goyah secara konsisten.</td>
-          <td>Melakukan sikap kapal terbang tetapi badan bergoyang sebelum hitungan ke-5 selesai.</td>
-          <td>Kesulitan mengangkat satu kaki ditekuk di depan dada secara seimbang.</td>
-        </tr>
-      `;
-    } else {
-      task1 = `
-        <p>1. Mengapa kita wajib melakukan gerakan pemanasan (stretching) sebelum memulai olahraga jasmani?<br>A. Agar tubuh cepat lelah dan berkeringat dingin<br>B. Merilekskan otot dan meningkatkan detak jantung untuk menghindari cedera/kram<br>C. Biar seragam olahraga basah</p>
-        <p>2. Latihan push-up secara teratur bermanfaat untuk melatih daya tahan dan kekuatan otot...<br>A. Perut dan punggung bawah<br>B. Dada, bahu, dan lengan atas (trisep/bisep)<br>C. Paha dan betis belakang</p>
-        <p>3. Mengapa pendinginan (cooling down) setelah berolahraga berat sangat penting dilakukan? Jelaskan pengaruhnya pada denyut nadi!</p>
-        
-        <h4 style="margin-top: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 5px;">II. KUNCI JAWABAN & PEDOMAN PENSKORAN</h4>
-        <p>1. <b>B (Merilekskan otot...)</b> - Skor: 30<br>
-        2. <b>B (Dada, bahu, dan lengan atas)</b> - Skor: 30<br>
-        3. <b>Membantu memulihkan denyut jantung secara perlahan dan mencegah penumpukan asam laktat penyebab nyeri otot</b> - Skor: 40</p>
-      `;
-      rubRows = `
-        <tr>
-          <td><b>Kebugaran Jasmani & Disiplin</b></td>
-          <td>Menguasai konsep denyut nadi dan tertib melakukan pemanasan/pendinginan dengan penuh kesadaran keselamatan.</td>
-          <td>Melakukan pemanasan dengan benar tetapi sering mengabaikan pendinginan di akhir kelas.</td>
-          <td>Bermain sendiri saat pemanasan bersama instruktur/guru berlangsung.</td>
-        </tr>
-      `;
-    }
-    rubRows += `
-      <tr>
-        <td><b>Sportivitas</b></td>
-        <td>Menunjukkan sportivitas tinggi, menerima kekalahan tim secara lapang dada, dan menyemangati lawan.</td>
-        <td>Bermain jujur tetapi cemberut ketika timnya kalah dalam perlombaan estafet.</td>
-        <td>Bermain curang dan menyalahkan teman kelompok saat kalah lomba.</td>
-      </tr>
-    `;
-  } else if (category === "senirupa") {
-    subTitle = "LEMBAR ASESMEN & RUBRIK PENILAIAN SENI RUPA";
-    if (meetingNum === 1) {
-      task1 = `
-        <p>1. Jenis garis yang melambangkan keluwesan, kelembutan, dan keindahan gerak alam adalah...<br>A. Garis lurus patah-patah tajam<br>B. Garis lengkung/gelombang<br>C. Garis tebal lurus vertikal</p>
-        <p>2. Saat ingin menggambar ombak di laut, jenis garis yang paling tepat digunakan adalah...<br>A. Garis lurus putus-putus<br>B. Garis bergelombang kontinu<br>C. Garis spiral melingkar</p>
-        <p>3. Gambarlah 4 jenis garis dasar (lurus horizontal, lurus vertikal, patah zig-zag, dan lengkung) di lembar jawabanmu!</p>
-        
-        <h4 style="margin-top: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 5px;">II. KUNCI JAWABAN & PEDOMAN PENSKORAN</h4>
-        <p>1. <b>B (Garis lengkung/gelombang)</b> - Skor: 30<br>
-        2. <b>B (Garis bergelombang kontinu)</b> - Skor: 30<br>
-        3. <b>Gambaran garis lurus mendatar, tegak, zig-zag, dan lengkung secara rapi (Kebijaksanaan guru)</b> - Skor: 40</p>
-      `;
-      rubRows = `
-        <tr>
-          <td><b>Penguasaan Garis</b></td>
-          <td>Mampu menggoreskan pensil menggambar aneka jenis garis secara tegas, stabil, dan rapi tanpa bantuan penggaris.</td>
-          <td>Mampu membuat garis tetapi goretannya masih agak bergetar dan kurang konsisten.</td>
-          <td>Goresan garis putus-putus acak-acakan dan tidak teratur.</td>
-        </tr>
-      `;
-    } else if (meetingNum === 2) {
-      task1 = `
-        <p>1. Bahan alam di bawah ini yang dapat digunakan untuk membuat karya seni kolase tempel adalah...<br>A. Kantong plastik bekas belanja<br>B. Daun kering berguguran dan ranting kayu kecil<br>C. Kawat besi tajam</p>
-        <p>2. Menempel potongan kertas origami atau daun kering pada gambar pola binatang disebut teknik...<br>A. Kolase<br>B. Mozaik<br>C. Lukis</p>
-        <p>3. Jelaskan langkah-langkah membuat kolase burung dari daun kering secara urut dan sebutkan lem yang tepat!</p>
-        
-        <h4 style="margin-top: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 5px;">II. KUNCI JAWABAN & PEDOMAN PENSKORAN</h4>
-        <p>1. <b>B (Daun kering berguguran...)</b> - Skor: 30<br>
-        2. <b>A (Kolase)</b> - Skor: 30<br>
-        3. <b>Membuat pola, menggunting daun sesuai pola, menempelkan daun dengan lem kayu putih/kertas (Kebijaksanaan guru)</b> - Skor: 40</p>
-      `;
-      rubRows = `
-        <tr>
-          <td><b>Teknik Menempel (Kolase)</b></td>
-          <td>Menempelkan daun kering pada pola secara presisi, bersih dari sisa lem, dan susunan daun proporsional.</td>
-          <td>Kolase sudah terbentuk sesuai pola tetapi penempelannya kurang rapi (banyak lem belepotan).</td>
-          <td>Menempelkan daun asal-asalan tanpa mengikuti garis batas pola gambar.</td>
-        </tr>
-      `;
-    } else if (meetingNum === 3) {
-      task1 = `
-        <p>1. Warna primer (warna dasar) yang tidak dapat diperoleh dari campuran warna lain adalah...<br>A. Hijau, ungu, jingga<br>B. Merah, kuning, biru<br>C. Hitam, abu-abu, putih</p>
-        <p>2. Jika warna merah kita campurkan secara merata dengan warna kuning, maka akan menghasilkan warna sekunder...<br>A. Hijau<br>B. Jingga (Orange)<br>C. Ungu</p>
-        <p>3. Sebutkan warna sekunder yang terbentuk dari perpaduan warna biru + kuning, dan warna merah + biru!</p>
-        
-        <h4 style="margin-top: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 5px;">II. KUNCI JAWABAN & PEDOMAN PENSKORAN</h4>
-        <p>1. <b>B (Merah, kuning, biru)</b> - Skor: 30<br>
-        2. <b>B (Jingga)</b> - Skor: 30<br>
-        3. <b>Biru + Kuning = Hijau; Merah + Biru = Ungu</b> - Skor: 40</p>
-      `;
-      rubRows = `
-        <tr>
-          <td><b>Teori & Pencampuran Warna</b></td>
-          <td>Sangat mahir melakukan pencampuran cat air warna primer untuk menghasilkan warna sekunder secara presisi.</td>
-          <td>Memahami konsep pencampuran warna tetapi takaran cat air dan air kurang seimbang sehingga warna agak pudar.</td>
-          <td>Belum mengerti perbedaan warna primer dan sekunder secara visual.</td>
-        </tr>
-      `;
-    } else {
-      task1 = `
-        <p>1. Karya seni rupa 3 dimensi memiliki karakteristik khusus yang membedakannya dengan 2 dimensi, yaitu...<br>A. Hanya memiliki panjang dan lebar<br>B. Memiliki panjang, lebar, tinggi, serta volume/ruang<br>C. Hanya bisa dinikmati dari satu arah depan saja</p>
-        <p>2. Bahan plastisin/tanah liat sangat mudah dibentuk menjadi patung mini karena memiliki sifat...<br>A. Keras dan kaku<br>B. Lunak dan plastis (mudah diubah bentuk)<br>C. Mudah menguap</p>
-        <p>3. Gambarkan sketsa rancangan patung hewan 3 dimensi bertema dinosaurus atau gajah yang ingin kamu buat dari plastisin!</p>
-        
-        <h4 style="margin-top: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 5px;">II. KUNCI JAWABAN & PEDOMAN PENSKORAN</h4>
-        <p>1. <b>B (Memiliki panjang, lebar, tinggi, serta volume...)</b> - Skor: 30<br>
-        2. <b>B (Lunak dan plastis...)</b> - Skor: 30<br>
-        3. <b>Sketsa skematik patung hewan (kebijaksanaan guru)</b> - Skor: 40</p>
-      `;
-      rubRows = `
-        <tr>
-          <td><b>Kreativitas 3 Dimensi</b></td>
-          <td>Mampu mematung plastisin menjadi bentuk anatomi hewan yang proporsional, kreatif, dan seimbang secara 3D.</td>
-          <td>Bisa membuat patung hewan tetapi sambungan antar kaki/kepala plastisin kurang kuat sehingga mudah patah.</td>
-          <td>Tidak mampu membentuk plastisin menjadi bentuk yang teridentifikasi secara visual.</td>
-        </tr>
-      `;
-    }
-    rubRows += `
-      <tr>
-        <td><b>Estetika & Kerapian</b></td>
-        <td>Karya akhir disajikan secara sangat estetik, komposisi warna harmoni, dan bersih.</td>
-        <td>Karya akhir cukup menarik tetapi pengerjaannya terkesan buru-buru di bagian pewarnaan/detailing.</td>
-        <td>Karya diselesaikan setengah-setengah dan ditinggalkan begitu saja.</td>
-      </tr>
-    `;
-  } else if (category === "english") {
-    subTitle = "ASSESSMENT SHEETS & EVALUATION RUBRIC (ENGLISH)";
-    if (meetingNum === 1) {
-      task1 = `
-        <p>1. Complete this dialog: "Hello, my name is Linda. Nice to ... you."<br>A. met<br>B. meet<br>C. meeting</p>
-        <p>2. What is the correct English response to "Good morning, how are you?"<br>A. "I am fine, thank you."<br>B. "Good afternoon."<br>C. "Goodbye."</p>
-        <p>3. Translate this greeting dialogue into Indonesian: "Good night, Mother. See you tomorrow!"</p>
-        
-        <h4 style="margin-top: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 5px;">II. ANSWER KEY & SCORING GUIDELINES</h4>
-        <p>1. <b>B (meet)</b> - Score: 30<br>
-        2. <b>A ("I am fine, thank you.")</b> - Score: 30<br>
-        3. <b>"Selamat malam, Ibu. Sampai jumpa besok!"</b> - Score: 40</p>
-      `;
-      rubRows = `
-        <tr>
-          <td><b>Speaking Skill</b></td>
-          <td>Speaks clearly with correct English pronunciation, appropriate intonation, and polite expressions.</td>
-          <td>Can pronounce the greeting expressions but with minor spelling/pronunciation errors.</td>
-          <td>Reluctant to speak or pronounces English greetings incorrectly.</td>
-        </tr>
-      `;
-    } else if (meetingNum === 2) {
-      task1 = `
-        <p>1. What is the English word for 'kursi belajar'?<br>A. Table<br>B. Chair<br>C. Whiteboard</p>
-        <p>2. Spell the name of this object: \uD83D\uDCDD (Pencil)<br>A. P-E-N-C-I-L<br>B. P-E-N<br>C. B-O-O-K</p>
-        <p>3. Translate this sentence into English: "Papan tulis itu bersih."</p>
-        
-        <h4 style="margin-top: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 5px;">II. ANSWER KEY & SCORING GUIDELINES</h4>
-        <p>1. <b>B (Chair)</b> - Score: 30<br>
-        2. <b>A (P-E-N-C-I-L)</b> - Score: 30<br>
-        3. <b>"The whiteboard is clean" or "That whiteboard is clean"</b> - Score: 40</p>
-      `;
-      rubRows = `
-        <tr>
-          <td><b>Vocabulary & Spelling</b></td>
-          <td>Can identify and spell classroom objects in English correctly without any typos.</td>
-          <td>Can spell vocabulary words but misses one or two letters in long words like 'whiteboard'.</td>
-          <td>Cannot spell basic English vocabulary nouns.</td>
-        </tr>
-      `;
-    } else if (meetingNum === 3) {
-      task1 = `
-        <p>1. "He is my father." The word 'father' means...<br>A. Ibu<br>B. Ayah<br>C. Saudara laki-laki</p>
-        <p>2. Who is your mother's husband?<br>A. My brother<br>B. My father<br>C. My grandfather</p>
-        <p>3. Translate this sentence into English: "Saya sayang adik perempuan saya."</p>
-        
-        <h4 style="margin-top: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 5px;">II. ANSWER KEY & SCORING GUIDELINES</h4>
-        <p>1. <b>B (Ayah)</b> - Score: 30<br>
-        2. <b>B (My father)</b> - Score: 30<br>
-        3. <b>"I love my little sister" or "I love my sister"</b> - Score: 40</p>
-      `;
-      rubRows = `
-        <tr>
-          <td><b>Translation Skill</b></td>
-          <td>Accurately translates sentences between English and Indonesian, keeping correct pronouns.</td>
-          <td>Translates correctly but makes mistakes with singular/plural pronouns (e.g. using 'he' for mother).</td>
-          <td>Unable to translate simple family terms.</td>
-        </tr>
-      `;
-    } else {
-      task1 = `
-        <p>1. The English name for the king of the jungle (Singa) is...<br>A. Elephant<br>B. Lion<br>C. Monkey</p>
-        <p>2. What wild animal has a very long neck?<br>A. Giraffe<br>B. Tiger<br>C. Rabbit</p>
-        <p>3. Spell the English vocabulary for these animals: "Gajah" and "Kupu-kupu" correctly!</p>
-        
-        <h4 style="margin-top: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 5px;">II. ANSWER KEY & SCORING GUIDELINES</h4>
-        <p>1. <b>B (Lion)</b> - Score: 30<br>
-        2. <b>A (Giraffe)</b> - Score: 30<br>
-        3. <b>Elephant and Butterfly</b> - Score: 40</p>
-      `;
-      rubRows = `
-        <tr>
-          <td><b>Pronunciation & Spelling</b></td>
-          <td>Speaks animal names correctly and spells them with 100% accuracy.</td>
-          <td>Can name the animals but makes minor spelling errors in complex words like 'butterfly'.</td>
-          <td>Fails to recall animal vocabulary in English.</td>
-        </tr>
-      `;
-    }
-    rubRows += `
-      <tr>
-        <td><b>Participation</b></td>
-        <td>Actively participates in all English dialogues, class games, and shows high enthusiasm.</td>
-        <td>Participates in the tasks but needs some encouragement to speak aloud in English.</td>
-        <td>Passive and does not want to try pronouncing English words.</td>
-      </tr>
-    `;
-  } else if (category === "jawa") {
-    subTitle = "LEMBAR ASESMEN & RUBRIK PIWULANG BASA JAWA";
-    if (meetingNum === 1) {
-      task1 = `
-        <p>1. Tembung 'sirah' yen diowahi dadi basa krama alus (inggil) yaiku...<br>A. Mustaka<br>B. Amparan<br>C. Rikma</p>
-        <p>2. Bapak nembe wae... sega goreng wonten pawon. Tembung krama alus sing bener yaiku...<br>A. Mangan<br>B. Dhahar<br>C. Nedha</p>
-        <p>3. Owahana ukara ngoko iki dadi krama alus: "Simbah lunga menyang pasar nunggang becak."!</p>
-        
-        <h4 style="margin-top: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 5px;">II. KUNCI JAWABAN & PEDOMAN PENSKORAN</h4>
-        <p>1. <b>A (Mustaka)</b> - Skor: 30<br>
-        2. <b>B (Dhahar)</b> - Skor: 30<br>
-        3. <b>Simbah tindak dhateng peken nitih becak.</b> - Skor: 40</p>
-      `;
-      rubRows = `
-        <tr>
-          <td><b>Unggah-Ungguh Basa</b></td>
-          <td>Mampu membedakan penggunaan ngoko lugu dan krama alus secara tepat sesuai lawan bicara.</td>
-          <td>Memahami basa krama alus tetapi masih sering tercampur (kemproh) dengan tembang ngoko.</td>
-          <td>Belum memahami tata krama berbicara basa Jawa marang wong tuwa.</td>
-        </tr>
-      `;
-    } else if (meetingNum === 2) {
-      task1 = `
-        <p>1. Dongeng kewan Kancil lan Baya ngemot piwulang luhur supaya kita dadi bocah kang...<br>A. Senang ngapusi kanca<br>B. Pinter nggunakake akal kanggo kebecikan lan ora entuk umuk (sombong)<br>C. Senang golek musuh</p>
-        <p>2. Watake baya ing dongeng kasebut yaiku gampang diapusi kancil amarga...<br>A. Kesed lan turu wae<br>B. Grusa-grusu lan srakah (rakus)<br>C. Senang tetulung</p>
-        <p>3. Tulisna pitutur luhur/pesan moral saka crita dongeng kancil lan baya kang kokpahami!</p>
-        
-        <h4 style="margin-top: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 5px;">II. KUNCI JAWABAN & PEDOMAN PENSKORAN</h4>
-        <p>1. <b>B (Pinter nggunakake akal...)</b> - Skor: 30<br>
-        2. <b>B (Grusa-grusu lan srakah...)</b> - Skor: 30<br>
-        3. <b>Bocah kudu pinter, ora entuk srakah, lan kudu mikir dhisik sadurunge bertindak (kebijaksanaan guru)</b> - Skor: 40</p>
-      `;
-      rubRows = `
-        <tr>
-          <td><b>Apresiasi Sastra Jawa</b></td>
-          <td>Mampu memahami isi dongeng/geguritan dan mengambil nilai budi pekerti yang terkandung didalamnya.</td>
-          <td>Mampu menceritakan kembali dongeng tetapi kesulitan menemukan nilai luhur ceritanya.</td>
-          <td>Kesulitan memahami arti kosakata basa Jawa dalam teks dongeng/tembang dolanan.</td>
-        </tr>
-      `;
-    } else if (meetingNum === 3) {
-      task1 = `
-        <p>1. Paraga Pandhawa sing pambarep (paling tuwa) lan nduweni watak sabar banget yaiku...<br>A. Werkudara<br>B. Puntadewa (Yudhistira)<br>C. Janaka (Arjuna)</p>
-        <p>2. Pusaka arane Gada Rujakpala diduweni dening salah siji paraga Pandhawa kang gagah perkasa, yaiku...<br>A. Nakula<br>B. Werkudara (Bima)<br>C. Sadewa</p>
-        <p>3. Sebutna jeneng-jeneng Pandhawa lima kanthi lengkap lan runtut saka pambarep tekan wuragil!</p>
-        
-        <h4 style="margin-top: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 5px;">II. KUNCI JAWABAN & PEDOMAN PENSKORAN</h4>
-        <p>1. <b>B (Puntadewa)</b> - Skor: 30<br>
-        2. <b>B (Werkudara)</b> - Skor: 30<br>
-        3. <b>Puntadewa, Werkudara, Janaka, Nakula, Sadewa.</b> - Skor: 40</p>
-      `;
-      rubRows = `
-        <tr>
-          <td><b>Tokoh Wayang Pandhawa</b></td>
-          <td>Mampu mengidentifikasi watak, pusaka, dan silsilah Pandhawa lima secara tepat tanpa tertukar.</td>
-          <td>Mengidentifikasi Pandhawa tetapi salah menyebutkan urutan kelahiran si kembar Nakula-Sadewa.</td>
-          <td>Belum mengenal tokoh-tokoh Pandhawa lima dasar.</td>
-        </tr>
-      `;
-    } else {
-      task1 = `
-        <p>1. Lagu dolanan "Menthok-Menthok" ngemot pitutur luhur supaya awake dhewe dadi bocah kang...<br>A. Senang turu lan kesed<br>B. Ora entuk kesed, kudu sregep tangi esuk lan nyambut gawe<br>C. Senang umuk</p>
-        <p>2. Swara pitik jago (jantan) ing wayah esuk ing basa Jawa yaiku...<br>A. Petok-petok!<br>B. Kukuruyuk!<br>C. Mbek-mbek!</p>
-        <p>3. Tulisna lirik tembang dolanan "Gajah-Gajah" sak bait wae kanthi bener!</p>
-        
-        <h4 style="margin-top: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 5px;">II. KUNCI JAWABAN & PEDOMAN PENSKORAN</h4>
-        <p>1. <b>B (Ora entuk kesed...)</b> - Skor: 30<br>
-        2. <b>B (Kukuruyuk!)</b> - Skor: 30<br>
-        3. <b>"Gajah-gajah, kowe tak kandhani, mripat kaya laron, kuping amba-amba..."</b> - Skor: 40</p>
-      `;
-      rubRows = `
-        <tr>
-          <td><b>Olah Swara & Tembang</b></td>
-          <td>Lancar nembang dolanan kanthi cengkok, nada, lan ekspresi gerak tubuh yang sangat laras (sesuai).</td>
-          <td>Mampu nembang nanging isih kurang percaya diri/lirik tembang ana sing lali sithik.</td>
-          <td>Belum hafal lirik tembang dolanan Jawa dasar.</td>
-        </tr>
-      `;
-    }
-    rubRows += `
-      <tr>
-        <td><b>Krama Alus Pacelathon</b></td>
-        <td>Tansah nggunakake tembung krama alus marang guru/wong tuwa kanthi patrap sopan santun.</td>
-        <td>Bisa nggunakake krama alus nanging patrap awake isih kurang sopan (ora ndungkluk).</td>
-        <td>Matur nganggo ngoko kasar marang wong tuwa.</td>
-      </tr>
-    `;
-  } else if (category === "koding") {
-    subTitle = "LEMBAR ASESMEN & RUBRIK KODING & AI";
-    if (meetingNum === 1) {
-      task1 = `
-        <p>1. Urutan langkah-langkah logis dan teratur untuk menyelesaikan suatu masalah disebut...<br>A. Variabel<br>B. Algoritma<br>C. Loop</p>
-        <p>2. Urutan algoritma membuat segelas teh manis setelah merebus air adalah...<br>A. Memasukkan teh celup dan gula ke dalam gelas, lalu tuang air hangat<br>B. Meminum langsung tehnya<br>C. Membuang air rebusan</p>
-        <p>3. Buatlah runtutan instruksi (algoritma) bagi sebuah robot agar berjalan dari pintu kelas menuju ke tempat sampah di sudut kelas secara detail!</p>
-        
-        <h4 style="margin-top: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 5px;">II. KUNCI JAWABAN & PEDOMAN PENSKORAN</h4>
-        <p>1. <b>B (Algoritma)</b> - Skor: 30<br>
-        2. <b>A (Memasukkan teh celup...)</b> - Skor: 30<br>
-        3. <b>1. Berdiri tegap; 2. Hadap kanan; 3. Jalan lurus 5 langkah; 4. Berhenti di dekat tempat sampah (kebijaksanaan guru)</b> - Skor: 40</p>
-      `;
-      rubRows = `
-        <tr>
-          <td><b>Logika Algoritma</b></td>
-          <td>Mampu menyusun urutan perintah penyelesaian masalah secara logis, efisien, dan runtut.</td>
-          <td>Mampu membuat instruksi tetapi alur logikanya masih melompat-lompat/tidak efisien.</td>
-          <td>Belum memahami alur penyusunan langkah-langkah logika dasar (algoritma).</td>
-        </tr>
-      `;
-    } else if (meetingNum === 2) {
-      task1 = `
-        <p>1. Blok perintah berwarna kuning "when green flag clicked" pada Scratch berfungsi untuk...<br>A. Mengubah latar belakang panggung<br>B. Memulai program ketika bendera hijau diklik<br>C. Menghentikan program langsung</p>
-        <p>2. Blok Scratch untuk memutar Sprite/karakter searah jarum jam sebesar 90 derajat adalah...<br>A. turn right 90 degrees<br>B. move 90 steps<br>C. go to x:0 y:90</p>
-        <p>3. Jelaskan perbedaan fungsi antara blok kontrol "forever" dengan "repeat 10" dalam loops Scratch!</p>
-        
-        <h4 style="margin-top: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 5px;">II. KUNCI JAWABAN & PEDOMAN PENSKORAN</h4>
-        <p>1. <b>B (Memulai program...)</b> - Skor: 30<br>
-        2. <b>A (turn right 90 degrees)</b> - Skor: 30<br>
-        3. <b>"forever" melakukan pengulangan terus menerus tanpa henti; "repeat 10" membatasi pengulangan hanya sebanyak 10 kali</b> - Skor: 40</p>
-      `;
-      rubRows = `
-        <tr>
-          <td><b>Penggunaan Blok Scratch</b></td>
-          <td>Sangat memahami fungsi blok kontrol, gerak, suara, dan tampilan Scratch secara mandiri.</td>
-          <td>Mampu merakit blok perintah dasar tetapi bingung menentukan koordinat sprite x dan y.</td>
-          <td>Belum mengerti cara menyeret dan menempelkan blok perintah di workspace Scratch.</td>
-        </tr>
-      `;
-    } else if (meetingNum === 3) {
-      task1 = `
-        <p>1. Logika koding percabangan "if-then-else" digunakan ketika program memiliki...<br>A. Runtutan langkah lurus tanpa hambatan<br>B. Dua pilihan keputusan berdasarkan kondisi tertentu<br>C. Pengulangan langkah sebanyak 10 kali</p>
-        <p>2. "Jika lampu lalu lintas berwarna kuning, maka melambat. Jika tidak (merah), maka berhenti." Logika kondisional ini dinamakan...<br>A. Pengulangan (Looping)<br>B. Percabangan (Conditionals)<br>C. Variabel data</p>
-        <p>3. Buatlah satu contoh diagram logika "if-then-else" yang sering terjadi saat kamu memutuskan membawa payung sebelum pergi sekolah!</p>
-        
-        <h4 style="margin-top: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 5px;">II. KUNCI JAWABAN & PEDOMAN PENSKORAN</h4>
-        <p>1. <b>B (Dua pilihan keputusan...)</b> - Skor: 30<br>
-        2. <b>B (Percabangan/Conditionals)</b> - Skor: 30<br>
-        3. <b>Kondisi: Hujan? -> Then: Bawa payung; Else: Tidak bawa payung (Kebijaksanaan guru)</b> - Skor: 40</p>
-      `;
-      rubRows = `
-        <tr>
-          <td><b>Logika Kondisional</b></td>
-          <td>Mampu menganalisis alur logika percabangan kondisional if-then-else secara logis dan menyusun skemanya.</td>
-          <td>Memahami logika if-then tetapi bingung menempatkan kondisi fallback (else) pada script.</td>
-          <td>Belum menguasai konsep dasar percabangan bersyarat.</td>
-        </tr>
-      `;
-    } else {
-      task1 = `
-        <p>1. Sensor pada robot atau handphone yang berfungsi menerima masukan data gambar wajah dinamakan...<br>A. Speaker suara<br>B. Kamera visual<br>C. Port USB</p>
-        <p>2. Proses memberikan ribuan contoh gambar kepada komputer agar ia belajar mengenali jenis buah disebut...<br>A. Training data (latihan data)<br>B. Coding program<br>C. Internet surfing</p>
-        <p>3. Sebutkan 2 contoh asisten cerdas Kecerdasan Artifisial (AI) yang biasa kamu gunakan sehari-hari di internet!</p>
-        
-        <h4 style="margin-top: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 5px;">II. KUNCI JAWABAN & PEDOMAN PENSKORAN</h4>
-        <p>1. <b>B (Kamera visual)</b> - Skor: 30<br>
-        2. <b>A (Training data)</b> - Skor: 30<br>
-        3. <b>Contoh: Google Assistant, Siri, ChatGPT, Gemini, dll (Kebijaksanaan guru)</b> - Skor: 40</p>
-      `;
-      rubRows = `
-        <tr>
-          <td><b>Konsep AI Dasar</b></td>
-          <td>Mampu menguraikan proses kerja AI dan sensor robot secara rasional dengan contoh yang logis.</td>
-          <td>Mengetahui singkatan AI tetapi kesulitan membedakan proses training data dengan pemrograman konvensional.</td>
-          <td>Belum mengenal arti Kecerdasan Buatan (AI) secara umum.</td>
-        </tr>
-      `;
-    }
-    rubRows += `
-      <tr>
-        <td><b>Decomposition (Debugging)</b></td>
-        <td>Mampu memecah masalah besar menjadi bagian kecil (dekomposisi) dan memperbaikinya jika ada eror (debugging).</td>
-        <td>Menyelesaikan proyek koding tetapi bingung mencari kesalahan (eror) saat program tidak jalan.</td>
-        <td>Membutuhkan bantuan penuh untuk menyelesaikan eror koding sederhana.</td>
-      </tr>
-    `;
-  } else {
-    // Ultimate Fallback for any other subjects
-    subTitle = "LEMBAR ASESMEN & RUBRIK OBSERVASI SIKAP";
-    if (meetingNum === 1) {
-      task1 = `
-        <p>1. Apa tujuan utama kita mempelajari materi ${topicName}?<br>A. Melatih hafalan cepat tanpa pemahaman<br>B. Melatih kemampuan bernalar logis dan pemecahan masalah kontekstual<br>C. Mengikuti kehendak teman sekelas</p>
-        <p>2. Melakukan evaluasi mandiri membantu kita untuk...<br>A. Mengetahui kelemahan dan kelebihan proses belajar kita<br>B. Menyombongkan diri jika mendapat nilai tinggi<br>C. Mempercepat waktu pulang</p>
-        <p>3. Tuliskan ringkasan 1 poin utama yang paling penting dari materi ${topicName}!</p>
-        
-        <h4 style="margin-top: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 5px;">II. KUNCI JAWABAN & PEDOMAN PENSKORAN</h4>
-        <p>1. <b>B (Melatih bernalar logis...)</b> - Skor: 30<br>
-        2. <b>A (Mengetahui kelemahan...)</b> - Skor: 30<br>
-        3. <b>Jawaban relevan dengan materi ${topicName} (Kebijaksanaan guru)</b> - Skor: 40</p>
-      `;
-      rubRows = `
-        <tr>
-          <td><b>Pemahaman Materi</b></td>
-          <td>Memahami seluruh konsep dasar materi ${topicName} dengan baik dan mampu menjelaskannya secara tertulis.</td>
-          <td>Mampu menghafal materi tetapi masih kesulitan menerapkannya dalam situasi yang baru.</td>
-          <td>Belum menguasai kompetensi dasar dari topik yang dipelajari.</td>
-        </tr>
-      `;
-    } else {
-      task1 = `
-        <p>1. Sikap kerja keras saat menghadapi kesulitan memahami materi ${topicName} adalah...<br>A. Langsung menyerah dan tidur<br>B. Bertanya kepada guru atau berdiskusi dengan teman kelompok secara santun<br>C. Merobek kertas tugas</p>
-        <p>2. Menuliskan kesimpulan belajar di buku catatan melatih kita untuk...<br>A. Menghabiskan tinta pulpen<br>B. Berpikir terstruktur dan mendokumentasikan ilmu penting<br>C. Mempercantik meja belajar</p>
-        <p>3. Berikan satu contoh penerapan langsung materi ${topicName} dalam lingkungan rumahmu!</p>
-        
-        <h4 style="margin-top: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 5px;">II. KUNCI JAWABAN & PEDOMAN PENSKORAN</h4>
-        <p>1. <b>B (Bertanya kepada guru...)</b> - Skor: 30<br>
-        2. <b>B (Berpikir terstruktur...)</b> - Skor: 30<br>
-        3. <b>Penerapan logis dan bermanfaat sesuai materi ${topicName} (Kebijaksanaan guru)</b> - Skor: 40</p>
-      `;
-      rubRows = `
-        <tr>
-          <td><b>Kemampuan Refleksi</b></td>
-          <td>Mampu mengevaluasi kelemahan diri sendiri saat mempelajari materi ${topicName} dan berupaya aktif memperbaikinya.</td>
-          <td>Menyadari kesulitan belajarnya tetapi tidak tahu bagaimana cara memperbaikinya.</td>
-          <td>Belum bisa melakukan refleksi atas proses belajarnya secara mandiri.</td>
-        </tr>
-      `;
-    }
-    rubRows += `
-      <tr>
-        <td><b>Kemandirian Tugas</b></td>
-        <td>Mengerjakan tugas secara mandiri, jujur, penuh konsentrasi, dan mengumpulkan tepat waktu.</td>
-        <td>Mengerjakan tugas mandiri tetapi mudah teralihkan konsentrasinya oleh keadaan sekitar.</td>
-        <td>Selalu meminta bantuan penuh dari orang lain untuk menyelesaikan tugas sederhana.</td>
-      </tr>
-    `;
-  }
 
   return `
     <div style="border: 1px solid var(--border-color); padding: 20px; border-radius: 8px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
@@ -5118,7 +5225,7 @@ function compilePromes(subData, fase) {
 
   return `
     ${headers}
-    <p class="text-muted" style="margin-bottom:4px;font-size:12px;font-style:italic;">* Distribusi JP sesuai kalender akademik 2025/2026 dan Permendikdasmen No. 13/2025.</p>
+    <p class="text-muted" style="margin-bottom:4px;font-size:12px;font-style:italic;">* Distribusi JP sesuai kalender akademik ${state.teacherProfile.tahunAjaran} dan Permendikdasmen No. 13/2025.</p>
     <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:10px;font-size:11px;">
       <span style="background:#fff3cd;padding:2px 8px;border-radius:4px;border:1px solid #d4a017;"><b>M</b> = MPLS</span>
       <span style="background:#fde8e8;padding:2px 8px;border-radius:4px;border:1px solid #c0392b;"><b>P/U</b> = PAS/Ujian</span>
@@ -5286,6 +5393,9 @@ function getConcreteActivity(category, topicName) {
   }
 
   if (category === "pancasila") {
+    if (topicLower.includes("perumus") || topicLower.includes("tokoh") || topicLower.includes("kebersamaan") || topicLower.includes("bpupki") || topicLower.includes("sejarah")) {
+      return 'Peserta didik melakukan simulasi bermain peran (role-play) sidang perumusan Pancasila dengan membagi peran sebagai tokoh bangsa seperti Ir. Soekarno, Moh. Yamin, dan Dr. Soepomo untuk mendiskusikan nilai kebersamaan dan musyawarah mufakat secara langsung.';
+    }
     if (topicLower.includes("gotong") || topicLower.includes("kerja") || topicLower.includes("sama") || topicLower.includes("bakti")) {
       return `Peserta didik mensimulasikan aktivitas kerja bakti di kelas (seperti membagi tugas menyapu, merapikan buku, dan membersihkan papan tulis) secara langsung untuk mempraktikkan gotong royong secara berkelompok.`;
     }
@@ -5353,6 +5463,7 @@ function getLangkahInstruksional(subjectId, topicName) {
   else if (subjectId.includes("english")) category = "english";
   else if (subjectId.includes("jawa")) category = "jawa";
 
+  const qa = getTopicSpecificQA(subjectId, topicName);
   const data = {
     pendahuluan1: "",
     pendahuluan2: "",
@@ -5370,97 +5481,97 @@ function getLangkahInstruksional(subjectId, topicName) {
   switch (category) {
     case "matematika":
       data.pendahuluan1 = `Guru mengondisikan kesiapan mental belajar kelas dengan mengajak siswa duduk tegap dan memandu teknik pernapasan kesadaran (tarik napas dalam 4 detik, tahan 2 detik, lalu hembuskan perlahan) sebanyak 3 kali secara hening untuk memusatkan emosi positif belajar. Dilanjutkan dengan berdoa bersama dipimpin ketua kelas, memeriksa kerapian pakaian, menjaga kebersihan kelas, serta menanyakan perasaan emosional siswa hari ini secara ramah.`;
-      data.pendahuluan2 = `Guru menghubungkan materi dengan pengalaman kontekstual siswa di kehidupan sehari-hari: 'Anak-anak hebat, pernahkah kalian memotong kue ulang tahun untuk dibagikan secara adil ke teman-teman? Atau mengelompokkan mainan kelereng di rumah? Hari ini kita akan belajar matematika tentang <b>${topicName}</b> agar kita bisa mengukur, menghitung, dan membagi objek nyata secara tepat, adil, dan objektif dalam kehidupan sehari-hari!'`;
-      data.pendahuluan3 = `Guru menjelaskan target capaian pembelajaran hari ini yaitu memahami cara kerja logika <b>${topicName}</b>. Alur kegiatan menyenangkan yang akan dilalui meliputi eksplorasi manipulatif objek berkelompok, visualisasi gambar sketsa konsep, merumuskan simbol matematis, serta diakhiri dengan kuis interaktif berhadiah bintang prestasi yang ramah anak.`;
+      data.pendahuluan2 = `Guru menghubungkan materi dengan pengalaman kontekstual siswa di kehidupan sehari-hari: 'Anak-anak hebat, pernahkah kalian memotong kue ulang tahun untuk dibagikan secara adil ke teman-teman? Atau mengelompokkan mainan kelereng di rumah? Hari ini kita akan belajar matematika tentang "${topicName}" agar kita bisa mengukur, menghitung, dan membagi objek nyata secara tepat, adil, dan objektif dalam kehidupan sehari-hari!'`;
+      data.pendahuluan3 = `Guru menjelaskan target capaian pembelajaran hari ini yaitu memahami cara kerja logika "${topicName}". Alur kegiatan menyenangkan yang akan dilalui meliputi eksplorasi manipulatif objek berkelompok, visualisasi gambar sketsa konsep, merumuskan simbol matematis, serta diakhiri dengan kuis interaktif berhadiah bintang prestasi yang ramah anak.`;
       
-      data.tahap1 = `Peserta didik dihadapkan pada situasi tidak lengkap atau teka-teki konkret bermasalah di depan kelas. Guru memperlihatkan alat peraga nyata atau wadah berisi barang acak, lalu mengajukan pertanyaan pemantik: 'Jika kita ingin menyortir dan menghitung kumpulan objek fisik ini untuk memecahkan konsep <b>${topicName}</b> secara paling efektif and adil, bagaimana langkah logis awal yang harus kita lakukan?'. Siswa dipancing untuk berpikir kritis tanpa langsung diberi tahu rumusnya.`;
+      data.tahap1 = `Peserta didik dihadapkan pada situasi tidak lengkap atau teka-teki konkret bermasalah di depan kelas. Guru memperlihatkan alat peraga nyata atau wadah berisi barang acak, lalu mengajukan pertanyaan pemantik: 'Jika kita ingin menyortir dan menghitung kumpulan objek fisik ini untuk memecahkan konsep "${topicName}" secara paling efektif and adil, bagaimana langkah logis awal yang harus kita lakukan?'. Siswa dipancing untuk berpikir kritis tanpa langsung diberi tahu rumusnya.`;
       data.tahap2 = getConcreteActivity("matematika", topicName);
-      data.tahap3 = `Peserta didik menuangkan hasil manipulasi konkret di atas ke dalam bentuk lembar kerja visual (representasi gambar). Setiap kelompok menggambar arsiran lingkaran/persegi untuk pecahan, melukis sketsa diagram batang berwarna, atau menata tabel visual data terkait <b>${topicName}</b> pada kertas karton kelompok agar konsepnya terlihat jelas secara visual.`;
-      data.tahap4 = `Peserta didik dibimbing untuk menerjemahkan representasi visual tersebut menjadi simbol abstrak formal matematika. Siswa menuliskan angka resmi, merumuskan persamaan operasi hitung (seperti tanda tambah [+], kurang [-], pecahan, atau rumus keliling/luas), serta melabeli simbol matematis yang merepresentasikan materi <b>${topicName}</b> secara akurat.`;
-      data.tahap5 = `Perwakilan dari setiap kelompok mempresentasikan proses berpikir kelompoknya di depan kelas. Siswa menjelaskan secara verbal dan logis bagaimana mereka memproses benda konkret hingga menemukan formulasi matematika <b>${topicName}</b>. Kelompok lain memberikan tanggapan berupa apresiasi atau pertanyaan kritis konstruktif, dilanjutkan dengan penguatan dan validasi konsep oleh guru.`;
+      data.tahap3 = `Peserta didik menuangkan hasil manipulasi konkret di atas ke dalam bentuk lembar kerja visual (representasi gambar). Setiap kelompok menggambar arsiran lingkaran/persegi untuk pecahan, melukis sketsa diagram batang berwarna, atau menata tabel visual data terkait "${topicName}" pada kertas karton kelompok agar konsepnya terlihat jelas secara visual.`;
+      data.tahap4 = `Peserta didik dibimbing untuk menerjemahkan representasi visual tersebut menjadi simbol abstrak formal matematika. Siswa menuliskan angka resmi, merumuskan persamaan operasi hitung (seperti tanda tambah [+], kurang [-], pecahan, atau rumus keliling/luas), serta melabeli simbol matematis yang merepresentasikan materi "${topicName}" secara akurat.`;
+      data.tahap5 = `Perwakilan dari setiap kelompok mempresentasikan proses berpikir kelompoknya di depan kelas. Siswa menjelaskan secara verbal dan logis bagaimana mereka memproses benda konkret hingga menemukan formulasi matematika "${topicName}". Kelompok lain memberikan tanggapan berupa apresiasi atau pertanyaan kritis konstruktif, dilanjutkan dengan penguatan dan validasi konsep oleh guru.`;
       
-      data.penutup1 = `Siswa bersama guru melakukan refleksi perasaan belajar dengan mengajukan pertanyaan pemandu: 'Aktivitas eksplorasi bagian mana yang paling menantang dan memicu rasa ingin tahumu tentang <b>${topicName}</b> hari ini? Karakter baik (seperti gotong royong dan kejujuran) apa saja yang sudah kita terapkan?'`;
+      data.penutup1 = `Siswa bersama guru melakukan refleksi perasaan belajar dengan mengajukan pertanyaan pemandu: 'Aktivitas eksplorasi bagian mana yang paling menantang dan memicu rasa ingin tahumu tentang "${topicName}" hari ini? Karakter baik (seperti gotong royong dan kejujuran) apa saja yang sudah kita terapkan?'`;
       data.penutup2 = `Guru melakukan asesmen spontan lisan dengan mengajukan 3 pertanyaan pemahaman cepat secara acak:<br>
-      1. 'Sebutkan 1 contoh pemanfaatan konsep <b>${topicName}</b> yang baru saja kita pelajari saat kamu membantu ibu di rumah!'<br>
-      2. 'Mengapa kita harus menggambarkan pola visual terlebih dahulu sebelum menuliskan simbol formal <b>${topicName}</b>?'<br>
-      3. 'Jika angka variabel diubah menjadi lebih besar, apa pengaruhnya terhadap hasil perhitungan akhir?'`;
-      data.penutup3 = `Guru memberikan tindak lanjut tugas rumah kontekstual sederhana: 'Cari dan catatlah 2 benda atau kegiatan di rumahmu yang menerapkan prinsip hitung <b>${topicName}</b>.' Pembelajaran ditutup dengan doa syukur bersama dan yel-yel penyemangat kelas secara ceria.`;
+      1. '${qa.questions[0] || 'Bagaimana cara menyelesaikan perhitungan matematika ini secara teliti?'}'<br>
+      2. '${qa.questions[1] || 'Sebutkan 1 contoh penerapan materi matematika ini dalam kegiatanmu sehari-hari di rumah!'}'<br>
+      3. '${qa.questions[2] || 'Mengapa pengerjaan secara runtut membantu mencegah kekeliruan berhitung?'}'`;
+      data.penutup3 = `Guru memberikan tindak lanjut tugas rumah kontekstual sederhana: 'Cari dan catatlah 2 benda atau kegiatan di rumahmu yang menerapkan prinsip hitung "${topicName}".' Pembelajaran ditutup dengan doa syukur bersama dan yel-yel penyemangat kelas secara ceria.`;
       break;
 
     case "kristen":
       data.pendahuluan1 = `Guru mengondisikan kesiapan mental belajar siswa dengan bernyanyi lagu rohani gembira (seperti 'Setinggi-tingginya Langit' atau 'Hari Ini Kurasa Bahagia') bersama-sama secara ceria, dilanjutkan berdoa pembuka dipimpin salah satu siswa, serta absensi kehadiran siswa dengan sapaan hangat.`;
-      data.pendahuluan2 = `Guru menghubungkan materi dengan iman Kristen sehari-hari: 'Anak-anak terkasih, tahukah kalian bahwa setiap kita diciptakan secara unik, dikasihi, dan dipelihara oleh Tuhan setiap hari? Hari ini kita belajar materi <b>${topicName}</b> agar kita bisa mensyukuri kasih setia Allah dan menjadi saluran berkat bagi keluarga serta teman-teman di sekitar kita!'`;
+      data.pendahuluan2 = `Guru menghubungkan materi dengan iman Kristen sehari-hari: 'Anak-anak terkasih, tahukah kalian bahwa setiap kita diciptakan secara unik, dikasihi, dan dipelihara oleh Tuhan setiap hari? Hari ini kita belajar materi "${topicName}" agar kita bisa mensyukuri kasih setia Allah dan menjadi saluran berkat bagi keluarga serta teman-teman di sekitar kita!'`;
       data.pendahuluan3 = `Guru memaparkan alur aktivitas seru hari ini: menyanyi gerakan bersama, menyusun urutan peristiwa Alkitab, berdiskusi kelompok merawat alam ciptaan, menulis komitmen kasih Kristen, dan ditutup dengan doa syukur bersama.`;
       
-      data.tahap1 = `Peserta didik dihadapkan pada paparan cerita Alkitab bergambar atau pembacaan nats firman Tuhan bertema <b>${topicName}</b>. Guru mengajukan pertanyaan pemantik: 'Dari firman Tuhan ini, teladan atau pesan kasih apa yang ingin Tuhan ajarkan kepada kita untuk dilakukan hari ini?'.`;
+      data.tahap1 = `Peserta didik dihadapkan pada paparan cerita Alkitab bergambar atau pembacaan nats firman Tuhan bertema "${topicName}". Guru mengajukan pertanyaan pemantik: 'Dari firman Tuhan ini, teladan atau pesan kasih apa yang ingin Tuhan ajarkan kepada kita untuk dilakukan hari ini?'.`;
       data.tahap2 = getConcreteActivity("kristen", topicName);
-      data.tahap3 = `Peserta didik menuangkan pesan cerita Alkitab di atas dalam lembar kerja visual berkelompok. Mereka menggambar ilustrasi kisah Alkitab, mewarnai gambar alam ciptaan, atau menyusun poster visual bertema <b>${topicName}</b> secara kreatif.`;
-      data.tahap4 = `Peserta didik dibimbing merumuskan kalimat doa syukur tertulis atau komitmen janji iman Kristen (seperti janji membantu orang tua, rukun dengan saudara) terkait materi <b>${topicName}</b> secara mandiri di buku tulis masing-masing.`;
-      data.tahap5 = `Setiap kelompok bergantian mempresentasikan poster visual atau membacakan kalimat komitmen kasih bertema <b>${topicName}</b> di depan kelas. Murid lain memberikan apresiasi dan guru memberikan konfirmasi teologis serta penguatan firman Tuhan.`;
+      data.tahap3 = `Peserta didik menuangkan pesan cerita Alkitab di atas dalam lembar kerja visual berkelompok. Mereka menggambar ilustrasi kisah Alkitab, mewarnai gambar alam ciptaan, atau menyusun poster visual bertema "${topicName}" secara kreatif.`;
+      data.tahap4 = `Peserta didik dibimbing merumuskan kalimat doa syukur tertulis atau komitmen janji iman Kristen (seperti janji membantu orang tua, rukun dengan saudara) terkait materi "${topicName}" secara mandiri di buku tulis masing-masing.`;
+      data.tahap5 = `Setiap kelompok bergantian mempresentasikan poster visual atau membacakan kalimat komitmen kasih bertema "${topicName}" di depan kelas. Murid lain memberikan apresiasi dan guru memberikan konfirmasi teologis serta penguatan firman Tuhan.`;
       
-      data.penutup1 = `Siswa bersama guru melakukan refleksi iman: 'Bagian nats firman Tuhan mana yang paling menyentuh hatimu hari ini tentang <b>${topicName}</b>? Sikap kasih apa yang akan kamu praktikkan setelah keluar dari kelas ini?'`;
+      data.penutup1 = `Siswa bersama guru melakukan refleksi iman: 'Bagian nats firman Tuhan mana yang paling menyentuh hatimu hari ini tentang "${topicName}"? Sikap kasih apa yang akan kamu praktikkan setelah keluar dari kelas ini?'`;
       data.penutup2 = `Guru melakukan asesmen spontan lisan dengan mengajukan 3 pertanyaan pemahaman Alkitab secara cepat:<br>
-      1. 'Apa pesan utama nats Alkitab materi <b>${topicName}</b> yang baru saja kita pelajari?'<br>
-      2. 'Sebutkan 2 contoh tindakan nyata di rumah sebagai bukti anak yang mengasihi Allah!'<br>
-      3. 'Bagaimana sikap kita saat melihat teman sedang mengalami kesusahan?'`;
-      data.penutup3 = `Guru memberikan tugas rumah mandiri: 'Tuliskan satu doa pendek ucapan syukur atas berkat <b>${topicName}</b> dan doakan bersama orang tuamu malam nanti.' Kelas ditutup dengan menyanyi dan doa syafaat penutup oleh guru.`;
+      1. '${qa.questions[0] || 'Bagaimana cara kita mempraktikkan ajaran kasih/moral yang kita pelajari hari ini di rumah?'}'<br>
+      2. '${qa.questions[1] || 'Sebutkan adab berdoa/beribadah yang baik dan sopan di hadapan Tuhan?'}'<br>
+      3. '${qa.questions[2] || 'Mengapa kita harus saling mengampuni kesalahan teman kita dengan tulus?'}'`;
+      data.penutup3 = `Guru memberikan tugas rumah mandiri: 'Tuliskan satu doa pendek ucapan syukur terkait materi hari ini dan doakan bersama orang tuamu malam nanti.' Kelas ditutup dengan menyanyi dan doa syafaat penutup oleh guru.`;
       break;
 
     case "koding":
       data.pendahuluan1 = `Guru mengondisikan kesiapan belajar siswa dengan mengajak memejamkan mata dan melakukan peregangan otot leher dan jari tangan secara hening. Siswa diarahkan memfokuskan mental pada ketenangan logika berpikir guna mempersiapkan pemecahan masalah algoritma. Dilanjutkan dengan doa pembuka dipimpin salah satu siswa, absensi kehadiran, dan sapaan penyemangat 'Halo para penemu masa depan!'.`;
-      data.pendahuluan2 = `Guru memberikan apersepsi pentingnya koding: 'Anak-anak hebat, tahukah kalian bahwa game interaktif dan animasi robot dibuat menggunakan susunan perintah logika komputer? Hari ini kita akan belajar merancang logika koding bertema <b>${topicName}</b> agar kita memiliki kemampuan berpikir komputasional yang runtut dan kreatif dalam menciptakan teknologi!'`;
+      data.pendahuluan2 = `Guru memberikan apersepsi pentingnya koding: 'Anak-anak hebat, tahukah kalian bahwa game interaktif dan animasi robot dibuat menggunakan susunan perintah logika komputer? Hari ini kita akan belajar merancang logika koding bertema "${topicName}" agar kita memiliki kemampuan berpikir komputasional yang runtut dan kreatif dalam menciptakan teknologi!'`;
       data.pendahuluan3 = `Guru menyampaikan bahwa alur belajar hari ini dikemas dalam bentuk permainan 'unplugged coding' (gerak fisik koding tanpa komputer), menyusun peta visual alir program (flowchart), mempraktikkan koding langsung di perangkat digital, dan diakhiri pameran karya koding kelompok.`;
       
-      data.tahap1 = `Peserta didik mengamati jalannya demonstrasi game Scratch atau program simulasi bertema <b>${topicName}</b> di proyektor kelas. Guru sengaja menyisipkan kesalahan logika (bug) sehingga sprite bergerak acak atau macet. Siswa ditantang menganalisis secara kritis: 'Mengapa program koding ini tidak berjalan sesuai instruksi dan bagian logika mana yang bermasalah?'.`;
+      data.tahap1 = `Peserta didik mengamati jalannya demonstrasi game Scratch atau program simulasi bertema "${topicName}" di proyektor kelas. Guru sengaja menyisipkan kesalahan logika (bug) sehingga sprite bergerak acak atau macet. Siswa ditantang menganalisis secara kritis: 'Mengapa program koding ini tidak berjalan sesuai instruksi dan bagian logika mana yang bermasalah?'.`;
       data.tahap2 = getConcreteActivity("koding", topicName);
-      data.tahap3 = `Peserta didik berkolaborasi menggambar bagan alir (flowchart) visual atau menempelkan potongan visual blok kode Scratch pada lembar kerja kelompok. Mereka merancang alur logika jalannya sprite dan struktur perulangan (loops/conditional) terkait <b>${topicName}</b> sebelum mengetik di komputer.`;
-      data.tahap4 = `Peserta didik membuka komputer/tablet kelompok dan menyusun blok koding resmi yang sesungguhnya di editor Scratch berdasarkan flowchart visual yang telah mereka sepakati. Siswa mengetikkan nilai koordinat, menyisipkan variabel, dan menyempurnakan struktur kode program <b>${topicName}</b>.`;
-      data.tahap5 = `Kelompok mendemonstrasikan program koding <b>${topicName}</b> mereka yang sudah berhasil berjalan bebas dari bug di depan kelas menggunakan proyektor. Mereka menjelaskan alur logika algoritma yang dipakai dan bagaimana cara mereka men-debug program jika terjadi error. Siswa lain dipandu untuk menguji coba program tersebut.`;
+      data.tahap3 = `Peserta didik berkolaborasi menggambar bagan alir (flowchart) visual atau menempelkan potongan visual blok kode Scratch pada lembar kerja kelompok. Mereka merancang alur logika jalannya sprite dan struktur perulangan (loops/conditional) terkait "${topicName}" sebelum mengetik di komputer.`;
+      data.tahap4 = `Peserta didik membuka komputer/tablet kelompok dan menyusun blok koding resmi yang sesungguhnya di editor Scratch berdasarkan flowchart visual yang telah mereka sepakati. Siswa mengetikkan nilai koordinat, menyisipkan variabel, dan menyempurnakan struktur kode program "${topicName}".`;
+      data.tahap5 = `Kelompok mendemonstrasikan program koding "${topicName}" mereka yang sudah berhasil berjalan bebas dari bug di depan kelas menggunakan proyektor. Mereka menjelaskan alur logika algoritma yang dipakai dan bagaimana cara mereka men-debug program jika terjadi error. Siswa lain dipandu untuk menguji coba program tersebut.`;
       
-      data.penutup1 = `Siswa merefleksikan emosi belajar mereka: 'Bagaimana perasaanmu saat program kodingmu pertama kali mengalami error (bug), dan apa pelajaran kesabaran yang kamu dapatkan hingga program <b>${topicName}</b> berhasil berjalan sukses?'`;
-      data.penutup2 = `Guru memberikan asesmen spontan lisan dengan menampilkan potongan gambar susunan blok kode <b>${topicName}</b> di proyektor, lalu mengajukan 3 pertanyaan:<br>
-      1. 'Jika blok perintah <b>${topicName}</b> ini dijalankan, ke arah mana sprite komputer kita akan bergeser?'<br>
-      2. 'Apa fungsi dari variabel/perulangan yang baru saja kita pasang pada kode tersebut?'<br>
-      3. 'Bagaimana caramu menghentikan program jika sprite mengalami looping tanpa henti?'`;
-      data.penutup3 = `Guru memberikan tugas tindak lanjut: 'Modifikasi proyek koding <b>${topicName}</b> kalian dengan menambahkan efek suara interaktif atau warna background baru di rumah.' Kelas ditutup dengan berdoa bersama dan mematikan komputer secara tertib.`;
+      data.penutup1 = `Siswa merefleksikan emosi belajar mereka: 'Bagaimana perasaanmu saat program kodingmu pertama kali mengalami error (bug), dan apa pelajaran kesabaran yang kamu dapatkan hingga program koding buatanmu berhasil berjalan sukses?'`;
+      data.penutup2 = `Guru memberikan asesmen spontan lisan dengan menampilkan potongan gambar susunan blok kode Scratch di proyektor, lalu mengajukan 3 pertanyaan:<br>
+      1. '${qa.questions[0] || 'Jika blok perintah Scratch ini dijalankan, ke arah mana sprite komputer kita akan bergeser?'}'<br>
+      2. '${qa.questions[1] || 'Apa fungsi dari variabel/perulangan yang baru saja kita pasang pada kode tersebut?'}'<br>
+      3. '${qa.questions[2] || 'Bagaimana caramu menghentikan program jika sprite mengalami looping tanpa henti?'}'`;
+      data.penutup3 = `Guru memberikan tugas tindak lanjut: 'Modifikasi proyek koding kalian dengan menambahkan efek suara interaktif atau warna background baru di rumah.' Kelas ditutup dengan berdoa bersama dan mematikan komputer secara tertib.`;
       break;
 
     case "ipas":
       data.pendahuluan1 = `Guru memimpin teknik pemusatan fokus kesadaran alamiah (mindful listening) dengan mengajak siswa memejamkan mata secara rileks selama 1 menit dan mendengarkan suara alam di luar kelas (kicau burung, embusan angin) dengan khusyuk untuk menyatu dengan alam. Dilanjutkan berdoa syukur bersama, memeriksa kebersihan laci meja, dan mengabsen siswa dengan menanyakan kabar kesehatan mereka.`;
-      data.pendahuluan2 = `Guru menghubungkan materi dengan realitas kehidupan sosial dan alam: 'Anak-anak, pernahkah kalian melihat air hujan menguap? Atau mengamati bagaimana benda di sekitar kita bergerak jatuh? Hari ini kita akan menjelajah fenomena tentang <b>${topicName}</b> agar kita bisa menjaga kelestarian bumi dan memahami hukum alam ciptaan Tuhan secara bijaksana!'`;
+      data.pendahuluan2 = `Guru menghubungkan materi dengan realitas kehidupan sosial dan alam: 'Anak-anak, pernahkah kalian melihat air hujan menguap? Atau mengamati bagaimana benda di sekitar kita bergerak jatuh? Hari ini kita akan menjelajah fenomena tentang "${topicName}" agar kita bisa menjaga kelestarian bumi dan memahami hukum alam ciptaan Tuhan secara bijaksana!'`;
       data.pendahuluan3 = `Guru memaparkan alur petualangan belajar hari ini yang sangat menyenangkan: melakukan penyelidikan eksperimen sains mandiri di laboratorium/halaman sekolah, menggambar siklus/proses alam secara visual, merumuskan kesimpulan teoretis ilmiah, dan membuat poster hasil observasi kelompok.`;
       
-      data.tahap1 = `Peserta didik disuguhkan suatu fenomena sains riil di depan kelas (seperti mendemonstrasikan es batu mencair di dalam air hangat, menyorotkan cahaya senter ke permukaan gelap, atau memperlihatkan tanaman layu) yang berkaitan erat dengan materi <b>${topicName}</b>. Guru memandu siswa merumuskan pertanyaan penyelidikan kritis.`;
+      data.tahap1 = `Peserta didik disuguhkan suatu fenomena sains riil di depan kelas (seperti mendemonstrasikan es batu mencair di dalam air hangat, menyorotkan cahaya senter ke permukaan gelap, atau memperlihatkan tanaman layu) yang berkaitan erat dengan materi "${topicName}". Guru memandu siswa merumuskan pertanyaan penyelidikan kritis.`;
       data.tahap2 = getConcreteActivity("ipas", topicName);
-      data.tahap3 = `Peserta didik mencatat data observasi dan menuangkannya ke dalam representasi gambar visual. Mereka melukis diagram siklus hidup, menggambar arah perambatan cahaya, atau membuat peta pikiran (mind map) proses ekosistem bertema <b>${topicName}</b> pada kertas kerja karton besar kelompok.`;
-      data.tahap4 = `Peserta didik dibimbing merumuskan kesimpulan ilmiah dari data gambar tersebut dan mendefinisikan konsep sains secara formal (seperti menuliskan istilah ilmiah konduksi, evaporasi, fotosintesis, atau interaksi sosial) yang menjelaskan materi <b>${topicName}</b>.`;
-      data.tahap5 = `Setiap kelompok mempresentasikan poster hasil eksperimen ilmiah <b>${topicName}</b> mereka di depan kelas dengan percaya diri. Mereka menguraikan alur sebab-akibat fenomena alam yang diteliti, menjawab pertanyaan kritis kelompok lain, serta menerima penjelasan konseptual penegasan dari guru.`;
+      data.tahap3 = `Peserta didik mencatat data observasi dan menuangkannya ke dalam representasi gambar visual. Mereka melukis diagram siklus hidup, menggambar arah perambatan cahaya, atau membuat peta pikiran (mind map) proses ekosistem bertema "${topicName}" pada kertas kerja karton besar kelompok.`;
+      data.tahap4 = `Peserta didik dibimbing merumuskan kesimpulan ilmiah dari data gambar tersebut dan mendefinisikan konsep sains secara formal (seperti menuliskan istilah ilmiah konduksi, evaporasi, fotosintesis, atau interaksi sosial) yang menjelaskan materi "${topicName}".`;
+      data.tahap5 = `Setiap kelompok mempresentasikan poster hasil eksperimen ilmiah "${topicName}" mereka di depan kelas dengan percaya diri. Mereka menguraikan alur sebab-akibat fenomena alam yang diteliti, menjawab pertanyaan kritis kelompok lain, serta menerima penjelasan konseptual penegasan dari guru.`;
       
-      data.penutup1 = `Siswa merefleksikan kepedulian lingkungan mereka dengan menjawab pertanyaan: 'Setelah memahami konsep <b>${topicName}</b> ini, tindakan nyata apa yang bisa kamu lakukan untuk menjaga kelestarian alam atau lingkungan sosial di sekitarmu?'`;
+      data.penutup1 = `Siswa merefleksikan kepedulian lingkungan mereka dengan menjawab pertanyaan: 'Setelah memahami konsep "${topicName}" ini, tindakan nyata apa yang bisa kamu lakukan untuk menjaga kelestarian alam atau lingkungan sosial di sekitarmu?'`;
       data.penutup2 = `Guru memberikan asesmen spontan lisan berupa 3 pertanyaan konsep teoretis secara cepat:<br>
-      1. 'Berdasarkan praktikum tadi, apa faktor utama yang menyebabkan fenomena <b>${topicName}</b> dapat terjadi?'<br>
-      2. 'Sebutkan 2 contoh nyata penerapan atau keberadaan konsep <b>${topicName}</b> di sekitar lingkungan rumahmu!'<br>
-      3. 'Apa dampak negatif yang terjadi bagi kehidupan manusia jika proses <b>${topicName}</b> mengalami kerusakan atau gangguan?'`;
-      data.penutup3 = `Guru memberikan penugasan rumah pengamatan mandiri: 'Diskusikan bersama orang tuamu, catat 3 perilaku positif di rumah yang mendukung kelestarian konsep <b>${topicName}</b>.' Pembelajaran ditutup dengan doa syukur bersama dan salam hangat.`;
+      1. '${qa.questions[0] || 'Berdasarkan praktikum tadi, apa faktor utama yang menyebabkan fenomena alam ini terjadi?'}'<br>
+      2. '${qa.questions[1] || 'Sebutkan 2 contoh nyata penerapan atau keberadaan konsep ini di sekitar lingkungan rumahmu?'}'<br>
+      3. '${qa.questions[2] || 'Apa dampak negatif yang terjadi bagi kehidupan manusia jika proses alam ini terganggu?'}'`;
+      data.penutup3 = `Guru memberikan penugasan rumah pengamatan mandiri: 'Diskusikan bersama orang tuamu, catat 3 perilaku positif di rumah yang mendukung kelestarian konsep hari ini.' Pembelajaran ditutup dengan doa syukur bersama dan salam hangat.`;
       break;
 
     default: // Bahasa Indonesia, English, Jawa, Pancasila, PJOK, Seni Rupa, PAI
       data.pendahuluan1 = `Guru memimpin pembukaan kelas dengan mengajak siswa duduk melingkar, menarik napas panjang secara teratur untuk merasakan detak jantung dan bersyukur atas nikmat kesehatan (mindful breathing). Dilanjutkan dengan berdoa bersama dipimpin salah satu siswa, absensi siswa dengan menanyakan kabar emosional serta memberikan senyuman ramah guna membangun emosi belajar yang harmonis.`;
-      data.pendahuluan2 = `Guru memberikan gambaran kontekstual yang relevan: 'Anak-anak hebat, kemampuan mengekspresikan gagasan, membaca, memahami nilai budi pekerti, dan merancang karya kreatif terkait <b>${topicName}</b> sangat penting bagi kehidupan kita agar kita tumbuh menjadi pribadi yang berakhlak mulia, toleran, cerdas, serta terampil berkomunikasi di masyarakat.'`;
+      data.pendahuluan2 = `Guru memberikan gambaran kontekstual yang relevan: 'Anak-anak hebat, kemampuan mengekspresikan gagasan, membaca, memahami nilai budi pekerti, dan merancang karya kreatif terkait "${topicName}" sangat penting bagi kehidupan kita agar kita tumbuh menjadi pribadi yang berakhlak mulia, toleran, cerdas, serta terampil berkomunikasi di masyarakat.'`;
       data.pendahuluan3 = `Guru menjelaskan alur aktivitas seru hari ini yaitu bermain peran (role-play), menyusun urutan kartu kata fisik, menggambar peta visual jalinan ide, menuliskan karya deskriptif mandiri, serta diakhiri dengan pameran karya kelompok yang menyenangkan.`;
       
-      data.tahap1 = `Peserta didik dihadapkan pada paparan cerita menarik, poster gambar tematik, atau pemutaran rekaman suara kontekstual bertema <b>${topicName}</b>. Guru memotong alur cerita di tengah jalan dan meminta siswa memprediksi akhir kisah secara kreatif guna merangsang kesadaran dan rasa penasaran awal.`;
-      data.tahap2 = getConcreteActivity("default", topicName);
-      data.tahap3 = `Peserta didik menuangkan hasil praktik fisik tersebut ke dalam bentuk representasi visual seperti menggambar ilustrasi alur cerita (storyboard), sketsa pola langkah gerak, atau peta konsep kosakata bertema <b>${topicName}</b> pada kertas kerja kelompok.`;
-      data.tahap4 = `Peserta didik menerjemahkan alur visual tersebut menjadi bentuk konseptual tertulis. Siswa merumuskan paragraf deskriptif utuh, menyusun kalimat dialog resmi yang santun, atau menuliskan kesimpulan nilai moral terkait <b>${topicName}</b> dengan bahasa baku.`;
-      data.tahap5 = `Perwakilan murid menyajikan hasil karya tulisan, membacakan dialog buatan kelompok, atau mendemonstrasikan gerakan fisik bertema <b>${topicName}</b> di depan kelas secara bergantian. Mereka menerima umpan balik positif dari teman, serta mendapatkan konfirmasi kebahasaan/perilaku dari guru.`;
+      data.tahap1 = `Peserta didik dihadapkan pada paparan cerita menarik, poster gambar tematik, atau pemutaran rekaman suara kontekstual bertema "${topicName}". Guru memotong alur cerita di tengah jalan dan meminta siswa memprediksi akhir kisah secara kreatif guna merangsang kesadaran dan rasa penasaran awal.`;
+      data.tahap2 = getConcreteActivity(category, topicName);
+      data.tahap3 = `Peserta didik menuangkan hasil praktik fisik tersebut ke dalam bentuk representasi visual seperti menggambar ilustrasi alur cerita (storyboard), sketsa pola langkah gerak, atau peta konsep kosakata bertema "${topicName}" pada kertas kerja kelompok.`;
+      data.tahap4 = `Peserta didik menerjemahkan alur visual tersebut menjadi bentuk konseptual tertulis. Siswa merumuskan paragraf deskriptif utuh, menyusun kalimat dialog resmi yang santun, atau menuliskan kesimpulan nilai moral terkait "${topicName}" dengan bahasa baku.`;
+      data.tahap5 = `Perwakilan murid menyajikan hasil karya tulisan, membacakan dialog buatan kelompok, atau mendemonstrasikan gerakan fisik bertema "${topicName}" di depan kelas secara bergantian. Mereka menerima umpan balik positif dari teman, serta mendapatkan konfirmasi kebahasaan/perilaku dari guru.`;
       
-      data.penutup1 = `Siswa mengevaluasi keberhasilan kerja sama kelompok mereka serta merefleksikan nilai-nilai kebaikan materi <b>${topicName}</b> dalam pembentukan karakter perilaku sopan santun sehari-hari.`;
+      data.penutup1 = `Siswa mengevaluasi keberhasilan kerja sama kelompok mereka serta merefleksikan nilai-nilai kebaikan materi "${topicName}" dalam pembentukan karakter perilaku sopan santun sehari-hari.`;
       data.penutup2 = `Guru melakukan kuis lisan spontan berupa 3 pertanyaan pemahaman cepat secara acak:<br>
-      1. 'Dari aktivitas pembelajaran materi <b>${topicName}</b> hari ini, apa kesimpulan atau amanat utama yang wajib kita terapkan?'<br>
-      2. 'Mengapa kita harus menyusun rancangan visual (gambar) terlebih dahulu sebelum menulis karya utuh <b>${topicName}</b>?'<br>
-      3. 'Sebutkan contoh sikap santun dalam mengomunikasikan ide atau pendapat terkait materi ini kepada orang lain!'`;
-      data.penutup3 = `Guru memberikan tugas tindak lanjut sederhana: 'Praktikkan nilai budi pekerti atau keterampilan terkait <b>${topicName}</b> yang telah dipelajari hari ini di lingkungan rumahmu, lalu mintalah tanda tangan orang tuamu sebagai bukti.' Kegiatan diakhiri dengan doa penutup bersama.`;
+      1. '${qa.questions[0] || 'Dari aktivitas pembelajaran hari ini, apa kesimpulan atau amanat utama yang wajib kita terapkan?'}'<br>
+      2. '${qa.questions[1] || 'Mengapa kita harus menyusun rancangan visual (gambar) terlebih dahulu sebelum menulis karya utuh?'}'<br>
+      3. '${qa.questions[2] || 'Sebutkan contoh sikap santun dalam mengomunikasikan ide atau pendapat terkait materi ini kepada orang lain!'}'`;
+      data.penutup3 = `Guru memberikan tugas tindak lanjut sederhana: 'Praktikkan nilai budi pekerti atau keterampilan yang telah dipelajari hari ini di lingkungan rumahmu, lalu mintalah tanda tangan orang tuamu sebagai bukti.' Kegiatan diakhiri dengan doa penutup bersama.`;
       break;
   }
 
@@ -5535,7 +5646,7 @@ function compileModulAjar(subData, chData, topicName, fase) {
         <ul style="margin: 0; padding-left: 0; list-style: none;">
           ${selectedDplList.map(d => `
             <li style="margin-bottom: 8px; display: flex; gap: 10px; align-items: flex-start;">
-              <span class="interactive-checkbox" data-dimensi="${d.key}" style="cursor:pointer; font-weight: bold; color: #0b5e56; font-size: 12px; font-family: monospace; white-space: nowrap; display: inline-block; min-width: 32px; text-align: center; user-select: none;">${d.val}</span>
+              <span class="interactive-checkbox" data-dimensi="${d.key}" style="cursor:pointer; font-weight: bold; color: #0b5e56; font-size: 13px; font-family: monospace; white-space: nowrap; display: inline-block; min-width: 32px; text-align: center; user-select: none;">${d.val}</span>
               <div>
                 <b style="color: #0b5e56;">${d.idx}. ${d.name}</b><br>
                 <span style="font-size: 10px; color: #576d6a; font-style: italic;">Indikator: ${d.ind}</span>
@@ -5547,7 +5658,7 @@ function compileModulAjar(subData, chData, topicName, fase) {
     `;
   } else {
     selectedDplHtml = `
-      <div style="background-color: #f8faf9; padding: 12px 15px; border-radius: 8px; border: 1px solid #d2e4e1; margin-bottom: 20px; text-align: center; font-style: italic; color: #576d6a; font-size: 11px;">
+      <div style="background-color: #f8faf9; padding: 12px 15px; border-radius: 8px; border: 1px solid #d2e4e1; margin-bottom: 20px; text-align: center; font-style: italic; color: #576d6a; font-size: 13px;">
         [Belum ada dimensi Profil Lulusan yang dipilih. Ceklis pada menu setup sebelah kiri]
       </div>
     `;
@@ -5590,67 +5701,67 @@ function compileModulAjar(subData, chData, topicName, fase) {
   return `
     <div style="text-align: center; margin-bottom: 25px;">
       <h2 style="font-size: 18px; font-weight: bold; color: #0b5e56; margin: 0; text-transform: uppercase;">MODUL AJAR KURIKULUM MERDEKA</h2>
-      <p style="font-size: 12px; color: #576d6a; margin: 5px 0 0 0;">Pendekatan Pembelajaran Mendalam (Deep Learning)</p>
+      <p style="font-size: 13px; color: #576d6a; margin: 5px 0 0 0;">Pendekatan Pembelajaran Mendalam (Deep Learning)</p>
     </div>
 
     <h2 style="font-size: 14px; border-bottom: 2px solid #0b5e56; padding-bottom: 4px; color: #0b5e56; margin-top: 20px;">I. INFORMASI UMUM</h2>
     <table style="width: 100%; border-collapse: collapse; margin-top: 10px; margin-bottom: 15px;">
       <tr style="border-bottom: 1px solid #eaf4f3;">
-        <td style="width: 25%; font-weight: bold; padding: 6px 0; font-size: 11px; color: #2b3a38;">• Nama Penyusun</td>
-        <td style="width: 2%; padding: 6px 0; font-size: 11px;">:</td>
-        <td style="padding: 6px 0; font-size: 11px;" class="editable-content" data-field="namaGuru">${state.teacherProfile.namaGuru}</td>
+        <td style="width: 25%; font-weight: bold; padding: 6px 0; font-size: 13px; color: #2b3a38;">• Nama Penyusun</td>
+        <td style="width: 2%; padding: 6px 0; font-size: 13px;">:</td>
+        <td style="padding: 6px 0; font-size: 13px;" class="editable-content" data-field="namaGuru">${state.teacherProfile.namaGuru}</td>
       </tr>
       <tr style="border-bottom: 1px solid #eaf4f3;">
-        <td style="font-weight: bold; padding: 6px 0; font-size: 11px; color: #2b3a38;">• Institusi</td>
-        <td style="padding: 6px 0; font-size: 11px;">:</td>
-        <td style="padding: 6px 0; font-size: 11px;" class="editable-content" data-field="namaSekolah">${state.teacherProfile.namaSekolah}</td>
+        <td style="font-weight: bold; padding: 6px 0; font-size: 13px; color: #2b3a38;">• Institusi</td>
+        <td style="padding: 6px 0; font-size: 13px;">:</td>
+        <td style="padding: 6px 0; font-size: 13px;" class="editable-content" data-field="namaSekolah">${state.teacherProfile.namaSekolah}</td>
       </tr>
       <tr style="border-bottom: 1px solid #eaf4f3;">
-        <td style="font-weight: bold; padding: 6px 0; font-size: 11px; color: #2b3a38;">• Tahun</td>
-        <td style="padding: 6px 0; font-size: 11px;">:</td>
-        <td style="padding: 6px 0; font-size: 11px;" class="editable-content" data-field="tahunAjaran">${state.teacherProfile.tahunAjaran}</td>
+        <td style="font-weight: bold; padding: 6px 0; font-size: 13px; color: #2b3a38;">• Tahun</td>
+        <td style="padding: 6px 0; font-size: 13px;">:</td>
+        <td style="padding: 6px 0; font-size: 13px;" class="editable-content" data-field="tahunAjaran">${state.teacherProfile.tahunAjaran}</td>
       </tr>
       <tr style="border-bottom: 1px solid #eaf4f3;">
-        <td style="font-weight: bold; padding: 6px 0; font-size: 11px; color: #2b3a38;">• Jenjang / Kelas</td>
-        <td style="padding: 6px 0; font-size: 11px;">:</td>
-        <td style="padding: 6px 0; font-size: 11px;">Sekolah Dasar (SD) / Kelas ${state.selectedClass}</td>
+        <td style="font-weight: bold; padding: 6px 0; font-size: 13px; color: #2b3a38;">• Jenjang / Kelas</td>
+        <td style="padding: 6px 0; font-size: 13px;">:</td>
+        <td style="padding: 6px 0; font-size: 13px;">Sekolah Dasar (SD) / Kelas ${state.selectedClass}</td>
       </tr>
       <tr style="border-bottom: 1px solid #eaf4f3;">
-        <td style="font-weight: bold; padding: 6px 0; font-size: 11px; color: #2b3a38;">• Fase</td>
-        <td style="padding: 6px 0; font-size: 11px;">:</td>
-        <td style="padding: 6px 0; font-size: 11px;">Fase ${fase}</td>
+        <td style="font-weight: bold; padding: 6px 0; font-size: 13px; color: #2b3a38;">• Fase</td>
+        <td style="padding: 6px 0; font-size: 13px;">:</td>
+        <td style="padding: 6px 0; font-size: 13px;">Fase ${fase}</td>
       </tr>
       <tr style="border-bottom: 1px solid #eaf4f3;">
-        <td style="font-weight: bold; padding: 6px 0; font-size: 11px; color: #2b3a38;">• Mata Pelajaran</td>
-        <td style="padding: 6px 0; font-size: 11px;">:</td>
-        <td style="padding: 6px 0; font-size: 11px;">${subData.title}</td>
+        <td style="font-weight: bold; padding: 6px 0; font-size: 13px; color: #2b3a38;">• Mata Pelajaran</td>
+        <td style="padding: 6px 0; font-size: 13px;">:</td>
+        <td style="padding: 6px 0; font-size: 13px;">${subData.title}</td>
       </tr>
       <tr style="border-bottom: 1px solid #eaf4f3;">
-        <td style="font-weight: bold; padding: 6px 0; font-size: 11px; color: #2b3a38;">• Elemen Konten</td>
-        <td style="padding: 6px 0; font-size: 11px;">:</td>
-        <td style="padding: 6px 0; font-size: 11px;">${chData.title}</td>
+        <td style="font-weight: bold; padding: 6px 0; font-size: 13px; color: #2b3a38;">• Elemen Konten</td>
+        <td style="padding: 6px 0; font-size: 13px;">:</td>
+        <td style="padding: 6px 0; font-size: 13px;">${chData.title}</td>
       </tr>
       <tr style="border-bottom: 1px solid #eaf4f3;">
-        <td style="font-weight: bold; padding: 6px 0; font-size: 11px; color: #2b3a38;">• Alokasi Waktu</td>
-        <td style="padding: 6px 0; font-size: 11px;">:</td>
-        <td style="padding: 6px 0; font-size: 11px;">2 JP (2 x 35 Menit)</td>
+        <td style="font-weight: bold; padding: 6px 0; font-size: 13px; color: #2b3a38;">• Alokasi Waktu</td>
+        <td style="padding: 6px 0; font-size: 13px;">:</td>
+        <td style="padding: 6px 0; font-size: 13px;">2 JP (2 x 35 Menit)</td>
       </tr>
       <tr style="border-bottom: 1px solid #eaf4f3;">
-        <td style="font-weight: bold; padding: 6px 0; font-size: 11px; color: #2b3a38;">• Moda & Model Pembelajaran</td>
-        <td style="padding: 6px 0; font-size: 11px;">:</td>
-        <td style="padding: 6px 0; font-size: 11px;">Tatap Muka / Perencanaan Pembelajaran Mendalam (Deep Learning)</td>
+        <td style="font-weight: bold; padding: 6px 0; font-size: 13px; color: #2b3a38;">• Moda & Model Pembelajaran</td>
+        <td style="padding: 6px 0; font-size: 13px;">:</td>
+        <td style="padding: 6px 0; font-size: 13px;">Tatap Muka / Perencanaan Pembelajaran Mendalam (Deep Learning)</td>
       </tr>
     </table>
 
-    <h3 style="font-size: 12px; font-weight: bold; color: #0b5e56; margin-top: 15px; margin-bottom: 5px;">A. Kompetensi Awal (Materi Prasyarat)</h3>
-    <div style="background-color: #f8faf9; padding: 10px 12px; border-radius: 6px; border: 1px solid #e2ecea; font-size: 11px; line-height: 1.5; color: #2b3a38;" class="editable-content" data-field="kompetensiAwal">
+    <h3 style="font-size: 13px; font-weight: bold; color: #0b5e56; margin-top: 15px; margin-bottom: 5px;">A. Kompetensi Awal (Materi Prasyarat)</h3>
+    <div style="background-color: #f8faf9; padding: 10px 12px; border-radius: 6px; border: 1px solid #e2ecea; font-size: 13px; line-height: 1.5; color: #2b3a38;" class="editable-content" data-field="kompetensiAwal">
       Peserta didik telah memiliki pemahaman prasyarat dasar sebelum memasuki materi <b>${topicName}</b>, termasuk pengenalan konsep penunjang, kemampuan bernalar awal, serta kesiapan mental belajar secara kolaboratif.
     </div>
 
-    <h3 style="font-size: 12px; font-weight: bold; color: #0b5e56; margin-top: 15px; margin-bottom: 5px;">B. Sarana dan Prasarana</h3>
-    <ul style="margin: 0; padding-left: 20px; font-size: 11px; line-height: 1.6; color: #2b3a38;">
+    <h3 style="font-size: 13px; font-weight: bold; color: #0b5e56; margin-top: 15px; margin-bottom: 5px;">B. Sarana dan Prasarana</h3>
+    <ul style="margin: 0; padding-left: 20px; font-size: 13px; line-height: 1.6; color: #2b3a38;">
       <li><b>Media & Alat Peraga Konkret:</b> Laptop, proyektor, papan tulis, alat peraga manipulatif konkret penunjang visualisasi konsep, serta pemanfaatan portal pembelajaran digital resmi melalui <a href="https://rumah.pendidikan.go.id/" target="_blank" style="color:#0b5e56; text-decoration:underline; font-weight:bold;">https://rumah.pendidikan.go.id/</a>.</li>
-      <li><b>Sumber Belajar:</b> Buku Panduan Guru dan Buku Siswa Kemendikdasmen RI 2025/2026, modul pembelajaran pendukung, serta LKPD berbasis aktivitas konkret.</li>
+      <li><b>Sumber Belajar:</b> Buku Panduan Guru dan Buku Siswa Kemendikdasmen RI ${state.teacherProfile.tahunAjaran}, modul pembelajaran pendukung, serta LKPD berbasis aktivitas konkret.</li>
     </ul>
 
     <h2 style="font-size: 14px; border-bottom: 2px solid #0b5e56; padding-bottom: 4px; color: #0b5e56; margin-top: 25px;">II. INTEGRASI 8 DIMENSI PROFIL LULUSAN (DPL)</h2>
@@ -5660,33 +5771,33 @@ function compileModulAjar(subData, chData, topicName, fase) {
 
     <h2 style="font-size: 14px; border-bottom: 2px solid #0b5e56; padding-bottom: 4px; color: #0b5e56; margin-top: 25px;">III. KOMPONEN INTI</h2>
     
-    <h3 style="font-size: 12px; font-weight: bold; color: #0b5e56; margin-top: 15px; margin-bottom: 5px;">A. Tujuan Pembelajaran (TP)</h3>
-    <div style="background-color: #f8faf9; padding: 12px; border-radius: 6px; border: 1px solid #e2ecea; font-size: 11px; line-height: 1.6; color: #2b3a38;" class="editable-content" data-field="tp">
+    <h3 style="font-size: 13px; font-weight: bold; color: #0b5e56; margin-top: 15px; margin-bottom: 5px;">A. Tujuan Pembelajaran (TP)</h3>
+    <div style="background-color: #f8faf9; padding: 12px; border-radius: 6px; border: 1px solid #e2ecea; font-size: 13px; line-height: 1.6; color: #2b3a38;" class="editable-content" data-field="tp">
       1. Melalui pendekatan Konkret-Gambar-Abstrak (KGA), peserta didik mampu ${tp.replace(/^1\.\s*|2\.\s*/g, '') || `mengidentifikasi dan menjelaskan konsep ${topicName} secara visual dan logis.`}<br>
       2. Melalui pemecahan masalah (Problem-Based), peserta didik mampu memecahkan masalah kontekstual nyata terkait <b>${topicName}</b> secara mandiri dan kritis.
     </div>
 
-    <h3 style="font-size: 12px; font-weight: bold; color: #0b5e56; margin-top: 15px; margin-bottom: 5px;">B. Pemahaman Bermakna (Pembelajaran Bermakna)</h3>
-    <div style="background-color: #f8faf9; padding: 10px 12px; border-radius: 6px; border: 1px solid #e2ecea; font-size: 11px; line-height: 1.5; color: #2b3a38;" class="editable-content" data-field="pemahamanBermakna">
+    <h3 style="font-size: 13px; font-weight: bold; color: #0b5e56; margin-top: 15px; margin-bottom: 5px;">B. Pemahaman Bermakna (Pembelajaran Bermakna)</h3>
+    <div style="background-color: #f8faf9; padding: 10px 12px; border-radius: 6px; border: 1px solid #e2ecea; font-size: 13px; line-height: 1.5; color: #2b3a38;" class="editable-content" data-field="pemahamanBermakna">
       ${pemahamanBermakna}
     </div>
 
-    <h3 style="font-size: 12px; font-weight: bold; color: #0b5e56; margin-top: 15px; margin-bottom: 5px;">C. Pertanyaan Pemantik (Memicu Rasa Ingin Tahu)</h3>
-    <div style="background-color: #f8faf9; padding: 10px 12px; border-radius: 6px; border: 1px solid #e2ecea; font-size: 11px; line-height: 1.5; color: #2b3a38;" class="editable-content" data-field="pemantik">
+    <h3 style="font-size: 13px; font-weight: bold; color: #0b5e56; margin-top: 15px; margin-bottom: 5px;">C. Pertanyaan Pemantik (Memicu Rasa Ingin Tahu)</h3>
+    <div style="background-color: #f8faf9; padding: 10px 12px; border-radius: 6px; border: 1px solid #e2ecea; font-size: 13px; line-height: 1.5; color: #2b3a38;" class="editable-content" data-field="pemantik">
       ${pemantik}
     </div>
 
     <h2 style="font-size: 14px; border-bottom: 2px solid #0b5e56; padding-bottom: 4px; color: #0b5e56; margin-top: 25px;">IV. SINTAKS LANGKAH PEMBELAJARAN MENDALAM (DEEP LEARNING)</h2>
     
-    <h3 style="font-size: 12px; font-weight: bold; color: #0b5e56; margin-top: 15px; margin-bottom: 5px;">1. Kegiatan Pendahuluan (<span class="editable-content" data-field="waktuPendahuluan">${waktuPendahuluan}</span> Menit)</h3>
-    <ul style="margin: 0; padding-left: 20px; font-size: 11px; line-height: 1.6; color: #2b3a38;">
+    <h3 style="font-size: 13px; font-weight: bold; color: #0b5e56; margin-top: 15px; margin-bottom: 5px;">1. Kegiatan Pendahuluan (<span class="editable-content" data-field="waktuPendahuluan">${waktuPendahuluan}</span> Menit)</h3>
+    <ul style="margin: 0; padding-left: 20px; font-size: 13px; line-height: 1.6; color: #2b3a38;">
       <li><b>Pembukaan Berkesadaran (Mindful):</b> <span class="editable-content" data-field="langkahPendahuluan1">${langkahPendahuluan1}</span></li>
       <li><b>Apersepsi & Motivasi Kontekstual (Meaningful):</b> <span class="editable-content" data-field="langkahPendahuluan2">${langkahPendahuluan2}</span></li>
       <li><b>Penyampaian Target (Joyful):</b> <span class="editable-content" data-field="langkahPendahuluan3">${langkahPendahuluan3}</span></li>
     </ul>
 
-    <h3 style="font-size: 12px; font-weight: bold; color: #0b5e56; margin-top: 15px; margin-bottom: 5px;">2. Kegiatan Inti (<span class="editable-content" data-field="waktuInti">${waktuInti}</span> Menit)</h3>
-    <ul style="margin: 0; padding-left: 20px; font-size: 11px; line-height: 1.6; color: #2b3a38;">
+    <h3 style="font-size: 13px; font-weight: bold; color: #0b5e56; margin-top: 15px; margin-bottom: 5px;">2. Kegiatan Inti (<span class="editable-content" data-field="waktuInti">${waktuInti}</span> Menit)</h3>
+    <ul style="margin: 0; padding-left: 20px; font-size: 13px; line-height: 1.6; color: #2b3a38;">
       <li>
         <b>Tahap 1: Orientasi Masalah & Stimulasi Nyata (Berkesadaran)</b>
         <div class="editable-content" data-field="langkahInti1" style="margin-left: 15px; color: #555;">${langkahInti1}</div>
@@ -5709,15 +5820,15 @@ function compileModulAjar(subData, chData, topicName, fase) {
       </li>
     </ul>
 
-    <h3 style="font-size: 12px; font-weight: bold; color: #0b5e56; margin-top: 15px; margin-bottom: 5px;">3. Kegiatan Penutup (<span class="editable-content" data-field="waktuPenutup">${waktuPenutup}</span> Menit)</h3>
-    <ul style="margin: 0; padding-left: 20px; font-size: 11px; line-height: 1.6; color: #2b3a38;">
+    <h3 style="font-size: 13px; font-weight: bold; color: #0b5e56; margin-top: 15px; margin-bottom: 5px;">3. Kegiatan Penutup (<span class="editable-content" data-field="waktuPenutup">${waktuPenutup}</span> Menit)</h3>
+    <ul style="margin: 0; padding-left: 20px; font-size: 13px; line-height: 1.6; color: #2b3a38;">
       <li><b>Refleksi Berlapis (As Learning):</b> <span class="editable-content" data-field="langkahPenutup1">${langkahPenutup1}</span></li>
       <li><b>Asesmen Spontan:</b> <span class="editable-content" data-field="langkahPenutup2">${langkahPenutup2}</span></li>
       <li><b>Tindak Lanjut & Penutup:</b> <span class="editable-content" data-field="langkahPenutup3">${langkahPenutup3}</span></li>
     </ul>
 
     <h2 style="font-size: 14px; border-bottom: 2px solid #0b5e56; padding-bottom: 4px; color: #0b5e56; margin-top: 25px;">V. SISTEM ASESMEN PENDIDIKAN MENDALAM</h2>
-    <ol style="margin: 0; padding-left: 20px; font-size: 11px; line-height: 1.6; color: #2b3a38;">
+    <ol style="margin: 0; padding-left: 20px; font-size: 13px; line-height: 1.6; color: #2b3a38;">
       <li><b>Asesmen Awal (Diagnostik):</b> Menilai kesiapan kompetensi prasyarat dasar sebelum siklus pembelajaran topik dimulai.</li>
       <li><b>Asesmen Formatif (For/As Learning):</b> Menggunakan catatan anekdot, lembar observasi partisipasi diskusi, serta rubrik perkembangan karakter dimensi profil lulusan selama kegiatan inti.</li>
       <li><b>Asesmen Sumatif (Of Learning):</b> Evaluasi akhir berupa kuis objektif pemahaman materi, penugasan masalah non-rutin, atau unjuk karya proyek di akhir bab.</li>
@@ -5725,17 +5836,17 @@ function compileModulAjar(subData, chData, topicName, fase) {
 
     <h2 style="font-size: 14px; border-bottom: 2px solid #0b5e56; padding-bottom: 4px; color: #0b5e56; margin-top: 25px;">VI. LAMPIRAN OPERASIONAL</h2>
     
-    <h3 style="font-size: 12px; font-weight: bold; color: #0b5e56; margin-top: 15px; margin-bottom: 5px;">A. Lembar Kerja Peserta Didik (LKPD)</h3>
-    <div style="background-color: #f8faf9; padding: 10px 12px; border-radius: 6px; border: 1px solid #e2ecea; font-size: 11px; line-height: 1.5; color: #2b3a38; font-style: italic;">
+    <h3 style="font-size: 13px; font-weight: bold; color: #0b5e56; margin-top: 15px; margin-bottom: 5px;">A. Lembar Kerja Peserta Didik (LKPD)</h3>
+    <div style="background-color: #f8faf9; padding: 10px 12px; border-radius: 6px; border: 1px solid #e2ecea; font-size: 13px; line-height: 1.5; color: #2b3a38; font-style: italic;">
       * Lampiran LKPD tersedia pada menu tab terpisah, berisi format kolom identitas kelompok, eksplorasi KGA berbasis manipulasi benda nyata, ruang sketsa gambar visual, serta ruang perumusan simbol/bahasa resmi.
     </div>
 
-    <h3 style="font-size: 12px; font-weight: bold; color: #0b5e56; margin-top: 15px; margin-bottom: 5px;">B. Ringkasan Bahan Ajar</h3>
-    <div style="background-color: #f8faf9; padding: 10px 12px; border-radius: 6px; border: 1px solid #e2ecea; font-size: 11px; line-height: 1.5; color: #2b3a38; font-style: italic;">
+    <h3 style="font-size: 13px; font-weight: bold; color: #0b5e56; margin-top: 15px; margin-bottom: 5px;">B. Ringkasan Bahan Ajar</h3>
+    <div style="background-color: #f8faf9; padding: 10px 12px; border-radius: 6px; border: 1px solid #e2ecea; font-size: 13px; line-height: 1.5; color: #2b3a38; font-style: italic;">
       * Ringkasan materi lengkap untuk literasi numerasi pendukung siswa tersedia di tab menu Bahan Ajar.
     </div>
 
-    <h3 style="font-size: 12px; font-weight: bold; color: #0b5e56; margin-top: 15px; margin-bottom: 5px;">C. Instrumen & Rubrik Penilaian Sikap (Otomatis)</h3>
+    <h3 style="font-size: 13px; font-weight: bold; color: #0b5e56; margin-top: 15px; margin-bottom: 5px;">C. Instrumen & Rubrik Penilaian Sikap (Otomatis)</h3>
     <div style="overflow-x: auto; width: 100%; margin-top: 8px;">
       <table style="width: 100%; border-collapse: collapse; min-width: 700px;">
         <thead>
